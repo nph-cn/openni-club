@@ -1,0 +1,110 @@
+name: Compile native apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'config/**'
+      - 'scripts/configure-club.mjs'
+      - 'scripts/lib/club-*.mjs'
+      - 'package*.json'
+      - '.github/workflows/native.yml'
+  pull_request:
+    paths:
+      - 'apps/mobile/**'
+      - 'config/**'
+      - 'scripts/configure-club.mjs'
+      - 'scripts/lib/club-*.mjs'
+      - 'package*.json'
+      - '.github/workflows/native.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: ${{ matrix.platform }} compile
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: android-debug
+            os: ubuntu-24.04
+          - platform: ios-unsigned
+            os: macos-26
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Generate the public demo identity
+        working-directory: .
+        run: |
+          npm ci
+          node scripts/configure-club.mjs --apply config/demo.club.json --mode preview
+      - uses: actions/setup-java@v4
+        if: matrix.platform == 'android-debug'
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.50.0'
+          cache: true
+      - name: Resolve Flutter packages
+        run: flutter pub get
+      - name: Record toolchain and generated identities
+        run: |
+          mkdir -p native-evidence
+          flutter --version > native-evidence/toolchain.txt
+          if [ '${{ matrix.platform }}' = 'ios-unsigned' ]; then
+            xcodebuild -version >> native-evidence/toolchain.txt
+          else
+            java -version 2>> native-evidence/toolchain.txt
+          fi
+          node --input-type=module <<'JS'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          import {loadClubConfig} from '../../scripts/lib/club-config.mjs';
+          const brand=JSON.parse(readFileSync('assets/brand.json','utf8'));
+          const config=await loadClubConfig('../../config/demo.club.json',{mode:'preview'});
+          const android=readFileSync('android/brand.generated.properties','utf8');
+          const ios=readFileSync('ios/Flutter/Brand.generated.xcconfig','utf8');
+          assert.equal(brand.mode,'demo');
+          assert.equal(brand.apiBaseUrl,'');
+          assert.equal(brand.configHash,config.configHash);
+          assert(android.includes('OPENNI_APPLICATION_ID='+config.distribution.androidApplicationId));
+          assert(ios.includes('OPENNI_BUNDLE_ID = '+config.distribution.iosBundleId));
+          writeFileSync('native-evidence/identity.json',JSON.stringify({clubId:brand.clubId,configHash:brand.configHash,mode:brand.mode,apiBaseUrl:brand.apiBaseUrl,androidApplicationId:config.distribution.androidApplicationId,iosBundleId:config.distribution.iosBundleId},null,2));
+          JS
+      - name: Compile Android debug APK
+        if: matrix.platform == 'android-debug'
+        run: flutter build apk --debug --dart-define=APP_MODE=demo 2>&1 | tee native-evidence/build.log
+      - name: Compile iOS without signing
+        if: matrix.platform == 'ios-unsigned'
+        run: |
+          flutter build ios --release --no-codesign --dart-define=APP_MODE=demo 2>&1 | tee native-evidence/build.log
+          ditto -c -k --sequesterRsrc --keepParent build/ios/iphoneos/Runner.app native-evidence/ios-unsigned.app.zip
+      - name: Upload compile evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-${{ github.sha }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            apps/mobile/native-evidence/
+            apps/mobile/build/app/outputs/flutter-apk/app-debug.apk
