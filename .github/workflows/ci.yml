@@ -1,0 +1,47 @@
+name: Check OpenNI Club
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/doctor.mjs --self-test
+      - run: npm ci
+      - run: node --test scripts/test/*.test.mjs
+      - run: node --test apps/miniprogram/test/*.test.cjs
+      - run: npm test
+        working-directory: services/api
+      - run: npm run check
+        working-directory: services/api
+      - run: npm test
+        working-directory: services/integrations
+      - run: npm run check
+        working-directory: services/integrations
+  flutter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+        working-directory: apps/mobile
+      - run: flutter analyze
+        working-directory: apps/mobile
+      - run: flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart
+        working-directory: apps/mobile
+      - run: flutter build web --base-href /demo/
+        working-directory: apps/mobile
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npm run build

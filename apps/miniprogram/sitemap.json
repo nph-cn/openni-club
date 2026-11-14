@@ -1,0 +1,9 @@
+{
+  "desc": "OpenNI demonstration; public pages discoverable after operator configuration",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

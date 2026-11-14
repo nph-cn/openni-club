@@ -1,0 +1,5 @@
+<template name="state">
+  <view wx:if="{{loading}}" class="state" role="status"><view class="state-mark">···</view><text>正在加载俱乐部内容</text></view>
+  <view wx:elif="{{error}}" class="state error"><text class="state-title">暂时没能连接上</text><text class="muted">{{error}}</text><button class="button secondary" bindtap="retry">重新加载</button></view>
+</template>
+<template name="demo"><view wx:if="{{demo}}" class="demo-note">演示俱乐部 · 人物与价格均为虚构 · 预约不扣款</view></template>

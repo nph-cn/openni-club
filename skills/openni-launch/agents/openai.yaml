@@ -1,0 +1,6 @@
+interface:
+  display_name: "OpenNI Club 上线教练"
+  short_description: "陪电竞俱乐部完成本地体验、品牌配置、域名部署与多端发布核验"
+  default_prompt: "使用 $openni-launch 检查我的 OpenNI Club 项目，带我完成下一阶段并说明真实上线阻断项。"
+policy:
+  allow_implicit_invocation: true

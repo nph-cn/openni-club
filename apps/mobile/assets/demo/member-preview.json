@@ -1,0 +1,510 @@
+{
+  "generatedAt": "2026-11-15T13:15:00.000Z",
+  "source": "api-fixture",
+  "demo": true,
+  "readOnly": true,
+  "me": {
+    "user": {
+      "id": "53fe2474-1349-40cc-9b1e-43a3afac6a3e",
+      "name": "演示成员"
+    },
+    "role": "member",
+    "playerId": "p1",
+    "demo": true,
+    "player": {
+      "id": "p1",
+      "name": "阿屿",
+      "role": "小队指挥",
+      "bio": "专注烽火地带路线沟通与队内报点，预约前可协商地图和打法。",
+      "games": [
+        "三角洲行动"
+      ],
+      "tags": [
+        "耐心沟通",
+        "战术协作"
+      ],
+      "initials": "屿",
+      "color": "#2455E7",
+      "avatarUrl": "",
+      "coverUrl": ""
+    }
+  },
+  "orders": [
+    {
+      "id": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "serviceId": "s1",
+      "serviceTitle": "三角洲 · PC 小时陪",
+      "playerId": null,
+      "scheduledAt": "2026-11-15T12:00:00.000Z",
+      "contact": "demo-contact-only",
+      "note": "希望练习信息沟通与小队配合。",
+      "priceCents": 3900,
+      "status": "completed",
+      "createdAt": "2026-11-15T11:45:00.000Z",
+      "paymentStatus": "unpaid",
+      "refundStatus": null,
+      "demo": true,
+      "fulfillmentStatus": "completed",
+      "assignedPlayerId": "p1",
+      "commissionBps": 2000,
+      "memberCents": 3120,
+      "clubCents": 780,
+      "durationMinutes": 60,
+      "acceptBy": null,
+      "paymentExpiresAt": "2026-11-15T12:15:00.000Z",
+      "serviceSnapshot": {
+        "id": "s1",
+        "title": "三角洲 · PC 小时陪",
+        "game": "三角洲行动",
+        "category": "小时陪",
+        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "priceCents": 3900,
+        "durationMinutes": 60,
+        "tags": [
+          "单陪",
+          "语音沟通"
+        ],
+        "inclusions": [],
+        "requirements": [],
+        "coverUrl": "",
+        "platform": "PC",
+        "serviceType": "hourly",
+        "billingUnit": "hour",
+        "teamSize": 1,
+        "gameMode": "烽火地带",
+        "maps": [
+          "零号大坝",
+          "长弓溪谷"
+        ],
+        "rules": [
+          "一位服务成员，预约 60 分钟。",
+          "地图在当前可选范围内协商；无额外地图加价。",
+          "不承诺撤离、击杀或游戏资产收益。",
+          "服务结束后提交记录，由客户确认或申请售后。"
+        ],
+        "variantId": "pc-60",
+        "variantTitle": "PC · 60分钟"
+      },
+      "events": [
+        {
+          "id": "9a20cfcc-2fd5-4d5f-965c-7e2b25aef400",
+          "type": "created",
+          "at": "2026-11-15T11:45:00.000Z",
+          "actor": {
+            "role": "customer",
+            "name": "演示客户 · 林"
+          },
+          "message": "已提交演示预约，不产生真实付款。"
+        },
+        {
+          "id": "36a1e58e-a724-4cf1-ab2f-b41263188088",
+          "type": "assigned",
+          "at": "2026-11-15T11:45:00.000Z",
+          "actor": {
+            "role": "owner",
+            "name": "俱乐部运营"
+          },
+          "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+        },
+        {
+          "id": "bb346aa3-a6d7-4ca7-a680-130e3c37f548",
+          "type": "accepted",
+          "at": "2026-11-15T11:45:00.000Z",
+          "actor": {
+            "role": "member",
+            "name": "阿屿"
+          },
+          "message": "成员已接单，预约时间已锁定。"
+        },
+        {
+          "id": "022a32e8-a4a8-4780-8fd1-90be050f67e7",
+          "type": "started",
+          "at": "2026-11-15T12:00:00.000Z",
+          "actor": {
+            "role": "member",
+            "name": "阿屿"
+          },
+          "message": "成员已开始服务。"
+        },
+        {
+          "id": "2371678b-1da1-4fdf-9d22-a47f8d6af420",
+          "type": "delivery_submitted",
+          "at": "2026-11-15T13:00:00.000Z",
+          "actor": {
+            "role": "member",
+            "name": "阿屿"
+          },
+          "message": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。"
+        },
+        {
+          "id": "8455873a-7aa9-4fd3-9d33-7e196f7aafbe",
+          "type": "confirmed",
+          "at": "2026-11-15T13:00:00.000Z",
+          "actor": {
+            "role": "customer",
+            "name": "演示客户 · 林"
+          },
+          "message": "客户已确认交付，成员收入转为可结算。"
+        },
+        {
+          "id": "2ed953b0-7236-4098-824d-ec0276673cae",
+          "type": "settlement_recorded",
+          "at": "2026-11-15T13:00:00.000Z",
+          "actor": {
+            "role": "owner",
+            "name": "俱乐部运营"
+          },
+          "message": "运营已记录成员结算凭据，系统没有自动转账。"
+        }
+      ],
+      "delivery": {
+        "summary": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。",
+        "evidenceUrl": null,
+        "submittedAt": "2026-11-15T13:00:00.000Z"
+      },
+      "review": {
+        "rating": 5,
+        "comment": "演示评价：沟通清楚，服务记录完整。",
+        "at": "2026-11-15T13:00:00.000Z"
+      },
+      "dispute": null
+    },
+    {
+      "id": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+      "serviceId": "s1",
+      "serviceTitle": "三角洲 · PC 小时陪",
+      "playerId": null,
+      "scheduledAt": "2026-11-15T13:15:00.000Z",
+      "contact": "demo-contact-only",
+      "note": "正在进行的小队服务。",
+      "priceCents": 3900,
+      "status": "confirmed",
+      "createdAt": "2026-11-15T13:05:00.000Z",
+      "paymentStatus": "unpaid",
+      "refundStatus": null,
+      "demo": true,
+      "fulfillmentStatus": "in_progress",
+      "assignedPlayerId": "p1",
+      "commissionBps": 2000,
+      "memberCents": 3120,
+      "clubCents": 780,
+      "durationMinutes": 60,
+      "acceptBy": null,
+      "paymentExpiresAt": "2026-11-15T13:35:00.000Z",
+      "serviceSnapshot": {
+        "id": "s1",
+        "title": "三角洲 · PC 小时陪",
+        "game": "三角洲行动",
+        "category": "小时陪",
+        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "priceCents": 3900,
+        "durationMinutes": 60,
+        "tags": [
+          "单陪",
+          "语音沟通"
+        ],
+        "inclusions": [],
+        "requirements": [],
+        "coverUrl": "",
+        "platform": "PC",
+        "serviceType": "hourly",
+        "billingUnit": "hour",
+        "teamSize": 1,
+        "gameMode": "烽火地带",
+        "maps": [
+          "零号大坝",
+          "长弓溪谷"
+        ],
+        "rules": [
+          "一位服务成员，预约 60 分钟。",
+          "地图在当前可选范围内协商；无额外地图加价。",
+          "不承诺撤离、击杀或游戏资产收益。",
+          "服务结束后提交记录，由客户确认或申请售后。"
+        ],
+        "variantId": "pc-60",
+        "variantTitle": "PC · 60分钟"
+      },
+      "events": [
+        {
+          "id": "cfebfbce-c134-4125-9996-7b0351fdacfc",
+          "type": "created",
+          "at": "2026-11-15T13:05:00.000Z",
+          "actor": {
+            "role": "customer",
+            "name": "演示客户 · 林"
+          },
+          "message": "已提交演示预约，不产生真实付款。"
+        },
+        {
+          "id": "e6f0901e-2f30-40ab-a311-4b9cce147423",
+          "type": "assigned",
+          "at": "2026-11-15T13:05:00.000Z",
+          "actor": {
+            "role": "owner",
+            "name": "俱乐部运营"
+          },
+          "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+        },
+        {
+          "id": "7926412b-415c-41e3-baaa-1a15214da923",
+          "type": "accepted",
+          "at": "2026-11-15T13:05:00.000Z",
+          "actor": {
+            "role": "member",
+            "name": "阿屿"
+          },
+          "message": "成员已接单，预约时间已锁定。"
+        },
+        {
+          "id": "d5e737ed-905a-4dd7-aa52-4292662f9531",
+          "type": "started",
+          "at": "2026-11-15T13:15:00.000Z",
+          "actor": {
+            "role": "member",
+            "name": "阿屿"
+          },
+          "message": "成员已开始服务。"
+        }
+      ],
+      "delivery": null,
+      "review": null,
+      "dispute": null
+    },
+    {
+      "id": "d76db3a0-40a5-424e-b4c8-8f9fb79600a5",
+      "serviceId": "s1",
+      "serviceTitle": "三角洲 · PC 小时陪",
+      "playerId": null,
+      "scheduledAt": "2026-11-15T14:30:00.000Z",
+      "contact": "demo-contact-only",
+      "note": "稍晚的预约，等待成员接单。",
+      "priceCents": 3900,
+      "status": "pending",
+      "createdAt": "2026-11-15T13:15:00.000Z",
+      "paymentStatus": "unpaid",
+      "refundStatus": null,
+      "demo": true,
+      "fulfillmentStatus": "awaiting_acceptance",
+      "assignedPlayerId": "p1",
+      "commissionBps": 2000,
+      "memberCents": 3120,
+      "clubCents": 780,
+      "durationMinutes": 60,
+      "acceptBy": "2026-11-15T13:30:00.000Z",
+      "paymentExpiresAt": "2026-11-15T13:45:00.000Z",
+      "serviceSnapshot": {
+        "id": "s1",
+        "title": "三角洲 · PC 小时陪",
+        "game": "三角洲行动",
+        "category": "小时陪",
+        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "priceCents": 3900,
+        "durationMinutes": 60,
+        "tags": [
+          "单陪",
+          "语音沟通"
+        ],
+        "inclusions": [],
+        "requirements": [],
+        "coverUrl": "",
+        "platform": "PC",
+        "serviceType": "hourly",
+        "billingUnit": "hour",
+        "teamSize": 1,
+        "gameMode": "烽火地带",
+        "maps": [
+          "零号大坝",
+          "长弓溪谷"
+        ],
+        "rules": [
+          "一位服务成员，预约 60 分钟。",
+          "地图在当前可选范围内协商；无额外地图加价。",
+          "不承诺撤离、击杀或游戏资产收益。",
+          "服务结束后提交记录，由客户确认或申请售后。"
+        ],
+        "variantId": "pc-60",
+        "variantTitle": "PC · 60分钟"
+      },
+      "events": [
+        {
+          "id": "383ed561-c5ea-487a-b0a4-7d0fac2152ac",
+          "type": "created",
+          "at": "2026-11-15T13:15:00.000Z",
+          "actor": {
+            "role": "customer",
+            "name": "演示客户 · 林"
+          },
+          "message": "已提交演示预约，不产生真实付款。"
+        },
+        {
+          "id": "8363c333-bd36-4873-a53b-a224b8b0376e",
+          "type": "assigned",
+          "at": "2026-11-15T13:15:00.000Z",
+          "actor": {
+            "role": "owner",
+            "name": "俱乐部运营"
+          },
+          "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+        }
+      ],
+      "delivery": null,
+      "review": null,
+      "dispute": null
+    }
+  ],
+  "earnings": {
+    "entries": [
+      {
+        "id": "71b5080f-09ee-452a-80f7-945981222e82",
+        "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+        "playerId": "p1",
+        "grossCents": 3900,
+        "clubCents": 780,
+        "memberCents": 3120,
+        "state": "settled",
+        "createdAt": "2026-11-15T13:00:00.000Z",
+        "availableAt": "2026-11-15T13:00:00.000Z",
+        "settledAt": "2026-11-15T13:00:00.000Z",
+        "settlementId": "12741755-0d64-49be-b959-611be19342ae",
+        "demo": true
+      }
+    ],
+    "totals": {
+      "heldCents": 0,
+      "availableCents": 0,
+      "settledCents": 3120,
+      "reversedCents": 0
+    },
+    "currency": "CNY",
+    "settlements": [
+      {
+        "id": "12741755-0d64-49be-b959-611be19342ae",
+        "paymentReference": "DEMO-RECEIPT-NO-TRANSFER",
+        "note": "只读演示凭据，没有真实打款。",
+        "createdAt": "2026-11-15T13:00:00.000Z",
+        "memberCents": 3120,
+        "entryIds": [
+          "71b5080f-09ee-452a-80f7-945981222e82"
+        ],
+        "demo": true,
+        "moneyTransferred": false,
+        "recordType": "manual_payment_record"
+      }
+    ],
+    "demo": true
+  },
+  "availability": {
+    "playerId": "p1",
+    "timezone": "Asia/Shanghai",
+    "slots": [
+      {
+        "startAt": "2026-11-15T10:00:00.000Z",
+        "endAt": "2026-11-15T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-16T10:00:00.000Z",
+        "endAt": "2026-11-16T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-17T10:00:00.000Z",
+        "endAt": "2026-11-17T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-18T10:00:00.000Z",
+        "endAt": "2026-11-18T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-19T10:00:00.000Z",
+        "endAt": "2026-11-19T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-20T10:00:00.000Z",
+        "endAt": "2026-11-20T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-21T10:00:00.000Z",
+        "endAt": "2026-11-21T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-22T10:00:00.000Z",
+        "endAt": "2026-11-22T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-23T10:00:00.000Z",
+        "endAt": "2026-11-23T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-24T10:00:00.000Z",
+        "endAt": "2026-11-24T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-25T10:00:00.000Z",
+        "endAt": "2026-11-25T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-26T10:00:00.000Z",
+        "endAt": "2026-11-26T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-27T10:00:00.000Z",
+        "endAt": "2026-11-27T15:30:00.000Z"
+      },
+      {
+        "startAt": "2026-11-28T10:00:00.000Z",
+        "endAt": "2026-11-28T15:30:00.000Z"
+      }
+    ]
+  },
+  "notifications": [
+    {
+      "id": "771e6aaa-08fd-4b4c-8d16-e1999930fc58",
+      "role": "member",
+      "type": "order_assigned",
+      "title": "有一条预约等待接单",
+      "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
+      "orderId": "d76db3a0-40a5-424e-b4c8-8f9fb79600a5",
+      "createdAt": "2026-11-15T13:15:00.000Z",
+      "readAt": null
+    },
+    {
+      "id": "0c6c53a9-e5bc-43b3-83e9-5c63e4c5b824",
+      "role": "member",
+      "type": "order_assigned",
+      "title": "有一条预约等待接单",
+      "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
+      "orderId": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+      "createdAt": "2026-11-15T13:05:00.000Z",
+      "readAt": null
+    },
+    {
+      "id": "1425e3cd-276a-4670-8f27-34dbbb6d6615",
+      "role": "member",
+      "type": "settlement_recorded",
+      "title": "结算凭据已记录",
+      "body": "请核对实际收款；这不是系统自动转账。",
+      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "createdAt": "2026-11-15T13:00:00.000Z",
+      "readAt": null
+    },
+    {
+      "id": "965cdf82-a01a-4722-886a-866d0ea4fda8",
+      "role": "member",
+      "type": "order_completed",
+      "title": "客户已确认完成",
+      "body": "本单收入已转为可结算，请查看收入明细。",
+      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "createdAt": "2026-11-15T13:00:00.000Z",
+      "readAt": null
+    },
+    {
+      "id": "e8c7f5b3-4483-403e-9f37-1b7ae63f89a6",
+      "role": "member",
+      "type": "order_assigned",
+      "title": "有一条预约等待接单",
+      "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
+      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "createdAt": "2026-11-15T11:45:00.000Z",
+      "readAt": null
+    }
+  ]
+}

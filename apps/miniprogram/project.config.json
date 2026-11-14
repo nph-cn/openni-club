@@ -1,0 +1,31 @@
+{
+  "appid": "touristappid",
+  "compileType": "miniprogram",
+  "description": "北岸电竞 · OpenNI Club",
+  "libVersion": "3.7.12",
+  "miniprogramRoot": "./",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "screenshots"
+      },
+      {
+        "type": "folder",
+        "value": "test"
+      },
+      {
+        "type": "file",
+        "value": "README.md"
+      }
+    ]
+  },
+  "projectname": "northshore",
+  "setting": {
+    "enhance": true,
+    "es6": true,
+    "minified": true,
+    "minifyWXML": true,
+    "urlCheck": true
+  }
+}

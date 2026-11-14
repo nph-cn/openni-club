@@ -1,0 +1,6 @@
+// Copy to WeChat.xcconfig. Match --dart-define=WECHAT_APP_ID.
+WECHAT_APP_ID = wxYOUR_OPEN_PLATFORM_APP_ID
+WECHAT_UNIVERSAL_LINK_HOST = app.your-club.example
+CODE_SIGN_ENTITLEMENTS = Runner/WeChat.entitlements
+// Set your own team in Xcode Signing & Capabilities.
+// DEVELOPMENT_TEAM = YOUR_APPLE_TEAM_ID

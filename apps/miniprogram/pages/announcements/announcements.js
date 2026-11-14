@@ -1,0 +1,2 @@
+const {api,createPage}=require('../../utils/page');
+Page(createPage({data:{announcements:[],expanded:''},onLoad(){this.load();},load(){return this.run(async()=>{this.setData({announcements:(await api.get('/announcements')).map(a=>Object.assign({},a,{date:a.publishedAt.slice(0,10)}))});});},toggle(e){this.setData({expanded:this.data.expanded===e.currentTarget.dataset.id?'':e.currentTarget.dataset.id});}}));

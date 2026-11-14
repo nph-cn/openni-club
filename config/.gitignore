@@ -1,0 +1,3 @@
+# The browser Studio exports this file alongside public configuration.
+server.env
+*.private.env

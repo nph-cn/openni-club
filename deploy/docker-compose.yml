@@ -1,0 +1,57 @@
+name: openni-club
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: services/api/Dockerfile
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8787
+      DATA_DIR: /app/data
+      CLUB_CONFIG_PATH: /app/generated/club/public.json
+      CLUB_SEED_PATH: /app/generated/club/seed.json
+    restart: unless-stopped
+    volumes:
+      - api-data:/app/data
+      - ./secrets:/run/openni-secrets:ro
+      - ../generated/club:/app/generated/club:ro
+    expose:
+      - "8787"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN in deploy/.env}
+      ACME_EMAIL: ${ACME_EMAIL:?Set ACME_EMAIL in deploy/.env}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../apps/admin:/srv/admin:ro
+      - ../apps/studio:/srv/studio:ro
+      - ../node_modules/fflate/esm/browser.js:/srv/vendor/fflate.js:ro
+      - ../apps/showcase:/srv/showcase:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  api-data:
+  caddy-data:
+  caddy-config:

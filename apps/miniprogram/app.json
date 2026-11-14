@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/services/services",
+    "pages/service/service",
+    "pages/players/players",
+    "pages/player/player",
+    "pages/booking/booking",
+    "pages/orders/orders",
+    "pages/order/order",
+    "pages/profile/profile",
+    "pages/announcements/announcements",
+    "pages/settings/settings",
+    "pages/member/member",
+    "pages/availability/availability",
+    "pages/earnings/earnings",
+    "pages/notifications/notifications"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F4F5F7",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "俱乐部",
+    "backgroundColor": "#F4F5F7"
+  },
+  "tabBar": {
+    "color": "#626C78",
+    "selectedColor": "#272D35",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "俱乐部"
+      },
+      {
+        "pagePath": "pages/services/services",
+        "text": "发现"
+      },
+      {
+        "pagePath": "pages/orders/orders",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

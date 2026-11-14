@@ -1,0 +1,101 @@
+{
+  "id": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+  "serviceId": "s1",
+  "serviceTitle": "三角洲 · PC 小时陪",
+  "playerId": null,
+  "scheduledAt": "2026-11-15T13:15:00.000Z",
+  "contact": "demo-contact-only",
+  "note": "正在进行的小队服务。",
+  "priceCents": 3900,
+  "status": "confirmed",
+  "createdAt": "2026-11-15T13:05:00.000Z",
+  "paymentStatus": "unpaid",
+  "refundStatus": null,
+  "demo": true,
+  "fulfillmentStatus": "in_progress",
+  "assignedPlayerId": "p1",
+  "commissionBps": 2000,
+  "memberCents": 3120,
+  "clubCents": 780,
+  "durationMinutes": 60,
+  "acceptBy": null,
+  "paymentExpiresAt": "2026-11-15T13:35:00.000Z",
+  "serviceSnapshot": {
+    "id": "s1",
+    "title": "三角洲 · PC 小时陪",
+    "game": "三角洲行动",
+    "category": "小时陪",
+    "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+    "priceCents": 3900,
+    "durationMinutes": 60,
+    "tags": [
+      "单陪",
+      "语音沟通"
+    ],
+    "inclusions": [],
+    "requirements": [],
+    "coverUrl": "",
+    "platform": "PC",
+    "serviceType": "hourly",
+    "billingUnit": "hour",
+    "teamSize": 1,
+    "gameMode": "烽火地带",
+    "maps": [
+      "零号大坝",
+      "长弓溪谷"
+    ],
+    "rules": [
+      "一位服务成员，预约 60 分钟。",
+      "地图在当前可选范围内协商；无额外地图加价。",
+      "不承诺撤离、击杀或游戏资产收益。",
+      "服务结束后提交记录，由客户确认或申请售后。"
+    ],
+    "variantId": "pc-60",
+    "variantTitle": "PC · 60分钟"
+  },
+  "events": [
+    {
+      "id": "cfebfbce-c134-4125-9996-7b0351fdacfc",
+      "type": "created",
+      "at": "2026-11-15T13:05:00.000Z",
+      "actor": {
+        "role": "customer",
+        "name": "演示客户 · 林"
+      },
+      "message": "已提交演示预约，不产生真实付款。"
+    },
+    {
+      "id": "e6f0901e-2f30-40ab-a311-4b9cce147423",
+      "type": "assigned",
+      "at": "2026-11-15T13:05:00.000Z",
+      "actor": {
+        "role": "owner",
+        "name": "俱乐部运营"
+      },
+      "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+    },
+    {
+      "id": "7926412b-415c-41e3-baaa-1a15214da923",
+      "type": "accepted",
+      "at": "2026-11-15T13:05:00.000Z",
+      "actor": {
+        "role": "member",
+        "name": "阿屿"
+      },
+      "message": "成员已接单，预约时间已锁定。"
+    },
+    {
+      "id": "d5e737ed-905a-4dd7-aa52-4292662f9531",
+      "type": "started",
+      "at": "2026-11-15T13:15:00.000Z",
+      "actor": {
+        "role": "member",
+        "name": "阿屿"
+      },
+      "message": "成员已开始服务。"
+    }
+  ],
+  "delivery": null,
+  "review": null,
+  "dispute": null
+}

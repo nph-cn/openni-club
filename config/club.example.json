@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "brand": {
+    "name": "你的电竞俱乐部",
+    "logo": "assets/brand/logo.svg",
+    "tagline": "和同频队友，一起上场",
+    "primaryColor": "#2455E7"
+  }
+}

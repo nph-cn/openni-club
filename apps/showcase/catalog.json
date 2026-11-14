@@ -1,0 +1,13 @@
+[
+ {"id":"home","title":"俱乐部首页","role":"customer","flow":"discover","description":"从俱乐部入口了解服务、成员与当前预约。"},
+ {"id":"services","title":"服务发现","role":"customer","flow":"discover","description":"比较服务的玩法、时长、费用与交付范围。"},
+ {"id":"service","title":"服务详情","role":"customer","flow":"booking","description":"看清服务包含的内容与预约规则，再开始下单。"},
+ {"id":"players","title":"队友名册","role":"customer","flow":"discover","description":"按游戏与需求找到合适的俱乐部成员。"},
+ {"id":"player","title":"队友详情","role":"customer","flow":"discover","description":"了解个人介绍、擅长项目与可约服务。"},
+ {"id":"booking","title":"创建预约","role":"customer","flow":"booking","description":"选择服务时间，填写本次游戏需求，核对费用。"},
+ {"id":"orders","title":"我的订单","role":"customer","flow":"fulfillment","description":"查看进行中的服务，继续待处理的预约。"},
+ {"id":"order","title":"订单详情","role":"customer","flow":"fulfillment","description":"查看服务安排、付款状态与本单处理记录。"},
+ {"id":"profile","title":"个人中心","role":"customer","flow":"account","description":"管理自己的预约、个人资料与俱乐部关系。"},
+ {"id":"announcements","title":"俱乐部公告","role":"customer","flow":"account","description":"阅读俱乐部服务说明与活动安排。"},
+ {"id":"settings","title":"设置与隐私","role":"customer","flow":"account","description":"查看经营信息、政策及账号管理选项。"}
+]

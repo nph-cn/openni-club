@@ -1,0 +1,212 @@
+{
+  "artifacts": [
+    {
+      "bytes": 1428,
+      "path": "generated/club/public.json",
+      "sha256": "cac39eacbf79e9320a7a6f2509cf844919cc7b7097399abf1ffce11e8a08e211"
+    },
+    {
+      "bytes": 1428,
+      "path": "apps/mobile/assets/brand.json",
+      "sha256": "cac39eacbf79e9320a7a6f2509cf844919cc7b7097399abf1ffce11e8a08e211"
+    },
+    {
+      "bytes": 24367,
+      "path": "generated/club/logo.png",
+      "sha256": "36d5930cd9aa0c655d80e683f05e5520e51261c5b5c712e080b563fda25fd688"
+    },
+    {
+      "bytes": 24367,
+      "path": "apps/mobile/assets/brand/logo.png",
+      "sha256": "36d5930cd9aa0c655d80e683f05e5520e51261c5b5c712e080b563fda25fd688"
+    },
+    {
+      "bytes": 24367,
+      "path": "apps/miniprogram/assets/brand/logo.png",
+      "sha256": "36d5930cd9aa0c655d80e683f05e5520e51261c5b5c712e080b563fda25fd688"
+    },
+    {
+      "bytes": 1537,
+      "path": "apps/miniprogram/utils/brand.generated.js",
+      "sha256": "dc207ece8dcfe1dfadc37e0c2b4455126d7a639210acedacf7c0296e714c3ee7"
+    },
+    {
+      "bytes": 575,
+      "path": "apps/miniprogram/project.config.json",
+      "sha256": "380fe7d633c0232ce209c597a06aec9d331feb37a0d4556b5c3ac5cc0d1dcd8f"
+    },
+    {
+      "bytes": 7916,
+      "path": "generated/club/seed.json",
+      "sha256": "eab35603aa0339e244290489be77bb24b1cab328bd9227cd3391171c0730af41"
+    },
+    {
+      "bytes": 6429,
+      "path": "apps/mobile/assets/catalog.json",
+      "sha256": "9d86c745e54f44255bc42317b406fa5197d0210f08c40abad68d29d7064b5783"
+    },
+    {
+      "bytes": 924,
+      "path": "generated/club/legal/privacy.html",
+      "sha256": "df377c735f0ee2736bdedb80ca5bb31380627ad4b7dc707812e5df8ad98ddd49"
+    },
+    {
+      "bytes": 816,
+      "path": "generated/club/legal/terms.html",
+      "sha256": "779b6b6528d64fb5b32375a3120c2959685e637a66905c52f3d9d2ded188b4e1"
+    },
+    {
+      "bytes": 149,
+      "path": "apps/mobile/android/brand.generated.properties",
+      "sha256": "947285817d8c3ab1a3ed0a0ec4df044f87826780680de0d873bf9aaa6b7cd7b2"
+    },
+    {
+      "bytes": 108,
+      "path": "apps/mobile/android/app/src/main/res/values/brand.generated.xml",
+      "sha256": "3eaed6bf56a384ebd2a28e654b1360d873bd3dea8b95b8585bd7ceea8922399d"
+    },
+    {
+      "bytes": 237,
+      "path": "apps/mobile/ios/Flutter/Brand.generated.xcconfig",
+      "sha256": "5162c01a373bb1735386e82201d12e6345d6f199223564b675ad94ba5f5dc1a1"
+    },
+    {
+      "bytes": 1624,
+      "path": "apps/mobile/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "sha256": "549fccd622dc6925bf84df4555b23a49c4d2f805631a63f659d01683d89f9640"
+    },
+    {
+      "bytes": 2215,
+      "path": "apps/mobile/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "sha256": "b4346e2c4bdf2867a33a9b867d3adb6cf8cd447b12569c3581a2c298507eee72"
+    },
+    {
+      "bytes": 2733,
+      "path": "apps/mobile/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "sha256": "077348c044eac0b1c8f68e6512b23df4a5eaa3df841316c8cbf84504faffb243"
+    },
+    {
+      "bytes": 4181,
+      "path": "apps/mobile/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "sha256": "df17d4d356cd5566d28c7a5bce7ede0a7a4f5573f706ab5497704f85db52af71"
+    },
+    {
+      "bytes": 5708,
+      "path": "apps/mobile/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "sha256": "f20c6310732a733e145656f03b00fd6d788872619a19d30fdd1ad137406d9c4c"
+    },
+    {
+      "bytes": 1402,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-20@2x.png",
+      "sha256": "9dbea0dc52e1aa89748ad65e3876444a881fd002abff3558874dc9dc05f6da99"
+    },
+    {
+      "bytes": 1754,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-20@3x.png",
+      "sha256": "6776e4f26db868c2427151a24b913c6d0c95f4b8b0f8b15b052359f1cc3b6c15"
+    },
+    {
+      "bytes": 1097,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-29@1x.png",
+      "sha256": "f583a494d171236d6baddab76e570c6a7cbbccac6d7cce0bd908e02a8138d05c"
+    },
+    {
+      "bytes": 1725,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-29@2x.png",
+      "sha256": "597f41c8d449dc37ed403c984508f77b2720894c59b5b06f864c375a63410863"
+    },
+    {
+      "bytes": 2567,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-29@3x.png",
+      "sha256": "1b6c971298e99755c7d222d25d88bdf178287b092695101d238f3b2d15ce7e6b"
+    },
+    {
+      "bytes": 2453,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-40@2x.png",
+      "sha256": "0b557327f1f58f90abdf4fa7ccc830eb0494a6a328e2d06bb9def8412ecabfe6"
+    },
+    {
+      "bytes": 3318,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-40@3x.png",
+      "sha256": "07ae956d0842c46923513da38bb45c620f02b0ff17e27df11c183db200d36c24"
+    },
+    {
+      "bytes": 3318,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-60@2x.png",
+      "sha256": "07ae956d0842c46923513da38bb45c620f02b0ff17e27df11c183db200d36c24"
+    },
+    {
+      "bytes": 5396,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-iphone-60@3x.png",
+      "sha256": "afe06d6994149b48bf386daf8f4e00fae58b3c394b0a24a3c3db562f94a5ce90"
+    },
+    {
+      "bytes": 711,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-20@1x.png",
+      "sha256": "3c5f346f91533d48418b65b665dc04f4f6a3435b8297cf4e29f6d9298fa645d1"
+    },
+    {
+      "bytes": 1402,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-20@2x.png",
+      "sha256": "9dbea0dc52e1aa89748ad65e3876444a881fd002abff3558874dc9dc05f6da99"
+    },
+    {
+      "bytes": 1097,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-29@1x.png",
+      "sha256": "f583a494d171236d6baddab76e570c6a7cbbccac6d7cce0bd908e02a8138d05c"
+    },
+    {
+      "bytes": 1725,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-29@2x.png",
+      "sha256": "597f41c8d449dc37ed403c984508f77b2720894c59b5b06f864c375a63410863"
+    },
+    {
+      "bytes": 1402,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-40@1x.png",
+      "sha256": "9dbea0dc52e1aa89748ad65e3876444a881fd002abff3558874dc9dc05f6da99"
+    },
+    {
+      "bytes": 2453,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-40@2x.png",
+      "sha256": "0b557327f1f58f90abdf4fa7ccc830eb0494a6a328e2d06bb9def8412ecabfe6"
+    },
+    {
+      "bytes": 2369,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-76@1x.png",
+      "sha256": "e5bf35a83a9a6cb32902e6dec1d55c912a649530a344231bbf51be014463ac01"
+    },
+    {
+      "bytes": 4499,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-76@2x.png",
+      "sha256": "b6fbeb856bb04ad0f2ebced70fc52f7bbc6c78dbf1a55ce71eaac5d94e59acf7"
+    },
+    {
+      "bytes": 4883,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ipad-83.5@2x.png",
+      "sha256": "52d9917789c860c27d4758742d185bc77ef2dc24a8ffdddde15f20a603fdd011"
+    },
+    {
+      "bytes": 30927,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/OpenNI-ios-marketing-1024@1x.png",
+      "sha256": "fcdd9594791f1e13acc25c0b710b18972cdad9023bcc5d9a64248ad1998523f9"
+    },
+    {
+      "bytes": 2463,
+      "path": "apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      "sha256": "fb93efa62e052cb59b4d709fba0a68c79e3ae740e20c45a445120209536fbb5a"
+    }
+  ],
+  "clubId": "northshore",
+  "configHash": "e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980",
+  "distribution": {
+    "androidApplicationId": "club.openni.c5ccdaffc95",
+    "appleTeamId": "",
+    "buildNumber": 2,
+    "clubId": "northshore",
+    "iosBundleId": "club.openni.c5ccdaffc95",
+    "version": "0.2.0"
+  },
+  "generatorVersion": "1.0.0",
+  "mode": "preview",
+  "schemaVersion": 1
+}

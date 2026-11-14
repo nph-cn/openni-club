@@ -1,0 +1,39 @@
+{
+  email {$ACME_EMAIL}
+}
+
+{$API_DOMAIN} {
+  encode zstd gzip
+  header {
+    X-Content-Type-Options nosniff
+    Referrer-Policy strict-origin-when-cross-origin
+  }
+  @api path /health /api/v1/*
+  handle @api {
+    header Cache-Control "no-store"
+    reverse_proxy api:8787
+  }
+  redir /admin /admin/ 308
+  redir /studio /studio/ 308
+  redir /guide/* https://github.com/nph-cn/openni-club/tree/main/docs 302
+  @shared path /style.css /library.css /icon.svg /fonts/*
+  handle @shared {
+    root * /srv/showcase
+    file_server
+  }
+  handle_path /admin/* {
+    root * /srv/admin
+    file_server
+  }
+  handle_path /studio/* {
+    root * /srv/studio
+    file_server
+  }
+  handle /vendor/fflate.js {
+    root * /srv
+    file_server
+  }
+  handle {
+    respond "OpenNI API is running. Administration: /admin/" 200
+  }
+}
