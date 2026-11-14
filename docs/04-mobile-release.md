@@ -2,7 +2,20 @@
 
 同一 Flutter 工程生成 iOS 与 Android，但签名、发布账号和审核分别完成。先处理 [发布阻断项](07-release-checklist.md)，再做正式打包。真实微信能力需使用自己的开放平台移动应用、签名和商户配置，见 [微信接入教程](09-wechat-adapters.md)。
 
-优先使用 [单配置工作流](10-single-config-workflow.md) 的 `release-club`，它自动传入公开微信 AppID、Universal Link、版本与 API 参数。下面的原始 Flutter 命令供开发者排错时参考；直接运行时需带同样公开参数。AppSecret 不进入任何客户端构建参数。本次 Android 首次构建因本机 NDK 下载磁盘不足中止，iOS 未完成编译；不能把 Web 成功写成双端原生已验收。
+优先使用 [单配置工作流](10-single-config-workflow.md) 的 `release-club`，它自动传入公开微信 AppID、Universal Link、版本与 API 参数。下面的原始 Flutter 命令供开发者排错时参考；直接运行时需带同样公开参数。AppSecret 不进入任何客户端构建参数。
+
+## 原生编译验证记录
+
+2026-11-15，[原生 CI 运行 43649484983](https://github.com/nph-cn/openni-club/actions/runs/43649484983) 已完整通过，验证提交为 [`198cb97`](https://github.com/nph-cn/openni-club/commit/198cb9725500ac9d4005baa68d1fdc8ce86e4b4c)。使用 Flutter 3.50.0 stable / Dart 3.14.0；两个独立 runner 均执行了配置生成、包名与配置指纹检查，再进行实际原生编译。
+
+| 平台 | Runner / 命令 | 结果与 CI 产物 |
+| --- | --- | --- |
+| Android | Ubuntu 24.04；`flutter build apk --debug --dart-define=APP_MODE=demo` | 通过；调试 APK、编译日志、工具链和配置身份记录 |
+| iOS | macOS 26、Xcode 26.6；`flutter build ios --release --no-codesign --dart-define=APP_MODE=demo` | 通过；未签名 `Runner.app` 压缩包、编译日志、工具链和配置身份记录 |
+
+本次配置使用虚构北岸电竞，双端应用标识为 `club.openni.c5ccdaffc95`，版本 `0.2.0`、构建号 `2`，模式为 demo、API 地址为空。生成器配置指纹为 `e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980`。产物只保存在上述运行的 Actions Artifacts，保留 7 天；可手动运行 [Compile native apps](https://github.com/nph-cn/openni-club/actions/workflows/native.yml) 重新编译。
+
+这次验证证明原生工程能够编译，**不代表真机验收、经营者签名、真实微信收退款或商店审核通过**。CI 不读取商户/开发者密钥，不上传商店，不创建原生发布版本。iOS 未签名产物不能直接交付安装；Android 调试包也不是商店发行包。
 
 ## Android
 
