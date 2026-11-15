@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 
 import 'discover.dart' show ServiceArt;
 import 'loading.dart';
@@ -255,10 +256,11 @@ class _AuthPageState extends State<AuthPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(
-            width: 42,
-            height: 48,
+            width: 38,
+            height: 40,
             child: Checkbox(
               value: accepted,
+              visualDensity: VisualDensity.compact,
               onChanged: busy
                   ? null
                   : (v) => setState(() => accepted = v ?? false),
@@ -267,21 +269,29 @@ class _AuthPageState extends State<AuthPage> {
           const Expanded(
             child: Text(
               '同意服务协议与隐私政策',
-              style: TextStyle(fontSize: 14, color: muted),
+              style: TextStyle(fontSize: 12, color: muted),
             ),
           ),
         ],
       ),
       Padding(
-        padding: const EdgeInsets.only(left: 36),
+        padding: const EdgeInsets.only(left: 30),
         child: Wrap(
           children: [
             TextButton(
               onPressed: () => context.push('/legal/terms'),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(0, 34),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+              ),
               child: const Text('服务协议'),
             ),
             TextButton(
               onPressed: () => context.push('/legal/privacy'),
+              style: TextButton.styleFrom(
+                minimumSize: const Size(0, 34),
+                padding: const EdgeInsets.symmetric(horizontal: 6),
+              ),
               child: const Text('隐私政策'),
             ),
           ],
@@ -292,35 +302,42 @@ class _AuthPageState extends State<AuthPage> {
   Widget errorMessage() => failure == null
       ? const SizedBox.shrink()
       : Padding(
-          padding: const EdgeInsets.only(top: 16),
+          padding: const EdgeInsets.only(top: 12),
           child: Semantics(
             liveRegion: true,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(
-                  Icons.error_outline_rounded,
-                  size: 19,
-                  color: Color(0xFFAA3532),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    failure!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Color(0xFFAA3532),
-                      height: 1.5,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFBEDEB),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    size: 15,
+                    color: danger,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      failure!,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: danger,
+                        height: 1.45,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
   Widget action(String title, VoidCallback? onPressed) => SizedBox(
     width: double.infinity,
-    height: 54,
+    height: 46,
     child: FilledButton(
       onPressed: busy ? null : onPressed,
       style: busy
@@ -334,20 +351,50 @@ class _AuthPageState extends State<AuthPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                   child:
                       MediaQuery.of(context).reduceMotion ||
                           MediaQuery.of(context).disableAnimations
-                      ? const Icon(Icons.hourglass_bottom_rounded, size: 18)
+                      ? const Icon(Icons.hourglass_bottom_rounded, size: 15)
                       : const CircularProgressIndicator(strokeWidth: 2),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 const Text('处理中…'),
               ],
             )
           : Text(title),
     ),
+  );
+
+  Widget _authIntro({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) => Row(
+    children: [
+      Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: rule, width: .6),
+        ),
+        child: Icon(icon, size: 20, color: ink),
+      ),
+      const SizedBox(width: 11),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: typeTitle),
+            const SizedBox(height: 2),
+            Text(subtitle, style: typeSecondary),
+          ],
+        ),
+      ),
+    ],
   );
 
   @override
@@ -375,39 +422,40 @@ class _AuthPageState extends State<AuthPage> {
           switchOutCurve: Curves.easeIn,
           child: PageList(
             key: ValueKey(step),
-            padding: const EdgeInsets.fromLTRB(24, 26, 24, 24),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 22),
             children: [
               if (step == 'login') ...[
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: BrandMark(repo, size: 58),
+                  child: BrandMark(repo, size: 48),
                 ),
-                const SizedBox(height: 26),
+                const SizedBox(height: 14),
                 Text(
                   '登录${repo.clubName}',
-                  style: const TextStyle(
-                    fontSize: 29,
-                    fontWeight: FontWeight.w600,
-                    height: 1.35,
-                  ),
+                  style: typePage,
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 4),
+                const Text(
+                  '示例账号可浏览聊天、预约与成员演示流程。',
+                  style: typeSecondary,
+                ),
+                const SizedBox(height: 24),
                 if (loading)
                   const SkeletonPulse(
                     child: Column(
                       children: [
-                        SkeletonBlock(height: 54),
-                        SizedBox(height: 14),
-                        SkeletonBlock(height: 54),
+                        SkeletonBlock(height: 46),
+                        SizedBox(height: 10),
+                        SkeletonBlock(height: 46),
                       ],
                     ),
                   )
                 else ...[
                   if (repo.wechatUnavailable == null) ...[
                     action('微信登录', wechat),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                     SizedBox(
-                      height: 54,
+                      height: 46,
                       child: OutlinedButton.icon(
                         onPressed: smsEnabled
                             ? () => setState(() {
@@ -415,7 +463,7 @@ class _AuthPageState extends State<AuthPage> {
                                 failure = null;
                               })
                             : null,
-                        icon: const Icon(Icons.phone_iphone_rounded, size: 21),
+                        icon: const Icon(Icons.phone_iphone_rounded, size: 18),
                         label: Text(smsEnabled ? '手机号登录' : '手机号登录暂不可用'),
                       ),
                     ),
@@ -429,9 +477,9 @@ class _AuthPageState extends State<AuthPage> {
                             })
                           : null,
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
                     const SizedBox(
-                      height: 54,
+                      height: 46,
                       child: OutlinedButton(
                         onPressed: null,
                         child: Text('微信登录暂不可用'),
@@ -445,26 +493,29 @@ class _AuthPageState extends State<AuthPage> {
                     onPressed: loadCapabilities,
                     child: const Text('重新加载登录方式'),
                   ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 18),
                 policies(),
-                const SizedBox(height: 36),
+                const SizedBox(height: 10),
                 Center(
                   child: TextButton(
                     onPressed: () => context.go('/'),
                     child: const Text('先浏览服务'),
                   ),
                 ),
+                const SizedBox(height: 4),
+                const Center(
+                  child: Text(
+                    '本地演示不会发送短信或发起微信授权',
+                    style: TextStyle(fontSize: 11, color: faint),
+                  ),
+                ),
               ] else if (!isCode) ...[
-                const Text(
-                  '手机号登录',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                _authIntro(
+                  icon: Icons.phone_iphone_rounded,
+                  title: '手机号登录',
+                  subtitle: '首次验证后自动创建账号',
                 ),
-                const SizedBox(height: 12),
-                const Text(
-                  '首次验证后自动创建账号',
-                  style: TextStyle(fontSize: 15, color: muted),
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 22),
                 AutofillGroup(
                   child: TextField(
                     controller: phone,
@@ -495,15 +546,15 @@ class _AuthPageState extends State<AuthPage> {
                       }),
                     ],
                     style: const TextStyle(
-                      fontSize: 23,
+                      fontSize: 20,
                       fontWeight: FontWeight.w500,
-                      letterSpacing: .4,
+                      letterSpacing: 1,
                     ),
                     decoration: const InputDecoration(
                       prefixText: '+86  ',
                       hintText: '请输入手机号',
                       hintStyle: TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
                       labelText: '手机号',
@@ -513,7 +564,7 @@ class _AuthPageState extends State<AuthPage> {
                   ),
                 ),
                 errorMessage(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 18),
                 action(
                   resendSeconds > 0 ? '${resendSeconds}s 后重新获取' : '获取验证码',
                   !loading && smsEnabled && resendSeconds == 0
@@ -522,31 +573,23 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 if (!loading && !smsEnabled)
                   const Padding(
-                    padding: EdgeInsets.only(top: 14),
+                    padding: EdgeInsets.only(top: 10),
                     child: Text(
                       '手机登录尚未开通，请选择其他方式',
-                      style: TextStyle(color: muted, fontSize: 14),
+                      style: TextStyle(color: muted, fontSize: 12),
                     ),
                   ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
                 policies(),
               ] else ...[
-                const Text(
-                  '输入验证码',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+                _authIntro(
+                  icon: Icons.shield_outlined,
+                  title: '输入验证码',
+                  subtitle: '${challenge?['phoneMasked'] ?? ''}',
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  '${challenge?['phoneMasked'] ?? ''}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: muted,
-                    letterSpacing: .6,
-                  ),
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 22),
                 if (loading)
-                  const SkeletonPulse(child: SkeletonBlock(height: 68))
+                  const SkeletonPulse(child: SkeletonBlock(height: 60))
                 else
                   AutofillGroup(
                     child: TextField(
@@ -562,25 +605,23 @@ class _AuthPageState extends State<AuthPage> {
                         LengthLimitingTextInputFormatter(6),
                       ],
                       style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 18,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 12,
                       ),
                       decoration: InputDecoration(
                         labelText: '6 位验证码',
                         hintText: '000000',
                         hintStyle: const TextStyle(
-                          fontSize: 30,
-                          letterSpacing: 18,
-                          color: muted,
+                          fontSize: 24,
+                          letterSpacing: 12,
+                          color: faint,
                         ),
                         errorText: null,
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(13),
                           borderSide: BorderSide(
-                            color: failure == null
-                                ? rule
-                                : const Color(0xFFAA3532),
+                            color: failure == null ? rule : danger,
                           ),
                         ),
                       ),
@@ -592,13 +633,17 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                   ),
                 errorMessage(),
-                const SizedBox(height: 24),
+                const SizedBox(height: 18),
                 action('验证并登录', !loading ? verify : null),
-                const SizedBox(height: 12),
+                const SizedBox(height: 6),
                 Align(
                   alignment: Alignment.centerLeft,
                   child: TextButton(
                     onPressed: busy || resendSeconds > 0 ? null : sendCode,
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(0, 36),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                    ),
                     child: Text(
                       resendSeconds > 0 ? '${resendSeconds}s 后重新获取' : '重新获取验证码',
                     ),
@@ -606,31 +651,42 @@ class _AuthPageState extends State<AuthPage> {
                 ),
                 if (challenge?['delivery'] == 'test')
                   Container(
-                    margin: const EdgeInsets.only(top: 22),
-                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: sage,
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
-                        const Text(
-                          '本地验证码，未发送短信',
-                          style: TextStyle(fontSize: 14, color: muted),
+                        const Icon(
+                          CupertinoIcons.info_circle,
+                          size: 14,
+                          color: muted,
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(width: 7),
+                        const Expanded(
+                          child: Text(
+                            '本地验证码，未发送短信',
+                            style: TextStyle(fontSize: 12, color: muted),
+                          ),
+                        ),
                         SelectableText(
                           '${challenge?['testCode'] ?? ''}',
                           style: const TextStyle(
-                            fontSize: 21,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 3,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 2,
                           ),
                         ),
                       ],
                     ),
                   ),
+                const SizedBox(height: 8),
+                const Text(
+                  '验证码仅用于本次演示登录；不会创建真实账号。',
+                  style: TextStyle(fontSize: 11, color: faint, height: 1.5),
+                ),
               ],
             ],
           ),
@@ -639,83 +695,145 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  Widget welcome() => ClubPage(
-    repo: repo,
-    appBar: false,
-    child: PageList(
-      padding: EdgeInsets.zero,
-      children: [
-        SizedBox(
-          height: MediaQuery.sizeOf(context).height * .51,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (repo.services.isNotEmpty)
-                ServiceArt(repo.services.first, radius: 0),
-              const DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.center,
-                    end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, canvas],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 24,
-                top: 22,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
+  Widget welcome() {
+    final service = repo.services.firstOrNull;
+    return ClubPage(
+      repo: repo,
+      appBar: false,
+      child: PageList(
+        padding: EdgeInsets.zero,
+        children: [
+          SizedBox(
+            height: MediaQuery.sizeOf(context).height * .46,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (service != null)
+                  ServiceArt(service, radius: 0)
+                else
+                  const ColoredBox(color: ink),
+                const DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: .88),
-                    borderRadius: BorderRadius.circular(18),
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0x660B0F14),
+                        Color(0x330B0F14),
+                        Color(0xF2F4F5F7),
+                      ],
+                      stops: [0, .55, 1],
+                    ),
                   ),
-                  child: BrandMark(repo, size: 42),
                 ),
-              ),
-            ],
+                Positioned(
+                  left: 20,
+                  top: 14,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .86),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        BrandMark(repo, size: 30),
+                        const SizedBox(width: 7),
+                        Text(
+                          repo.shortName,
+                          style: typeLabel.copyWith(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                repo.clubName,
-                style: const TextStyle(
-                  fontSize: 33,
-                  fontWeight: FontWeight.w600,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(repo.clubName, style: typePage.copyWith(fontSize: 26)),
+                const SizedBox(height: 4),
+                Text(
+                  '${repo.club['tagline'] ?? '游戏陪练预约'}',
+                  style: typeSecondary,
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                '游戏陪练预约',
-                style: TextStyle(fontSize: 20, color: muted),
-              ),
-              const SizedBox(height: 42),
-              action('登录 / 注册', () async {
-                final next = safeReturnPath(widget.next);
-                final signedIn = await context.push<bool>(
-                  '/login?next=${Uri.encodeComponent(next)}',
-                );
-                if (signedIn == true && mounted) {
-                  context.go(next);
-                }
-              }),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                height: 54,
-                child: OutlinedButton(
-                  onPressed: () => context.go(safeReturnPath(widget.next)),
-                  child: const Text('先浏览服务', style: TextStyle(fontSize: 16)),
+                const SizedBox(height: 16),
+                for (final feature in const [
+                  (Icons.sports_esports_outlined, '官方目录', '按游戏、服务和规格选择'),
+                  (Icons.event_available_outlined, '预约时段', '查看队友排班并提交预约'),
+                  (Icons.assignment_turned_in_outlined, '履约进度', '订单、交付记录与评价'),
+                ])
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 9),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(9),
+                            border: Border.all(color: rule, width: .6),
+                          ),
+                          child: Icon(feature.$1, size: 15, color: ink),
+                        ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(
+                                feature.$2,
+                                style: typeLabel.copyWith(fontSize: 12.5),
+                              ),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  feature.$3,
+                                  style: typeCaption,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                const SizedBox(height: 8),
+                action('登录 / 注册', () async {
+                  final next = safeReturnPath(widget.next);
+                  final signedIn = await context.push<bool>(
+                    '/login?next=${Uri.encodeComponent(next)}',
+                  );
+                  if (signedIn == true && mounted) {
+                    context.go(next);
+                  }
+                }),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: OutlinedButton(
+                    onPressed: () => context.go(safeReturnPath(widget.next)),
+                    child: const Text('先浏览服务', style: TextStyle(fontSize: 15)),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 14),
+                Center(
+                  child: Text(
+                    '${repo.club['notice'] ?? '虚构演示俱乐部'}',
+                    textAlign: TextAlign.center,
+                    style: typeCaption.copyWith(height: 1.5),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }

@@ -2,61 +2,172 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="OpenNI，MIT 开源电竞俱乐部应用。浏览 App、小程序与运营后台的运行界面和完整流程，配置自己的俱乐部品牌。"><meta name="theme-color" content="#ffffff">
-<title>OpenNI · 电竞俱乐部开源应用</title><link rel="icon" href="/icon.svg"><link rel="stylesheet" href="/library.css"><link rel="stylesheet" href="/gallery-refinement.css"><script type="module" src="/app.js"></script>
+<meta name="description" content="OpenNI，MIT 开源电竞俱乐部应用。按业务流程浏览 App、微信小程序与运营后台的真实运行截图，查看每个页面的状态、源码与原图。">
+<meta name="theme-color" content="#ffffff">
+<title>OpenNI · 电竞俱乐部开源应用 · 界面图库</title>
+<link rel="icon" href="/icon.svg">
+<link rel="stylesheet" href="/library.css">
+<link rel="stylesheet" href="/gallery-refinement.css">
+<script type="module" src="/app.js"></script>
 </head>
-<body class="brand-site">
+<body class="gallery-page">
 <a class="skip" href="#gallery-region">跳到界面图库</a>
 <header class="site-header">
   <a class="wordmark" href="/" aria-label="OpenNI 首页">OpenNI<span class="wordmark-dot" aria-hidden="true"></span></a>
-  <nav aria-label="站点导航"><a href="#gallery-region">界面图库</a><a href="/?view=flows#gallery-region">流程</a><a href="/delta/">三角洲专题</a><a href="/guide/">文档</a></nav>
-  <div class="header-actions"><a class="header-source" href="https://github.com/nph-cn/openni-club" target="_blank" rel="noreferrer">GitHub ↗</a><a class="header-cta" href="/studio/">配置俱乐部</a></div>
+  <nav aria-label="站点导航">
+    <a href="#gallery-region" aria-current="page">图库</a>
+    <a href="/?view=flows#gallery-region">流程</a>
+    <a href="/delta/">三角洲专题</a>
+    <a href="/guide/">文档</a>
+  </nav>
+  <div class="header-actions">
+    <a class="header-source" href="https://github.com/nph-cn/openni-club" target="_blank" rel="noreferrer">GitHub ↗</a>
+    <a class="header-cta" href="/demo/?device=iphone">打开 App ↗</a>
+  </div>
 </header>
 <main>
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero-heading">
-    <p class="hero-eyebrow">OpenNI · MIT 开源</p><h1 id="hero-title">电竞俱乐部开源应用</h1>
-    <p class="hero-description">App、小程序与管理后台，按你的品牌独立部署。</p>
-    <div class="hero-actions"><a class="action primary" href="/demo/?device=iphone">打开 App <span aria-hidden="true">↗</span></a><a class="action secondary" href="/studio/">配置俱乐部</a></div>
+<section class="app-hero" aria-labelledby="hero-title">
+  <div class="app-hero-copy">
+    <div class="app-identity">
+      <span class="app-icon" aria-hidden="true"><img src="/icon.svg" alt="" width="60" height="60"></span>
+      <div class="app-identity-text">
+        <p class="app-kicker"><span>OpenNI</span><span aria-hidden="true">·</span><span>MIT 开源</span><span aria-hidden="true">·</span><span>可白标部署</span></p>
+        <h1 id="hero-title">电竞俱乐部开源应用</h1>
+      </div>
+    </div>
+    <p class="app-summary">客户、成员与运营共用一套开源业务：发现服务、预约下单、履约交付、售后与结算。所有截图来自真实运行的界面，按业务流程与状态整理。</p>
+    <dl class="app-facts" aria-label="图库真实统计">
+      <div><dt>运行截图</dt><dd id="stat-screens">—</dd></div>
+      <div><dt>业务流程</dt><dd id="stat-flows">—</dd></div>
+      <div><dt>客户端</dt><dd id="stat-clients">—</dd></div>
+      <div><dt>交互状态</dt><dd id="stat-interactions">—</dd></div>
+    </dl>
+    <div class="app-tags" aria-label="主色与特性标签">
+      <span class="app-tag app-tag-color"><i class="swatch" style="--swatch:#263C2E"></i>品牌色 #263C2E</span>
+      <span class="app-tag app-tag-color"><i class="swatch" style="--swatch:#272D35"></i>App 主色 #272D35</span>
+      <span class="app-tag">iOS / Android</span>
+      <span class="app-tag">微信小程序</span>
+      <span class="app-tag">运营后台</span>
+      <span class="app-tag">MIT License</span>
+    </div>
+    <p class="app-note" id="platform-summary">正在读取截图清单…</p>
   </div>
   <div class="product-stage" id="product-stage" data-role="customer">
     <div class="stage-rail">
-      <div class="role-tabs" role="tablist" aria-label="预览产品角色"><button id="role-customer" role="tab" data-stage-role="customer" aria-selected="true" aria-controls="stage-panel">用户端</button><button id="role-member" role="tab" data-stage-role="member" aria-selected="false" aria-controls="stage-panel" tabindex="-1">成员端</button><button id="role-operator" role="tab" data-stage-role="operator" aria-selected="false" aria-controls="stage-panel" tabindex="-1">管理后台</button></div>
+      <div class="role-tabs" role="tablist" aria-label="预览产品角色">
+        <button id="role-customer" type="button" role="tab" data-stage-role="customer" aria-selected="true" aria-controls="stage-panel">用户端</button>
+        <button id="role-member" type="button" role="tab" data-stage-role="member" aria-selected="false" aria-controls="stage-panel" tabindex="-1">成员端</button>
+        <button id="role-operator" type="button" role="tab" data-stage-role="operator" aria-selected="false" aria-controls="stage-panel" tabindex="-1">管理后台</button>
+      </div>
       <a class="stage-launch" id="stage-launch" href="/demo/?device=iphone">打开 App ↗</a>
     </div>
     <div class="stage-panel" id="stage-panel" role="tabpanel" aria-labelledby="role-customer">
-      <div class="stage-visual"><button id="stage-open" class="stage-screen" aria-label="查看用户首页截图"><img id="stage-image" src="/screens/home.png" alt="北岸电竞用户首页运行截图" width="780" height="1688" fetchpriority="high"></button><div id="stage-extra" class="stage-extra"></div></div>
+      <div class="stage-visual">
+        <button id="stage-open" type="button" class="stage-screen" aria-label="查看用户首页截图"><img id="stage-image" alt="" width="390" height="844" fetchpriority="high"></button>
+        <div id="stage-extra" class="stage-extra"></div>
+      </div>
       <div class="stage-context"><span id="stage-caption">用户首页</span><a id="stage-browse" href="#gallery-region" data-explore-role="customer">查看用户端界面 <span aria-hidden="true">↘</span></a></div>
     </div>
   </div>
 </section>
-<section id="gallery-region" class="library-main" aria-label="产品界面图库">
-  <div class="library-title"><div><p class="section-eyebrow" id="hero-screen-count">界面与流程</p><h2 id="view-heading">界面图库<span id="total-count"></span></h2></div><label class="library-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><input id="search" type="search" placeholder="搜索界面、功能或状态" aria-label="搜索界面"><kbd>/</kbd></label></div>
-  <div class="library-layout"><div class="library-content">
-    <div class="library-toolbar">
-      <div class="platform-tabs" role="group" aria-label="客户端"><button data-platform="flutter" class="selected">App <span></span></button><button data-platform="mini" hidden>小程序 <span></span></button><button data-platform="admin" hidden>运营后台 <span></span></button></div>
-      <div class="view-switch" role="group" aria-label="浏览方式"><button data-view="screens" class="selected" aria-label="按界面浏览" title="界面"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="view-label">界面</span></button><button data-view="flows" aria-label="按流程浏览" title="流程"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="6" width="6" height="12" rx="1"/><rect x="16" y="6" width="6" height="12" rx="1"/><path d="M10 12h4m-2-2 2 2-2 2"/></svg><span class="view-label">流程</span></button><button id="favorites" aria-label="查看收藏" title="收藏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg><span>0</span></button></div>
+<section id="gallery-region" class="library-main" aria-labelledby="view-heading">
+  <div class="library-head">
+    <div class="library-title">
+      <p class="section-eyebrow" id="hero-screen-count">产品界面</p>
+      <h2 id="view-heading"><span class="heading-text">界面图库</span><span id="total-count">—</span></h2>
     </div>
-    <nav class="library-sidebar" aria-label="浏览流程" id="flow-sidebar"></nav>
-    <div class="filter-row"><div>
-      <label class="select-filter"><select id="role-filter" aria-label="筛选角色"><option value="all">所有角色</option><option value="customer">客户</option><option value="member">成员</option><option value="operator">运营</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></label>
-      <label class="select-filter"><select id="flow-filter" aria-label="筛选流程"><option value="all">所有流程</option><option value="auth">登录与验证</option><option value="discover">发现与选人</option><option value="booking">下单</option><option value="fulfillment">履约与售后</option><option value="member">成员工作台</option><option value="account">资料与设置</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></label>
-      <label class="select-filter"><select id="state-filter" aria-label="筛选状态"><option value="all">所有状态</option><option value="ready">正常</option><option value="loading">加载</option><option value="empty">空状态</option><option value="error">错误</option><option value="verification">验证</option><option value="success">完成</option></select><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></label>
-    </div><span id="result-count" class="result-count" role="status"></span></div>
-    <div id="active-filters" class="active-filters" hidden><span id="filter-summary"></span><button id="reset">清除筛选</button></div>
-    <div id="gallery-loading" class="gallery gallery-loading" aria-label="正在加载界面" role="status"><div></div><div></div><div></div><div></div></div>
-    <div id="gallery" class="gallery" aria-live="polite" aria-busy="true"></div>
-    <div id="empty" class="empty" hidden><h3>没有找到这个界面</h3><p>试试其他关键词。</p><button class="action secondary" id="reset-empty">清除筛选</button></div>
-    <div id="flow-gallery" class="flow-gallery" hidden></div>
-  </div></div>
+    <label class="library-search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+      <input id="search" type="search" placeholder="搜索界面、功能或状态" aria-label="搜索界面、功能或状态">
+      <kbd>/</kbd>
+    </label>
+  </div>
+  <div class="library-toolbar">
+    <div class="platform-tabs" role="group" aria-label="平台切换">
+      <button type="button" data-platform="flutter" class="selected" aria-pressed="true">iOS / Android <span>0</span></button>
+      <button type="button" data-platform="mini" aria-pressed="false">微信小程序 <span>0</span></button>
+      <button type="button" data-platform="admin" aria-pressed="false">运营后台 <span>0</span></button>
+    </div>
+    <div class="toolbar-right">
+      <div class="view-switch" role="group" aria-label="浏览方式">
+        <button type="button" data-view="flows" class="selected" aria-label="按业务流程分组浏览" aria-pressed="true">分组</button>
+        <button type="button" data-view="screens" aria-label="平铺全部界面" aria-pressed="false">全部</button>
+        <button type="button" id="favorites" aria-label="只看收藏" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg><span>0</span></button>
+      </div>
+    </div>
+  </div>
+  <p class="platform-note" id="platform-note">iOS 与 Android 共用同一套 Flutter 界面，截图在 iPhone 预览壳中采集，另含 Android 主题变体。</p>
+  <div class="filter-row">
+    <nav class="flow-chips" id="flow-sidebar" aria-label="按业务流程筛选"></nav>
+    <div class="filter-selects">
+      <label class="select-filter">
+        <select id="state-filter" aria-label="筛选状态">
+          <option value="all">所有状态</option>
+          <option value="ready">正常</option>
+          <option value="loading">加载</option>
+          <option value="empty">空状态</option>
+          <option value="error">错误</option>
+          <option value="verification">验证</option>
+          <option value="success">完成</option>
+        </select>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+      </label>
+      <span id="result-count" class="result-count" role="status"></span>
+    </div>
+  </div>
+  <div id="active-filters" class="active-filters" hidden><span id="filter-summary"></span><button type="button" id="reset">清除筛选</button></div>
+  <div id="gallery-loading" class="gallery-loading" aria-label="正在加载界面" role="status"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+  <div id="gallery" class="gallery" aria-live="polite" aria-busy="true"></div>
+  <div id="empty" class="empty" hidden><h3>没有找到界面</h3><p>试试其他关键词或筛选条件。</p><button type="button" class="action secondary" id="reset-empty">清除筛选</button></div>
 </section>
-<section class="topic-entry" aria-labelledby="topic-title"><div><p class="section-eyebrow">视觉专题</p><h2 id="topic-title">三角洲行动</h2><p>查看游戏服务与俱乐部界面的另一种视觉呈现。</p></div><a class="action primary" href="/delta/">打开专题 <span aria-hidden="true">↗</span></a></section>
-<footer class="site-footer"><a class="wordmark" href="/">OpenNI</a><div><a href="/demo/?device=iphone">App 预览</a><a href="/studio/">配置俱乐部</a><a href="/guide/">文档</a><a href="/guide/00-status.html">版本状态</a><a href="https://github.com/nph-cn/openni-club">GitHub ↗</a><a href="https://github.com/nph-cn/openni-club/blob/main/LICENSE">MIT License</a></div></footer>
+<section class="topic-entry" aria-labelledby="topic-title">
+  <div>
+    <p class="section-eyebrow">视觉专题</p>
+    <h2 id="topic-title">三角洲行动 · 战地档案</h2>
+    <p>另一套视觉呈现：滚动章节、模式与地图切换、官方影像。与图库相互独立。</p>
+  </div>
+  <a class="action secondary" href="/delta/">打开专题 <span aria-hidden="true">↗</span></a>
+</section>
+<footer class="site-footer">
+  <a class="wordmark" href="/">OpenNI</a>
+  <div>
+    <a href="/demo/?device=iphone">App 预览</a>
+    <a href="/studio/">配置俱乐部</a>
+    <a href="/guide/">文档</a>
+    <a href="/guide/00-status.html">版本状态</a>
+    <a href="https://github.com/nph-cn/openni-club">GitHub ↗</a>
+    <a href="https://github.com/nph-cn/openni-club/blob/main/LICENSE">MIT License</a>
+  </div>
+</footer>
 </main>
 <dialog id="detail" aria-labelledby="detail-title">
-  <div class="detail-top"><div><span id="detail-platform"></span><span id="detail-state" hidden></span></div><div class="detail-tools"><button id="toggle-zoom" aria-label="放大截图" aria-pressed="false">放大</button><button id="copy-link" aria-label="复制页面链接">复制链接</button><button id="close-detail" aria-label="关闭详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></div>
-  <div class="detail-body"><div class="detail-stage"><img id="detail-img" src="/screens/home.png" alt=""><div id="detail-image-error" hidden><p>图片未能加载</p><button class="action secondary" id="retry-image">重新加载</button></div></div><aside class="detail-info"><h2 id="detail-title"></h2><dl><dt>流程</dt><dd id="detail-flow"></dd><dt>源码</dt><dd id="detail-source"></dd></dl><a id="detail-demo" class="action primary">打开此页 ↗</a><a id="detail-download" class="action secondary" download>下载原图 ↓</a><div id="detail-sequence" class="detail-sequence" role="group" aria-label="当前流程的界面"></div></aside></div>
-  <div class="detail-nav"><button id="previous-screen">← 上一页</button><span id="detail-position"></span><button id="next-screen">下一页 →</button></div>
+  <header class="detail-top">
+    <div class="detail-breadcrumb"><span id="detail-platform"></span><span id="detail-state" hidden></span></div>
+    <div class="detail-tools">
+      <button type="button" id="toggle-zoom" aria-label="按原图放大" aria-pressed="false" title="放大 / 适合屏幕">放大</button>
+      <button type="button" id="toggle-fullscreen" aria-label="全屏查看" aria-pressed="false" title="全屏查看">全屏</button>
+      <button type="button" id="copy-link" aria-label="复制界面链接">复制链接</button>
+      <button type="button" id="close-detail" aria-label="关闭详情"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+    </div>
+  </header>
+  <div class="detail-body">
+    <div class="detail-stage"><img id="detail-img" alt=""><div id="detail-image-error" hidden><p>图片未能加载</p><button type="button" class="action secondary" id="retry-image">重新加载</button></div></div>
+    <aside class="detail-info">
+      <p class="detail-capture" id="detail-capture" hidden></p>
+      <h2 id="detail-title"></h2>
+      <p class="detail-description" id="detail-description"></p>
+      <dl class="detail-meta">
+        <dt>流程</dt><dd id="detail-flow"></dd>
+        <dt>状态</dt><dd id="detail-state-text"></dd>
+        <dt>范围</dt><dd id="detail-window"></dd>
+        <dt>源码</dt><dd id="detail-source"></dd>
+      </dl>
+      <a id="detail-demo" class="action primary">打开此页 ↗</a>
+      <a id="detail-download" class="action secondary" download>下载原图 ↓</a>
+      <div id="detail-sequence" class="detail-sequence" role="group" aria-label="当前流程的界面"></div>
+    </aside>
+  </div>
+  <div class="detail-nav"><button type="button" id="previous-screen">← 上一张</button><span id="detail-position"></span><button type="button" id="next-screen">下一张 →</button></div>
 </dialog>
 </body>
 </html>

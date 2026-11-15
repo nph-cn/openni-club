@@ -1,4 +1,8 @@
-import {labels, stateGroup, matchScreens, groupFlows, parseLocation, gallerySearch, browseSequence, galleryCounts, appPreviewUrl, screenPreview, sourceHref} from './gallery-model.js';
+import {
+  labels, platformTabs, stateGroup, matchScreens, groupFlows, flowLabel, parseLocation, gallerySearch,
+  browseSequence, galleryCounts, galleryStats, platformSummary, appPreviewUrl, screenPreview, sourceHref
+} from './gallery-model.js';
+
 const $ = selector => document.querySelector(selector);
 const names = labels;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -7,164 +11,487 @@ let detailScope = 'results';
 let {platform, role, flow, state, query, view, screenId: initialScreen} = parseLocation(location.search);
 let favoriteOnly = false;
 let favorites;
-try { const stored=JSON.parse(localStorage.getItem('openni:favorites') || '[]'); favorites=new Set(Array.isArray(stored)?stored.filter(id=>typeof id==='string'):[]); }
-catch { favorites = new Set(); }
+try {
+  const stored = JSON.parse(localStorage.getItem('openni:favorites') || '[]');
+  favorites = new Set(Array.isArray(stored) ? stored.filter(id => typeof id === 'string') : []);
+} catch {
+  favorites = new Set();
+}
 const dialog = $('#detail');
-const node = (tag, text, className) => { const item=document.createElement(tag); if(text!==undefined)item.textContent=text; if(className)item.className=className; return item; };
+const node = (tag, text, className) => { const item = document.createElement(tag); if (text !== undefined) item.textContent = text; if (className) item.className = className; return item; };
 const filters = () => ({platform, role, flow, state, query, view, favoriteOnly});
 const matched = () => matchScreens(screens, filters(), favorites);
 const detailList = () => browseSequence(matched(), currentId, detailScope);
-for(const link of document.querySelectorAll('a[href^="/demo/"]')) link.href=appPreviewUrl(link.getAttribute('href'));
-const browseMode=node('div',undefined,'detail-browse-mode');browseMode.setAttribute('role','group');browseMode.setAttribute('aria-label','浏览范围');
-for(const [scope,label] of [['flow','当前流程'],['results','筛选结果']]) {
- const button=node('button',label);button.type='button';button.dataset.browseScope=scope;
- button.onclick=()=>{detailScope=scope;const current=screens.find(screen=>screen.id===currentId);if(current)show(current);};browseMode.append(button);
+for (const link of document.querySelectorAll('a[href^="/demo/"]')) link.href = appPreviewUrl(link.getAttribute('href'));
+
+// 详情内切换浏览范围：当前流程 / 当前筛选结果。
+const browseMode = node('div', undefined, 'detail-browse-mode');
+browseMode.setAttribute('role', 'group');
+browseMode.setAttribute('aria-label', '浏览范围');
+for (const [scope, label] of [['flow', '当前流程'], ['results', '筛选结果']]) {
+  const button = node('button', label);
+  button.type = 'button';
+  button.dataset.browseScope = scope;
+  button.onclick = () => { detailScope = scope; const current = screens.find(screen => screen.id === currentId); if (current) show(current); };
+  browseMode.append(button);
 }
 $('#detail-sequence').before(browseMode);
-const captureInfo=node('p',undefined,'detail-capture');captureInfo.hidden=true;$('#detail-title').after(captureInfo);
-function locationFor(screenId='') { return `${location.pathname}${gallerySearch(filters(),screenId)}${location.hash}`; }
-function writeLocation(screenId='') { history.replaceState(null,'',locationFor(screenId)); }
-function buttons(key,value) {
- document.querySelectorAll(`button[data-${key}]`).forEach(button=>{ const selected=button.dataset[key]===value; button.classList.toggle('selected',selected); button.setAttribute('aria-pressed',String(selected)); });
+
+function locationFor(screenId = '') { return `${location.pathname}${gallerySearch(filters(), screenId)}${location.hash}`; }
+function writeLocation(screenId = '') { history.replaceState(null, '', locationFor(screenId)); }
+function buttons(key, value) {
+  document.querySelectorAll(`button[data-${key}]`).forEach(button => {
+    const selected = button.dataset[key] === value;
+    button.classList.toggle('selected', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
 }
 function syncControls() {
- $('#role-filter').value=role; $('#flow-filter').value=flow; $('#state-filter').value=state; if(document.activeElement!==$('#search'))$('#search').value=query;
- buttons('platform',platform); buttons('view',favoriteOnly?'':view); $('#favorites').classList.toggle('selected',favoriteOnly); $('#favorites').setAttribute('aria-pressed',String(favoriteOnly));
+  $('#state-filter').value = state;
+  if (document.activeElement !== $('#search')) $('#search').value = query;
+  buttons('platform', platform);
+  buttons('view', view);
+  $('#favorites').classList.toggle('selected', favoriteOnly);
+  $('#favorites').setAttribute('aria-pressed', String(favoriteOnly));
+  const note = $('#platform-note');
+  if (note) {
+    note.textContent = platform === 'flutter'
+      ? 'iOS 与 Android 共用同一套 Flutter 界面，截图在 iPhone 预览壳中采集，另含 Android 主题变体。'
+      : platform === 'mini'
+        ? '微信小程序为原生实现，截图来自微信开发者工具的运行画面。'
+        : '运营后台为桌面端页面，截图为 1266×712 浏览器运行画面。';
+  }
 }
 function screenImage(screen) {
- const img=node('img'); img.alt=`${names.platform[screen.platform]} · ${screen.title}`; img.width=screen.width||390; img.height=screen.height||844; img.loading='lazy'; img.decoding='async'; img.dataset.loaded='false';
- img.onload=()=>img.dataset.loaded='true'; img.onerror=()=>{img.dataset.loaded='error';img.alt=`${screen.title} · 图片未加载`;}; img.src=screen.image; return img;
+  const img = node('img');
+  img.alt = `${names.platform[screen.platform] || ''} · ${screen.title}`;
+  img.width = screen.width || 390;
+  img.height = screen.height || 844;
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  img.dataset.loaded = 'false';
+  img.onload = () => img.dataset.loaded = 'true';
+  img.onerror = () => { img.dataset.loaded = 'error'; img.alt = `${screen.title} · 图片未加载`; };
+  img.src = screen.image;
+  return img;
 }
-function render({sync=true}={}) {
- const shown=matched(),counts=galleryCounts(screens,shown,favorites); syncControls();
- renderSidebar();
- $('#hero-screen-count').textContent=`${counts.total} 个运行界面 · ${Object.values(counts.platforms).filter(count=>count>0).length} 个客户端`;
- $('#result-count').textContent=`本端 ${counts.shown} / ${counts.platforms[platform]} 个界面 · 全站 ${counts.total}`; $('#favorites span').textContent=counts.favorites;
- $('#gallery').replaceChildren(); $('#flow-gallery').replaceChildren(); $('#gallery').hidden=view!=='screens'; $('#flow-gallery').hidden=view!=='flows';
- $('#empty').hidden=shown.length>0; $('#empty h3').textContent='没有找到这个界面'; $('#empty p').textContent='试试其他筛选条件。'; $('#reset-empty').textContent='清除筛选';
- $('#gallery').classList.toggle('desktop',platform==='admin');
- $('#view-heading').replaceChildren(node('span',view==='flows'?'流程浏览':favoriteOnly?'我的收藏':'界面图库','heading-text'),Object.assign(node('span',String(counts.shown)),{id:'total-count'}));
- const active=[role!=='all'?names.role[role]:null,flow!=='all'?names.flow[flow]:null,state!=='all'?names.state[state]:null,query?`“${query}”`:null,favoriteOnly?'已收藏':null].filter(Boolean);
- $('#active-filters').hidden=!active.length; $('#filter-summary').textContent=active.join(' / ');
- if(view==='flows') renderFlows(shown);
- else for(const screen of shown) {
-  const article=node('article',undefined,'screen-card'),open=node('button',undefined,'screen-open'),mat=node('div',undefined,'screen-mat');
-  open.setAttribute('aria-label',`查看${screen.title}截图与详情`); mat.append(screenImage(screen)); open.append(mat); open.onclick=()=>show(screen,{scope:'results'});
-  const caption=node('div',undefined,'screen-caption'),text=node('div');
-  const group=stateGroup(screen); text.append(node('p',group==='ready'?(names.flow[screen.flow]||'产品界面'):names.state[group]));
-  const identity=node('div',undefined,'screen-identity'),logo=node('img');logo.src='/icon.svg';logo.alt='';logo.width=26;logo.height=26;logo.loading='lazy';identity.append(logo,node('h3',screen.title));text.append(identity);
-  const bookmark=node('button',undefined,'bookmark'+(favorites.has(screen.id)?' saved':'')); bookmark.setAttribute('aria-label',`${favorites.has(screen.id)?'取消收藏':'收藏'}${screen.title}`); bookmark.setAttribute('aria-pressed',String(favorites.has(screen.id)));
-  bookmark.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg>';
-  bookmark.onclick=()=>{favorites.has(screen.id)?favorites.delete(screen.id):favorites.add(screen.id);try{localStorage.setItem('openni:favorites',JSON.stringify([...favorites]));}catch{}render();};
-  caption.append(text,bookmark); article.append(open,caption); $('#gallery').append(article);
- }
- if(sync)writeLocation();
+function updateHeroStats() {
+  const stats = galleryStats(screens);
+  $('#stat-screens').textContent = stats.total;
+  $('#stat-flows').textContent = stats.flows;
+  $('#stat-clients').textContent = stats.clients;
+  $('#stat-interactions').textContent = stats.interactions;
+  $('#platform-summary').textContent = `${platformSummary(stats).join(' · ')} · 共 ${stats.total} 张运行截图`;
+}
+function render({sync = true} = {}) {
+  const shown = matched(), counts = galleryCounts(screens, shown, favorites);
+  syncControls();
+  renderSidebar();
+  if (screens.length) updateHeroStats();
+  $('#result-count').textContent = `本端 ${counts.platforms[platform] || 0} / 全站 ${counts.total} 张 · 当前 ${counts.shown} 张`;
+  $('#favorites span').textContent = counts.favorites;
+  for (const button of document.querySelectorAll('[data-platform]')) {
+    const count = counts.platforms[button.dataset.platform] || 0;
+    button.hidden = !count;
+    const badge = button.querySelector('span');
+    if (badge) badge.textContent = count;
+  }
+  const heading = favoriteOnly ? '我的收藏' : view === 'flows' ? '界面图库' : '全部界面';
+  $('#view-heading .heading-text').textContent = heading;
+  $('#total-count').textContent = `${counts.shown} 个界面`;
+  const platformFlowCount = new Set(screens.filter(screen => screen.platform === platform).map(screen => screen.flow)).size;
+  $('#hero-screen-count').textContent = `${names.platform[platform] || '全部客户端'} · ${platformFlowCount} 条业务流程`;
+  const active = [
+    role !== 'all' ? names.role[role] : null,
+    flow !== 'all' ? flowLabel(flow) : null,
+    state !== 'all' ? names.state[state] : null,
+    query ? `“${query}”` : null,
+    favoriteOnly ? '已收藏' : null
+  ].filter(Boolean);
+  $('#active-filters').hidden = !active.length;
+  $('#filter-summary').textContent = active.join(' / ');
+  $('#gallery').replaceChildren();
+  if (!shown.length) {
+    $('#empty').hidden = false;
+    $('#empty h3').textContent = favoriteOnly ? '还没有收藏界面' : '没有找到这个界面';
+    $('#empty p').textContent = favoriteOnly ? '在界面卡片右下角点收藏，随时回到这里。' : '试试其他关键词或筛选条件。';
+    $('#reset-empty').textContent = favoriteOnly ? '查看全部界面' : '清除筛选';
+  } else {
+    $('#empty').hidden = true;
+    if (view === 'flows') renderFlows(shown); else renderCards($('#gallery'), shown);
+  }
+  if (sync) writeLocation();
+}
+function renderCards(container, items) {
+  const grid = node('div', undefined, 'screen-grid' + (platform === 'admin' ? ' grid-landscape' : ''));
+  for (const screen of items) grid.append(screenCard(screen, {showFlow: view === 'screens'}));
+  container.append(grid);
 }
 function renderFlows(shown) {
- for(const group of groupFlows(shown)) {
-  const section=node('section',undefined,'flow-item'),head=node('header'); section.dataset.platform=platform; head.append(node('h3',group.name));
-  const tools=node('div',undefined,'flow-actions'),start=node('button','顺序浏览 →');start.type='button';start.setAttribute('aria-label',`顺序浏览${group.name}，共 ${group.screens.length} 页`);start.onclick=()=>show(group.screens[0],{scope:'flow'});tools.append(node('span',`${group.screens.length} 个界面`),start);head.append(tools);
-  const row=node('div',undefined,'flow-screens'); row.setAttribute('role','group'); row.setAttribute('aria-label',group.name);
-  for(const [index,screen] of group.screens.entries()) { const button=node('button',undefined,'flow-screen');button.setAttribute('aria-label',`查看第 ${index+1} 页：${screen.title}`);button.append(screenImage(screen),node('span',`${String(index+1).padStart(2,'0')}  ${screen.title}`));button.onclick=()=>show(screen,{scope:'flow'});row.append(button); }
-  section.append(head,row); $('#flow-gallery').append(section);
- }
+  for (const [index, group] of groupFlows(shown).entries()) {
+    const section = node('section', undefined, 'flow-block');
+    section.dataset.flow = group.key;
+    const head = node('header', undefined, 'flow-block-head');
+    const title = node('div', undefined, 'flow-block-title');
+    title.append(node('span', String(index + 1).padStart(2, '0'), 'flow-number'), node('h3', group.name), node('span', `${group.screens.length} 个界面`, 'flow-count'));
+    const start = node('button', '顺序浏览 →', 'flow-play');
+    start.type = 'button';
+    start.setAttribute('aria-label', `按顺序浏览${group.name}，共 ${group.screens.length} 屏`);
+    start.onclick = () => show(group.screens[0], {scope: 'flow'});
+    head.append(title, start);
+    section.append(head);
+    if (group.intro) section.append(node('p', group.intro, 'flow-intro'));
+    const grid = node('div', undefined, 'screen-grid' + (platform === 'admin' ? ' grid-landscape' : ''));
+    for (const screen of group.screens) grid.append(screenCard(screen, {showFlow: false}));
+    section.append(grid);
+    $('#gallery').append(section);
+  }
 }
-function show(screen,{scope=detailScope}={}) {
- detailScope=scope;
- const sequenceHadFocus=$('#detail-sequence').contains(document.activeElement);
- const sequenceScroll=$('#detail-sequence').scrollLeft;
- currentId=screen.id; $('#detail-title').textContent=screen.title; $('#detail-platform').textContent=names.platform[screen.platform];
- captureInfo.textContent=screen.device==='iPhone preview'?`iPhone 预览 · ${screen.captureKind==='interaction'?'交互状态截图':'运行界面截图'} · 非真机拍摄`:screen.capture||'';captureInfo.title=screen.capture||'';captureInfo.hidden=!captureInfo.textContent;
- const group=stateGroup(screen); $('#detail-state').hidden=group==='ready'; $('#detail-state').textContent=names.state[group]; $('#detail-flow').textContent=names.flow[screen.flow]||'产品界面';
- const source=screen.source; $('#detail-source').replaceChildren(Object.assign(node('a',source+' ↗'),{href:sourceHref(screen),target:'_blank',rel:'noreferrer'}));
- const img=$('#detail-img'); img.hidden=false; $('#detail-image-error').hidden=true; img.alt=screen.title;img.width=screen.width||390;img.height=screen.height||844;
- img.onload=()=>{img.hidden=false;$('#detail-image-error').hidden=true;}; img.onerror=()=>{img.hidden=true;$('#detail-image-error').hidden=false;}; img.src=screen.image;
- const preview=screenPreview(screen);$('#detail-demo').href=preview.href;$('#detail-demo').textContent=preview.label; $('#detail-download').href=screen.image;
- dialog.classList.toggle('wide-detail',screen.platform==='admin'); dialog.classList.remove('zoomed'); $('#toggle-zoom').textContent='放大'; $('#toggle-zoom').setAttribute('aria-label','放大截图'); $('#toggle-zoom').setAttribute('aria-pressed','false'); $('#copy-link').textContent='复制链接';
- const list=detailList(),index=list.findIndex(s=>s.id===screen.id); $('#detail-position').textContent=`${detailScope==='flow'?'本流程':'筛选结果'} ${index+1} / ${list.length}`; $('#previous-screen').disabled=index<=0; $('#next-screen').disabled=index>=list.length-1;
- browseMode.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.browseScope===detailScope)));
- const sequence=$('#detail-sequence');sequence.replaceChildren();
- sequence.setAttribute('aria-label',detailScope==='flow'?'当前流程的界面':'当前筛选结果的界面');
- for(const [step,related] of list.entries()) {
-  const button=node('button');button.dataset.screen=related.id;button.setAttribute('aria-label',`第 ${step+1} 页：${related.title}`);button.setAttribute('aria-current',String(related.id===screen.id));button.title=related.title;
-  const thumb=screenImage(related);thumb.alt='';button.append(thumb,node('span',`${String(step+1).padStart(2,'0')} ${related.title}`));button.onclick=()=>show(related);sequence.append(button);
- }
- if(!dialog.open)dialog.showModal(); $('.detail-body').scrollTop=0; $('.detail-stage').scrollTop=0; writeLocation(screen.id);
- sequence.scrollLeft=sequenceScroll;
- const current=sequence.querySelector('[aria-current=true]');
- if(sequenceHadFocus)current?.focus({preventScroll:true});
- if(current){const left=current.offsetLeft-sequence.offsetLeft,right=left+current.offsetWidth;if(left<sequence.scrollLeft)sequence.scrollLeft=left;else if(right>sequence.scrollLeft+sequence.clientWidth)sequence.scrollLeft=right-sequence.clientWidth;}
+function screenCard(screen, {showFlow = false} = {}) {
+  const article = node('article', undefined, 'screen-card');
+  const open = node('button', undefined, 'screen-open');
+  open.type = 'button';
+  open.setAttribute('aria-label', `查看「${screen.title}」大图、说明与原图下载`);
+  const shot = node('span', undefined, 'screen-shot');
+  shot.append(screenImage(screen));
+  open.append(shot, node('span', names.capture[screen.captureKind] || '查看大图', 'screen-open-hint'));
+  open.onclick = () => show(screen, {scope: view === 'flows' ? 'flow' : 'results'});
+  const caption = node('div', undefined, 'screen-caption');
+  const text = node('div', undefined, 'screen-caption-text');
+  text.append(node('p', screen.title, 'screen-name'));
+  const tags = node('p', undefined, 'screen-tags');
+  const group = stateGroup(screen);
+  tags.append(node('span', names.state[group], `state-pill state-${group}`));
+  if (screen.captureKind === 'interaction') tags.append(node('span', '交互状态', 'kind-pill'));
+  if (screen.capturePlatform === 'android') tags.append(node('span', 'Android', 'kind-pill'));
+  if (screen.role === 'member') tags.append(node('span', '成员端', 'role-pill'));
+  if (showFlow && screen.flow) tags.append(node('span', flowLabel(screen.flow), 'flow-pill'));
+  text.append(tags);
+  const saved = favorites.has(screen.id);
+  const bookmark = node('button', undefined, 'bookmark' + (saved ? ' saved' : ''));
+  bookmark.type = 'button';
+  bookmark.setAttribute('aria-label', `${saved ? '取消收藏' : '收藏'}${screen.title}`);
+  bookmark.setAttribute('aria-pressed', String(saved));
+  bookmark.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4z"/></svg>';
+  bookmark.onclick = () => toggleFavorite(screen, bookmark);
+  caption.append(text, bookmark);
+  article.append(open, caption);
+  return article;
 }
-function renderSidebar(){
- const sidebar=$('#flow-sidebar'),scroll=sidebar.scrollLeft,focusedFlow=sidebar.contains(document.activeElement)?document.activeElement.dataset.flow:null;sidebar.replaceChildren(node('h3','浏览流程'));
- const subset=matchScreens(screens,{...filters(),flow:'all'},favorites);
- for(const [key,title] of [['all','全部界面'],...Object.entries(names.flow)]){
-  const count=key==='all'?subset.length:subset.filter(item=>item.flow===key).length;
-  const button=node('button',title);button.type='button';button.dataset.flow=key;button.setAttribute('aria-pressed',String(flow===key));button.append(node('span',String(count)));
-  button.onclick=()=>{flow=key;render();};sidebar.append(button);
- }
- sidebar.scrollLeft=scroll;
- if(focusedFlow){const current=Array.from(sidebar.querySelectorAll('button')).find(button=>button.dataset.flow===focusedFlow);current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}
+function toggleFavorite(screen, button) {
+  const saved = favorites.has(screen.id);
+  if (saved) favorites.delete(screen.id); else favorites.add(screen.id);
+  try { localStorage.setItem('openni:favorites', JSON.stringify([...favorites])); } catch { /* 隐私模式忽略。 */ }
+  const nowSaved = !saved;
+  button.classList.toggle('saved', nowSaved);
+  button.setAttribute('aria-pressed', String(nowSaved));
+  button.setAttribute('aria-label', `${nowSaved ? '取消收藏' : '收藏'}${screen.title}`);
+  $('#favorites span').textContent = new Set(screens.filter(item => favorites.has(item.id)).map(item => item.id)).size;
+  if (favoriteOnly) render();
 }
-function next(offset) {const list=detailList(),index=list.findIndex(s=>s.id===currentId);if(list[index+offset])show(list[index+offset]);}
-$('#close-detail').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{currentId='';writeLocation();});
-$('#previous-screen').onclick=()=>next(-1); $('#next-screen').onclick=()=>next(1);
-dialog.addEventListener('keydown',event=>{if(event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();next(-1);}if(event.key==='ArrowRight'){event.preventDefault();next(1);}});
-dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
-$('#toggle-zoom').onclick=()=>{const zoomed=dialog.classList.toggle('zoomed');$('#toggle-zoom').textContent=zoomed?'适合屏幕':'放大';$('#toggle-zoom').setAttribute('aria-label',zoomed?'缩小至适合屏幕':'放大截图');$('#toggle-zoom').setAttribute('aria-pressed',String(zoomed));};
-$('#copy-link').onclick=async()=>{try{const url=new URL(location.href);url.search=gallerySearch({...filters(),view:detailScope==='flow'?'flows':'screens'},currentId);url.hash='gallery-region';await navigator.clipboard.writeText(url.href);$('#copy-link').textContent='已复制';}catch{$('#copy-link').textContent='请复制地址栏';}};
-$('#retry-image').onclick=()=>{const screen=screens.find(s=>s.id===currentId);if(screen)show(screen);};
-document.querySelectorAll('[data-platform]').forEach(button=>button.onclick=()=>{platform=button.dataset.platform;if(role!=='all'&&!screens.some(screen=>screen.platform===platform&&screen.role===role))role='all';render();});
-function setRole(value) {role=value;if(role==='operator')platform='admin';else if(role!=='all'&&platform==='admin')platform='flutter';render();}
-$('#role-filter').onchange=event=>setRole(event.target.value); $('#flow-filter').onchange=event=>{flow=event.target.value;render();}; $('#state-filter').onchange=event=>{state=event.target.value;render();};
-document.querySelectorAll('[data-explore-role]').forEach(link=>link.onclick=()=>{flow='all';state='all';query='';favoriteOnly=false;setRole(link.dataset.exploreRole);});
-document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>{view=button.dataset.view;favoriteOnly=false;render();});
-$('#favorites').onclick=()=>{favoriteOnly=!favoriteOnly;view='screens';render();};
-$('#search').oninput=event=>{query=event.target.value.trim();render();};
-function reset() {role='all';flow='all';state='all';query='';favoriteOnly=false;render();}
-$('#reset').onclick=reset; $('#reset-empty').onclick=()=>loadError?loadScreens():reset();
-document.addEventListener('keydown',event=>{if(event.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!dialog.open){event.preventDefault();$('#search').focus();}});
-async function loadScreens() {
- loadError=false; $('#gallery-loading').hidden=false; $('#empty').hidden=true; $('#gallery').setAttribute('aria-busy','true');
- try {
-  const response=await fetch('/screens.json');if(!response.ok)throw Error('index');const data=await response.json();if(!Array.isArray(data))throw Error('index');screens=data;
-  for(const button of document.querySelectorAll('[data-platform]')){const count=screens.filter(s=>s.platform===button.dataset.platform).length;button.hidden=!count;button.querySelector('span').textContent=count;}
-  const requested=screens.find(screen=>screen.id===initialScreen);if(requested){platform=requested.platform;if(!matched().includes(requested)){role='all';flow='all';state='all';query='';favoriteOnly=false;}}
-  render();if(requested)show(requested,{scope:view==='flows'?'flow':'results'});initialScreen='';
- } catch {loadError=true;$('#empty').hidden=false;$('#empty h3').textContent='界面目录未能加载';$('#empty p').textContent='';$('#reset-empty').textContent='重新加载';}
- finally {$('#gallery-loading').hidden=true;$('#gallery').setAttribute('aria-busy','false');}
+function show(screen, {scope = detailScope} = {}) {
+  detailScope = scope;
+  const sequenceHadFocus = $('#detail-sequence').contains(document.activeElement);
+  const sequenceScroll = $('#detail-sequence').scrollLeft;
+  currentId = screen.id;
+  const group = stateGroup(screen);
+  $('#detail-title').textContent = screen.title;
+  $('#detail-platform').textContent = names.platform[screen.platform] || '';
+  const stateBadge = $('#detail-state');
+  stateBadge.hidden = group === 'ready';
+  stateBadge.textContent = names.state[group];
+  $('#detail-state-text').textContent = names.state[group];
+  $('#detail-flow').textContent = names.flow[screen.flow] || '其他流程';
+  $('#detail-description').textContent = screen.description || '该界面在清单中尚未登记说明。';
+  const capture = $('#detail-capture');
+  capture.textContent = screen.device === 'iPhone preview'
+    ? `iPhone 预览壳 · ${screen.captureKind === 'interaction' ? '交互状态截图' : '完整页面截图'} · 非真机拍摄`
+    : screen.capture || '';
+  capture.title = screen.capture || '';
+  capture.hidden = !capture.textContent;
+  const source = screen.source;
+  const sourceTarget = $('#detail-source');
+  if (source) sourceTarget.replaceChildren(Object.assign(node('a', source + ' ↗'), {href: sourceHref(screen), target: '_blank', rel: 'noreferrer'}));
+  else sourceTarget.replaceChildren(node('span', '未登记源码路径'));
+  const img = $('#detail-img');
+  img.hidden = false;
+  $('#detail-image-error').hidden = true;
+  img.alt = screen.title;
+  img.width = screen.width || 390;
+  img.height = screen.height || 844;
+  img.onload = () => { img.hidden = false; $('#detail-image-error').hidden = true; };
+  img.onerror = () => { img.hidden = true; $('#detail-image-error').hidden = false; };
+  img.src = screen.image;
+  const preview = screenPreview(screen);
+  $('#detail-demo').href = preview.href;
+  $('#detail-demo').textContent = preview.label;
+  const download = $('#detail-download');
+  download.href = screen.image;
+  download.setAttribute('download', String(screen.image).split('/').pop());
+  dialog.classList.toggle('wide-detail', screen.platform === 'admin');
+  dialog.classList.remove('zoomed');
+  dialog.classList.remove('is-fullscreen');
+  $('#toggle-zoom').textContent = '放大';
+  $('#toggle-zoom').setAttribute('aria-label', '按原图放大');
+  $('#toggle-zoom').setAttribute('aria-pressed', 'false');
+  $('#toggle-fullscreen').textContent = '全屏';
+  $('#toggle-fullscreen').setAttribute('aria-label', '全屏查看');
+  $('#toggle-fullscreen').setAttribute('aria-pressed', 'false');
+  $('#copy-link').textContent = '复制链接';
+  const list = detailList(), index = list.findIndex(item => item.id === screen.id);
+  $('#detail-window').textContent = `${detailScope === 'flow' ? '当前流程' : '筛选结果'} · ${list.length} 张`;
+  $('#detail-position').textContent = `${detailScope === 'flow' ? '本流程' : '筛选结果'} ${index + 1} / ${list.length}`;
+  $('#previous-screen').disabled = index <= 0;
+  $('#next-screen').disabled = index >= list.length - 1;
+  browseMode.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.browseScope === detailScope)));
+  const sequence = $('#detail-sequence');
+  sequence.replaceChildren();
+  sequence.setAttribute('aria-label', detailScope === 'flow' ? '当前流程的界面' : '当前筛选结果的界面');
+  for (const [step, related] of list.entries()) {
+    const button = node('button');
+    button.type = 'button';
+    button.dataset.screen = related.id;
+    button.setAttribute('aria-label', `第 ${step + 1} 张：${related.title}`);
+    button.setAttribute('aria-current', String(related.id === screen.id));
+    button.title = related.title;
+    const thumb = screenImage(related);
+    thumb.alt = '';
+    button.append(thumb, node('span', `${String(step + 1).padStart(2, '0')} ${related.title}`));
+    button.onclick = () => show(related);
+    sequence.append(button);
+  }
+  if (!dialog.open) dialog.showModal();
+  $('.detail-body').scrollTop = 0;
+  $('.detail-stage').scrollTop = 0;
+  writeLocation(screen.id);
+  sequence.scrollLeft = sequenceScroll;
+  const current = sequence.querySelector('[aria-current=true]');
+  if (sequenceHadFocus) current?.focus({preventScroll: true});
+  if (current) {
+    const left = current.offsetLeft - sequence.offsetLeft, right = left + current.offsetWidth;
+    if (left < sequence.scrollLeft) sequence.scrollLeft = left;
+    else if (right > sequence.scrollLeft + sequence.clientWidth) sequence.scrollLeft = right - sequence.clientWidth;
+  }
 }
-syncControls(); await loadScreens();
+function renderSidebar() {
+  const sidebar = $('#flow-sidebar'), scroll = sidebar.scrollLeft;
+  const focused = sidebar.contains(document.activeElement) ? document.activeElement.dataset.flow : null;
+  sidebar.replaceChildren();
+  const subset = matchScreens(screens, {...filters(), flow: 'all'}, favorites);
+  const entries = [['all', '全部界面', subset.length], ...groupFlows(subset).map(group => [group.key, group.name, group.screens.length])];
+  for (const [key, title, count] of entries) {
+    const button = node('button', title);
+    button.type = 'button';
+    button.dataset.flow = key;
+    button.setAttribute('aria-pressed', String(flow === key));
+    button.append(node('span', String(count)));
+    button.onclick = () => { flow = flow === key ? 'all' : key; render(); };
+    sidebar.append(button);
+  }
+  sidebar.scrollLeft = scroll;
+  if (focused) {
+    const current = Array.from(sidebar.querySelectorAll('button')).find(button => button.dataset.flow === focused);
+    current?.focus({preventScroll: true});
+    current?.scrollIntoView({block: 'nearest', inline: 'nearest', behavior: 'instant'});
+  }
+}
+function next(offset) {
+  const list = detailList(), index = list.findIndex(item => item.id === currentId);
+  if (list[index + offset]) show(list[index + offset]);
+}
+$('#close-detail').onclick=()=>dialog.close();
+dialog.addEventListener('close', () => { currentId = ''; writeLocation(); });
+$('#previous-screen').onclick = () => next(-1);
+$('#next-screen').onclick = () => next(1);
+function toggleFullscreen() {
+  const active = dialog.classList.toggle('is-fullscreen');
+  $('#toggle-fullscreen').textContent = active ? '退出全屏' : '全屏';
+  $('#toggle-fullscreen').setAttribute('aria-label', active ? '退出全屏' : '全屏查看');
+  $('#toggle-fullscreen').setAttribute('aria-pressed', String(active));
+}
+dialog.addEventListener('keydown', event => {
+  if (event.altKey || event.ctrlKey || event.metaKey || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
+  if (event.key === 'ArrowLeft') { event.preventDefault(); next(-1); }
+  if (event.key === 'ArrowRight') { event.preventDefault(); next(1); }
+  if (event.key === 'f' || event.key === 'F') { event.preventDefault(); toggleFullscreen(); }
+  if (event.key === 'Escape' && dialog.classList.contains('is-fullscreen')) { event.preventDefault(); toggleFullscreen(); }
+});
+dialog.addEventListener('click', event => {
+  if (event.target === dialog) {
+    const rect = dialog.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+  }
+});
+$('#toggle-zoom').onclick = () => {
+  const zoomed = dialog.classList.toggle('zoomed');
+  $('#toggle-zoom').textContent = zoomed ? '适合屏幕' : '放大';
+  $('#toggle-zoom').setAttribute('aria-label', zoomed ? '缩小至适合屏幕' : '按原图放大');
+  $('#toggle-zoom').setAttribute('aria-pressed', String(zoomed));
+};
+$('#toggle-fullscreen').onclick = toggleFullscreen;
+$('#copy-link').onclick = async () => {
+  try {
+    const url = new URL(location.href);
+    url.search = gallerySearch({...filters(), view: 'screens'}, currentId);
+    url.hash = 'gallery-region';
+    await navigator.clipboard.writeText(url.href);
+    $('#copy-link').textContent = '已复制';
+  } catch {
+    $('#copy-link').textContent = '请复制地址栏';
+  }
+};
+$('#retry-image').onclick = () => { const screen = screens.find(item => item.id === currentId); if (screen) show(screen); };
+document.querySelectorAll('[data-platform]').forEach(button => {
+  button.onclick = () => {
+    platform = button.dataset.platform;
+    if (role !== 'all' && !screens.some(screen => screen.platform === platform && screen.role === role)) role = 'all';
+    if (flow !== 'all' && !screens.some(screen => screen.platform === platform && screen.flow === flow)) flow = 'all';
+    render();
+  };
+});
+$('#state-filter').onchange = event => { state = event.target.value; render(); };
+document.querySelectorAll('[data-view]').forEach(button => {
+  button.onclick = () => { view = button.dataset.view; favoriteOnly = false; render(); };
+});
+$('#favorites').onclick = () => { favoriteOnly = !favoriteOnly; render(); };
+$('#search').oninput = event => { query = event.target.value.trim(); render(); };
+$('#search').addEventListener('keydown', event => {
+  if (event.key === 'Escape') { event.preventDefault(); query = ''; $('#search').value = ''; render(); }
+});
+function reset() { role = 'all'; flow = 'all'; state = 'all'; query = ''; favoriteOnly = false; render(); }
+$('#reset').onclick = reset;
+$('#reset-empty').onclick = () => loadError ? loadScreens() : reset();
+document.addEventListener('keydown', event => {
+  if (event.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !dialog.open) { event.preventDefault(); $('#search').focus(); }
+});
 
-// 首页预览只使用清单中存在的运行截图，点击后进入相应流程。
-function openStageScreen(screen){
- platform=screen.platform;role='all';flow='all';state='all';query='';favoriteOnly=false;
- render({sync:false});show(screen,{scope:'flow'});
+async function loadScreens() {
+  loadError = false;
+  $('#gallery-loading').hidden = false;
+  $('#empty').hidden = true;
+  $('#gallery').setAttribute('aria-busy', 'true');
+  try {
+    const response = await fetch('/screens.json');
+    if (!response.ok) throw Error('index');
+    const data = await response.json();
+    if (!Array.isArray(data)) throw Error('index');
+    screens = data;
+    for (const button of document.querySelectorAll('[data-platform]')) {
+      const count = screens.filter(screen => screen.platform === button.dataset.platform).length;
+      button.hidden = !count;
+      const badge = button.querySelector('span');
+      if (badge) badge.textContent = count;
+    }
+    const requested = screens.find(screen => screen.id === initialScreen);
+    if (requested) {
+      platform = requested.platform;
+      if (!matched().includes(requested)) { role = 'all'; flow = 'all'; state = 'all'; query = ''; favoriteOnly = false; }
+    }
+    render();
+    if (requested) show(requested, {scope: view === 'flows' ? 'flow' : 'results'});
+    initialScreen = '';
+  } catch {
+    loadError = true;
+    $('#empty').hidden = false;
+    $('#empty h3').textContent = '界面目录未能加载';
+    $('#empty p').textContent = '请检查构建产物 /screens.json 是否存在。';
+    $('#reset-empty').textContent = '重新加载';
+  } finally {
+    $('#gallery-loading').hidden = true;
+    $('#gallery').setAttribute('aria-busy', 'false');
+  }
+}
+
+// 首页角色预览只使用清单中存在的运行截图，点击后进入相应流程。
+function openStageScreen(screen) {
+  platform = screen.platform;
+  role = 'all';
+  flow = 'all';
+  state = 'all';
+  query = '';
+  favoriteOnly = false;
+  render({sync: false});
+  show(screen, {scope: 'flow'});
 }
 const stageRoles={
- customer:{screenId:'home',extraIds:['services','player','booking'],alt:'北岸电竞用户首页运行截图',caption:'服务发现 · 选择陪练 · 预约',browse:'查看用户端界面',demo:'/demo/?device=iphone'},
- member:{screenId:'member',extraIds:['member_orders','availability','earnings'],alt:'北岸电竞成员工作台运行截图',caption:'成员工作台 · 接单与可约时段',browse:'查看成员端界面',demo:'/demo/?screen=member&device=iphone'},
- operator:{screenId:'admin-dispatch',extraIds:['admin-orders','admin-services'],alt:'北岸电竞运营派单工作台运行截图',caption:'派单 · 订单 · 服务管理',browse:'查看后台界面',demo:'/admin/'}
+  customer: {screenId: 'home', extraIds: ['services', 'player', 'booking'], alt: '用户端首页运行截图', caption: '用户端 · 首页、服务与预约入口', browse: '查看用户端界面', demo: '/demo/?device=iphone'},
+  member: {screenId: 'member', extraIds: ['member_orders', 'availability', 'earnings'], alt: '成员端工作台运行截图', caption: '成员端 · 接单、可约时段与收入', browse: '查看成员端界面', demo: '/demo/?screen=member&device=iphone'},
+  operator: {screenId: 'admin-dispatch', extraIds: ['admin-orders', 'admin-services'], alt: '运营后台派单工作台运行截图', caption: '运营后台 · 派单、订单与服务目录', browse: '查看后台界面', demo: '/admin/'}
 };
-let stageRequest=0;
-async function setStage(key){
- const config=stageRoles[key];if(!config)return;
- const screen=screens.find(screen=>screen.id===config.screenId),imageUrl=screen?.image;if(!imageUrl)return;
- const request=++stageRequest,image=new Image();image.src=imageUrl;
- try{await image.decode();}catch{return;}
- if(request!==stageRequest)return;
- const target=$('#stage-image');target.src=imageUrl;target.alt=config.alt;target.width=screen.width||390;target.height=screen.height||844;
- $('#stage-open').setAttribute('aria-label',`查看${screen.title||config.caption}截图`);$('#stage-open').onclick=()=>openStageScreen(screen);
- const extra=$('#stage-extra');extra.replaceChildren();
- for(const id of config.extraIds){const related=screens.find(item=>item.id===id);if(!related)continue;const button=node('button',undefined,'stage-screen');button.type='button';button.setAttribute('aria-label',`查看${related.title}截图`);button.append(screenImage(related));button.onclick=()=>openStageScreen(related);extra.append(button);}
- $('#product-stage').dataset.role=key;$('#stage-caption').textContent=config.caption;
- $('#stage-launch').href=config.demo;$('#stage-launch').textContent=key==='operator'?'打开后台 ↗':'打开 App ↗';$('#stage-browse').dataset.exploreRole=key;
- $('#stage-browse').replaceChildren(node('span',config.browse),node('span','↘'));
- $('#stage-panel').setAttribute('aria-labelledby',`role-${key}`);
- document.querySelectorAll('[data-stage-role]').forEach(button=>{const selected=button.dataset.stageRole===key;button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;});
- if(!reduceMotion.matches)$('#stage-panel').animate([{opacity:.45},{opacity:1}],{duration:220,easing:'ease-out'});
+let stageRequest = 0;
+async function setStage(key) {
+  const config = stageRoles[key];
+  if (!config) return;
+  const screen = screens.find(item => item.id === config.screenId), imageUrl = screen?.image;
+  if (!imageUrl) return;
+  const request = ++stageRequest, image = new Image();
+  image.src = imageUrl;
+  try { await image.decode(); } catch { return; }
+  if (request !== stageRequest) return;
+  const target = $('#stage-image');
+  target.src = imageUrl;
+  target.alt = config.alt || '';
+  target.width = screen.width || 390;
+  target.height = screen.height || 844;
+  $('#stage-open').setAttribute('aria-label', `查看${screen.title || config.caption}截图`);
+  $('#stage-open').onclick = () => openStageScreen(screen);
+  const extra = $('#stage-extra');
+  extra.replaceChildren();
+  for (const id of config.extraIds) {
+    const related = screens.find(item => item.id === id);
+    if (!related) continue;
+    const button = node('button', undefined, 'stage-screen');
+    button.type = 'button';
+    button.setAttribute('aria-label', `查看${related.title}截图`);
+    button.append(screenImage(related));
+    button.onclick = () => openStageScreen(related);
+    extra.append(button);
+  }
+  $('#product-stage').dataset.role = key;
+  $('#stage-caption').textContent = config.caption;
+  $('#stage-launch').href = config.demo;
+  $('#stage-launch').textContent = key === 'operator' ? '打开后台 ↗' : '打开 App ↗';
+  $('#stage-browse').dataset.exploreRole = key;
+  $('#stage-browse').replaceChildren(node('span', config.browse), node('span', '↘'));
+  $('#stage-panel').setAttribute('aria-labelledby', `role-${key}`);
+  document.querySelectorAll('[data-stage-role]').forEach(button => {
+    const selected = button.dataset.stageRole === key;
+    button.setAttribute('aria-selected', String(selected));
+    button.tabIndex = selected ? 0 : -1;
+  });
+  if (!reduceMotion.matches) $('#stage-panel').animate([{opacity: .45}, {opacity: 1}], {duration: 220, easing: 'ease-out'});
 }
 const roleTabs=[...document.querySelectorAll('[data-stage-role]')];
-roleTabs.forEach((button,index)=>{button.onclick=()=>setStage(button.dataset.stageRole);button.onkeydown=event=>{let next;if(event.key==='ArrowRight'||event.key==='ArrowDown')next=(index+1)%roleTabs.length;else if(event.key==='ArrowLeft'||event.key==='ArrowUp')next=(index+roleTabs.length-1)%roleTabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=roleTabs.length-1;else return;event.preventDefault();roleTabs[next].focus();setStage(roleTabs[next].dataset.stageRole);};});
+roleTabs.forEach((button, index) => {
+  button.onclick = () => setStage(button.dataset.stageRole);
+  button.onkeydown = event => {
+    let target;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') target = (index + 1) % roleTabs.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') target = (index + roleTabs.length - 1) % roleTabs.length;
+    else if (event.key === 'Home') target = 0;
+    else if (event.key === 'End') target = roleTabs.length - 1;
+    else return;
+    event.preventDefault();
+    roleTabs[target].focus();
+    setStage(roleTabs[target].dataset.stageRole);
+  };
+});
+document.querySelectorAll('[data-explore-role]').forEach(link => {
+  link.onclick = () => {
+    const value = link.dataset.exploreRole;
+    role = value === 'all' ? 'all' : value;
+    platform = value === 'operator' || value === 'admin' ? 'admin' : 'flutter';
+    flow = 'all';
+    state = 'all';
+    query = '';
+    favoriteOnly = false;
+    render();
+  };
+});
+
+syncControls();
+await loadScreens();
 await setStage('customer');
-if(!reduceMotion.matches){$('#hero-title').animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'translateY(0)'}],{duration:440,easing:'ease-out'});}
+if (!reduceMotion.matches) {
+  $('#hero-title').animate([{opacity: 0, transform: 'translateY(10px)'}, {opacity: 1, transform: 'translateY(0)'}], {duration: 440, easing: 'ease-out'});
+}

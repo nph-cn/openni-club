@@ -1,10 +1,19 @@
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 
 import 'repository.dart';
 import 'ui.dart';
 import 'orders.dart';
 import 'loading.dart';
+import 'discover.dart';
+
+String slotDay(dynamic value) {
+  final time = DateTime.tryParse('$value')
+      ?.toUtc()
+      .add(const Duration(hours: 8));
+  return time == null ? '--' : '${time.day}';
+}
 
 class MemberPage extends StatefulWidget {
   const MemberPage(
@@ -136,23 +145,27 @@ class _MemberPageState extends State<MemberPage> {
         IconButton(
           tooltip: '刷新工作台',
           onPressed: loading ? null : load,
-          icon: const Icon(Icons.refresh_rounded),
+          icon: const Icon(Icons.refresh_rounded, size: 19),
         ),
       ],
       bottom: widget.mode == 'order' && order != null ? actions(order) : null,
       child: PageList(
         children: [
-          if (loading) const LinearProgressIndicator(),
+          if (loading) const LinearProgressIndicator(minHeight: 2),
           if (error != null)
             Row(
               children: [
                 Expanded(
-                  child: Text(error!, style: const TextStyle(color: muted)),
+                  child: Text(error!, style: typeSecondary),
                 ),
                 TextButton(onPressed: load, child: const Text('重试')),
               ],
             ),
           ...children,
+          DemoStamp(
+            repo,
+            text: '成员演示数据来自只读快照：订单、分成与结算记录均为示例，不产生真实打款。',
+          ),
         ],
       ),
     );
@@ -167,172 +180,314 @@ class _MemberPageState extends State<MemberPage> {
             .toList();
     final player = repo.findPlayer(repo.memberPlayerId),
         totals = repo.earnings['totals'] as Map? ?? {};
+    final scene = player == null ? repo.services.firstOrNull : sceneForPlayer(repo, player);
+    final unread = repo.notifications.where((n) => n['readAt'] == null).length;
     return [
-      Row(
-        children: [
-          if (player != null)
-            PlayerArt(
-              repo: repo,
-              player: player,
-              width: 46,
-              height: 50,
-              radius: 10,
-            ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${player?['name'] ?? repo.memberName}',
-                  style: const TextStyle(
-                    fontSize: 23,
-                    fontWeight: FontWeight.w600,
+      ClipRRect(
+        borderRadius: BorderRadius.circular(19),
+        child: SizedBox(
+          height: 186,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              if (scene != null) ServiceArt(scene, radius: 0),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xCC0B0F14),
+                      Color(0xE60B0F14),
+                      Color(0xF20B0F14),
+                    ],
                   ),
                 ),
-                Text(
-                  '俱乐部成员',
-                  style: const TextStyle(fontSize: 14, color: muted),
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            tooltip: '通知',
-            onPressed: () => context.push('/notifications'),
-            icon: const Icon(Icons.notifications_none_rounded),
-          ),
-        ],
-      ),
-      const SizedBox(height: 22),
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: ink,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            _metric('${assigned.length}', '待接单', Colors.white),
-            _metric('${active.length}', '待服务', Colors.white),
-            _metric(
-              '¥${((totals['availableCents'] as num? ?? 0) / 100).toStringAsFixed(2)}',
-              '可结算',
-              const Color(0xFFC5CBD6),
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(height: 14),
-      InkWell(
-        onTap: () => context.push('/member/availability'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13),
-          child: Row(
-            children: [
-              const Icon(Icons.calendar_month_outlined, size: 21),
-              const SizedBox(width: 12),
-              const Expanded(
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      '安排我的可接时段',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: [
+                        if (player != null)
+                          PlayerArt(
+                            repo: repo,
+                            player: player,
+                            width: 38,
+                            height: 42,
+                            radius: 11,
+                          ),
+                        const SizedBox(width: 9),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${player?['name'] ?? repo.memberName}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  height: 1.2,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 1),
+                              const Text(
+                                '俱乐部成员 · 服务队列',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xB3FFFFFF),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            IconButton(
+                              tooltip: '通知',
+                              onPressed: () => context.push('/notifications'),
+                              icon: const Icon(
+                                Icons.notifications_none_rounded,
+                                size: 19,
+                                color: Colors.white,
+                              ),
+                            ),
+                            if (unread > 0)
+                              Positioned(
+                                top: 9,
+                                right: 9,
+                                child: Container(
+                                  width: 7,
+                                  height: 7,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE95D4F),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      children: [
+                        _heroMetric(
+                          value: '${assigned.length}',
+                          label: '待接单',
+                          highlight: assigned.isNotEmpty,
+                        ),
+                        _heroMetric(
+                          value: '${active.length}',
+                          label: '待服务',
+                        ),
+                        _heroMetric(
+                          value:
+                              '¥${((totals['availableCents'] as num? ?? 0) / 100).toStringAsFixed(0)}',
+                          label: '可结算',
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, size: 20),
             ],
           ),
         ),
       ),
+      const SizedBox(height: 10),
+      Row(
+        children: [
+          Expanded(
+            child: _memberShortcut(
+              icon: Icons.calendar_month_outlined,
+              label: '可接时段',
+              onTap: () => context.push('/member/availability'),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _memberShortcut(
+              icon: Icons.account_balance_wallet_outlined,
+              label: '收入账本',
+              onTap: () => context.go('/member/earnings'),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _memberShortcut(
+              icon: Icons.assignment_outlined,
+              label: '我的服务',
+              onTap: () => context.go('/member/orders'),
+            ),
+          ),
+        ],
+      ),
       SectionTitle(
         '待你接单',
-
+        caption: assigned.isEmpty ? null : '确认后可开始安排档期',
         action: '全部',
         onTap: () => context.go('/member/orders'),
       ),
       if (assigned.isEmpty)
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          child: Text(
-            '暂时没有待接单，新的指派会在这里出现。',
-            style: TextStyle(fontSize: 15, color: muted),
+        Surface(
+          border: true,
+          child: Row(
+            children: [
+              const Icon(
+                CupertinoIcons.tray,
+                size: 17,
+                color: faint,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '暂时没有待接单，新的指派会在这里出现。',
+                  style: typeSecondary,
+                ),
+              ),
+            ],
           ),
         ),
-      ...assigned.take(2).map((o) => taskRow(o, urgent: true)),
+      for (final o in assigned.take(2)) taskRow(o, urgent: true),
       const SectionTitle('接下来的安排'),
       if (active.isEmpty)
-        const Text('没有已排期的服务。', style: TextStyle(fontSize: 15, color: muted)),
-      ...active.take(3).map((o) => taskRow(o)),
+        const Text('没有已排期的服务。', style: typeSecondary),
+      for (final o in active.take(3)) taskRow(o),
     ];
   }
 
-  Widget _metric(String value, String label, Color color) => Expanded(
+  Widget _heroMetric({
+    required String value,
+    required String label,
+    bool highlight = false,
+  }) => Expanded(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           value,
           style: TextStyle(
-            fontSize: 23,
-            fontWeight: FontWeight.w600,
-            color: color,
+            fontSize: 20,
+            height: 1.05,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -.4,
+            fontFeatures: [FontFeature.tabularFigures()],
+            color: highlight ? const Color(0xFFFFD58A) : Colors.white,
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 14, color: Colors.white70),
+          style: const TextStyle(fontSize: 10.5, color: Color(0xB3FFFFFF)),
         ),
       ],
     ),
   );
+
   Widget taskRow(Json o, {bool urgent = false}) => Padding(
-    padding: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(17),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push('/member/orders/${o['id']}'),
+        child: Padding(
+          padding: const EdgeInsets.all(11),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  StagePill(stage(o)),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      when(o['scheduledAt']),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typeCaption,
+                    ),
+                  ),
+                  const Icon(
+                    CupertinoIcons.chevron_forward,
+                    size: 12,
+                    color: faint,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 9),
+              OrderServiceSummary(repo: repo, order: o),
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Divider(height: .5, thickness: .5),
+              ),
+              Row(
+                children: [
+                  const Icon(
+                    CupertinoIcons.person,
+                    size: 12,
+                    color: faint,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${o['contact'] ?? '客户联系方式待同步'}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: typeCaption,
+                    ),
+                  ),
+                  Text('预计收入', style: typeCaption),
+                  const SizedBox(width: 5),
+                  Text(
+                    '¥${money(o, 'memberCents')}',
+                    style: typeLabel.copyWith(fontSize: 13),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _memberShortcut({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) => Material(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(14),
+    clipBehavior: Clip.antiAlias,
     child: InkWell(
-      borderRadius: BorderRadius.circular(22),
-      onTap: () => context.push('/member/orders/${o['id']}'),
-      child: Surface(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(10, 9, 8, 9),
+        child: Row(
           children: [
-            Row(
-              children: [
-                Tag(
-                  stageName(stage(o)),
-                  fill: urgent ? ink : sage,
-                  color: urgent ? Colors.white : forest,
-                ),
-                const Spacer(),
-                const Icon(Icons.chevron_right_rounded, size: 20, color: muted),
-              ],
+            Icon(icon, size: 15, color: muted),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: typeLabel.copyWith(fontSize: 12),
+              ),
             ),
-            const SizedBox(height: 14),
-            OrderServiceSummary(repo: repo, order: o),
-            const Divider(height: 24),
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    '预计收入',
-                    style: TextStyle(fontSize: 14, color: muted),
-                  ),
-                ),
-                Text(
-                  '¥${money(o, 'memberCents')}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
+            const Icon(
+              CupertinoIcons.chevron_forward,
+              size: 11,
+              color: faint,
             ),
           ],
         ),
@@ -362,30 +517,119 @@ class _MemberPageState extends State<MemberPage> {
         value: orderFilter,
         onChanged: (value) => setState(() => orderFilter = value),
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 10),
+      Row(
+        children: [
+          Text('${items.length} 笔服务', style: typeSecondary),
+          const Spacer(),
+          Text('按预约时间排序', style: typeCaption),
+        ],
+      ),
+      const SizedBox(height: 8),
       if (items.isEmpty)
         EmptyState(switch (orderFilter) {
           '待接单' => '暂时没有待接单',
           '已结束' => '还没有结束的服务',
           _ => '暂时没有进行中的服务',
         }, orderFilter == '待接单' ? '俱乐部安排的预约会出现在这里。' : '服务状态更新后，会同步到对应列表。'),
-      ...items.map((o) => taskRow(o, urgent: orderFilter == '待接单')),
+      for (final o in items) taskRow(o, urgent: orderFilter == '待接单'),
     ];
   }
 
   List<Widget> detail(Json? o) {
     if (o == null) return [const EmptyState('找不到这笔服务', '订单可能尚未指派给你。')];
+    final status = stage(o);
+    final service =
+        repo.findService('${o['serviceId']}') ??
+        Json.from(o['serviceSnapshot'] as Map? ?? const {});
     return [
-      Text(
-        stageName(stage(o)),
-        style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(17),
+        child: SizedBox(
+          height: 132,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ServiceArt(service, radius: 0),
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [Color(0xE60B0F14), Color(0x990B0F14), Color(0x330B0F14)],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '履约单 ${o['id']}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xB3FFFFFF),
+                            ),
+                          ),
+                        ),
+                        if (o['acceptBy'] != null) ...[
+                          const SizedBox(width: 10),
+                          Flexible(
+                            child: Text(
+                              '接单截止 ${when(o['acceptBy'])}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.right,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xCCFFFFFF),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const Spacer(),
+                    Text(
+                      stageName(status),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        height: 1.15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${when(o['scheduledAt'])} · ${orderSpecification(o)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xD9FFFFFF),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      const SizedBox(height: 20),
-      Surface(
-        child: OrderServiceSummary(repo: repo, order: o),
-      ),
+      const SizedBox(height: 10),
+      Surface(border: true, child: OrderServiceSummary(repo: repo, order: o)),
       const SectionTitle('服务约定'),
       Surface(
+        border: true,
         child: Column(
           children: [
             PairRow('客户联系', '${o['contact']}'),
@@ -400,22 +644,20 @@ class _MemberPageState extends State<MemberPage> {
       if (o['delivery'] is Map) ...[
         const SectionTitle('已提交的服务记录'),
         Surface(
+          border: true,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${o['delivery']['summary']}',
-                style: const TextStyle(fontSize: 16, height: 1.65),
+                '${(o['delivery'] as Map)['summary']}',
+                style: typeBodySmall.copyWith(height: 1.6),
               ),
-              if (o['delivery']['evidenceUrl'] != null) ...[
-                const SizedBox(height: 12),
-                const Text(
-                  '交付凭证',
-                  style: TextStyle(fontSize: 13, color: muted),
-                ),
+              if ((o['delivery'] as Map)['evidenceUrl'] != null) ...[
+                const SizedBox(height: 9),
+                Text('交付凭证', style: typeCaption),
                 SelectableText(
-                  '${o['delivery']['evidenceUrl']}',
-                  style: const TextStyle(fontSize: 14),
+                  '${(o['delivery'] as Map)['evidenceUrl']}',
+                  style: typeSecondary.copyWith(color: link),
                 ),
               ],
             ],
@@ -424,6 +666,7 @@ class _MemberPageState extends State<MemberPage> {
       ],
       const SectionTitle('收入明细'),
       Surface(
+        border: true,
         child: Column(
           children: [
             PairRow('订单金额', '¥${money(o)}'),
@@ -431,17 +674,23 @@ class _MemberPageState extends State<MemberPage> {
               '俱乐部分成',
               '${((o['commissionBps'] as num? ?? 0) / 100).toStringAsFixed(0)}%',
             ),
-            const Divider(height: 18),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 3),
+              child: Divider(height: .5, thickness: .5),
+            ),
             PairRow('你的预计收入', '¥${money(o, 'memberCents')}', strong: true),
-            const SizedBox(height: 8),
-            const Text(
-              '客户确认完成且无争议后，进入可结算账目。',
-              style: TextStyle(fontSize: 13, color: muted, height: 1.6),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '客户确认完成且无争议后，进入可结算账目。',
+                style: typeCaption,
+              ),
             ),
           ],
         ),
       ),
-      const SectionTitle('履约记录'),
+      const SectionTitle('履约记录', caption: '时间均为北京时间'),
       ...(o['events'] as List? ?? []).asMap().entries.map((e) {
         final v = e.value as Map;
         return TimelineEntry(
@@ -463,8 +712,9 @@ class _MemberPageState extends State<MemberPage> {
             child: const Text('无法接单'),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
         Expanded(
+          flex: 2,
           child: FilledButton(
             onPressed: busy || repo.isLocal ? null : () => act(o, 'accept'),
             child: const Text('确认接单'),
@@ -483,7 +733,7 @@ class _MemberPageState extends State<MemberPage> {
     _ => Text(
       stage(o) == 'awaiting_confirmation' ? '已提交，等待客户确认。' : '当前状态无需成员操作。',
       textAlign: TextAlign.center,
-      style: const TextStyle(fontSize: 15, color: muted),
+      style: typeSecondary,
     ),
   };
   Future<void> decline(Json o) async {
@@ -506,45 +756,49 @@ class _MemberPageState extends State<MemberPage> {
         builder: (ctx, set) => SafeArea(
           child: Padding(
             padding: EdgeInsets.fromLTRB(
-              24,
+              18,
               0,
-              24,
-              24 + MediaQuery.viewInsetsOf(ctx).bottom,
+              18,
+              18 + MediaQuery.viewInsetsOf(ctx).bottom,
             ),
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  const SheetHeading(
                     '留下这场服务的记录',
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+                    caption: '描述实际完成的内容，客户核对后确认完成。',
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '描述实际完成的内容，客户核对后确认完成。',
-                    style: TextStyle(fontSize: 14, color: muted),
-                  ),
-                  const SizedBox(height: 20),
                   TextField(
                     controller: summary,
                     maxLines: 4,
                     maxLength: 2000,
+                    style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
                       labelText: '服务说明',
                       hintText: '练习内容、配合情况、约定事项是否完成',
+                      counterText: '',
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 9),
                   TextField(
                     controller: evidence,
+                    style: const TextStyle(fontSize: 14),
                     decoration: const InputDecoration(
                       labelText: '交付凭证 HTTPS 链接（选填）',
+                      hintText: 'https://',
                     ),
                   ),
                   if (fail != null)
-                    Text(fail!, style: const TextStyle(color: Colors.red)),
-                  const SizedBox(height: 18),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Text(
+                        fail!,
+                        style: const TextStyle(color: danger, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 14),
                   FilledButton(
                     onPressed: repo.isLocal
                         ? null
@@ -594,35 +848,24 @@ class _MemberPageState extends State<MemberPage> {
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: EdgeInsets.fromLTRB(
-            24,
+            18,
             0,
-            24,
-            24 + MediaQuery.viewInsetsOf(ctx).bottom,
+            18,
+            18 + MediaQuery.viewInsetsOf(ctx).bottom,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                description,
-                style: const TextStyle(fontSize: 14, color: muted),
-              ),
-              const SizedBox(height: 16),
+              SheetHeading(title, caption: description),
               TextField(
                 controller: text,
                 maxLength: 500,
                 maxLines: 3,
-                decoration: InputDecoration(labelText: label),
+                style: const TextStyle(fontSize: 14),
+                decoration: InputDecoration(labelText: label, counterText: ''),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               FilledButton(
                 onPressed: () {
                   if (text.text.trim().length >= 3) {
@@ -645,117 +888,229 @@ class _MemberPageState extends State<MemberPage> {
         entries = (repo.earnings['entries'] as List? ?? [])
             .map((e) => Json.from(e))
             .toList();
+    final settled = (totals['settledCents'] as num? ?? 0) / 100,
+        held = (totals['heldCents'] as num? ?? 0) / 100,
+        available = (totals['availableCents'] as num? ?? 0) / 100;
+    final maxValue = [settled, held, available, 1].reduce(
+      (a, b) => a > b ? a : b,
+    );
     return [
-      Container(
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
+      ClipRRect(
+        borderRadius: BorderRadius.circular(19),
+        child: Container(
           color: ink,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              '可结算金额',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '¥${((totals['availableCents'] as num? ?? 0) / 100).toStringAsFixed(2)}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 38,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 22),
-            Row(
-              children: [
-                _metric(
-                  '¥${((totals['heldCents'] as num? ?? 0) / 100).toStringAsFixed(2)}',
-                  '待确认 / 冻结',
-                  Colors.white,
-                ),
-                _metric(
-                  '¥${((totals['settledCents'] as num? ?? 0) / 100).toStringAsFixed(2)}',
-                  '已记录结算',
-                  Colors.white,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      const SizedBox(height: 16),
-      const Text(
-        '结算由俱乐部处理，请核对实际到账。',
-        style: TextStyle(fontSize: 14, color: muted, height: 1.8),
-      ),
-      const SectionTitle('每笔服务的分成'),
-      if (entries.isEmpty) const EmptyState('暂时没有收入记录', '完成服务并由客户确认后，会生成相应账目。'),
-      ...entries.map(
-        (e) => Container(
-          padding: const EdgeInsets.symmetric(vertical: 17),
-          decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: rule)),
-          ),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      '服务 #${e['orderId'].toString().substring(0, 8)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                  const Icon(
+                    CupertinoIcons.creditcard,
+                    size: 14,
+                    color: Color(0xB3FFFFFF),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    '可结算金额',
+                    style: typeSecondary.copyWith(color: const Color(0xB3FFFFFF)),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .12),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: const Text(
+                      '由俱乐部结算',
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        color: Color(0xCCFFFFFF),
                       ),
                     ),
                   ),
-                  Text(
-                    '¥${money(e, 'memberCents')}',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 7),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      when(e['createdAt']),
-                      style: const TextStyle(fontSize: 14, color: muted),
-                    ),
-                  ),
-                  Tag(
-                    const {
-                          'held': '待确认 / 冻结',
-                          'available': '可结算',
-                          'settled': '已记录结算',
-                          'reversed': '已撤销',
-                        }[e['state']] ??
-                        '待处理',
-                    fill: e['state'] == 'available' ? sage : sand,
-                    color: ink,
-                  ),
-                ],
+              const SizedBox(height: 6),
+              Text(
+                '¥${available.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 28,
+                  height: 1.05,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -.8,
+                  fontFeatures: [FontFeature.tabularFigures()],
+                  color: Colors.white,
+                ),
               ),
-              if (e['settlementId'] != null)
-                TextButton(
-                  onPressed: () => textSheet(
-                    context,
-                    '结算凭据',
-                    _settlement(e['settlementId']),
+              const SizedBox(height: 12),
+              for (final row in [
+                ('已记录结算', settled, const Color(0xFF8FD3AC)),
+                ('待确认 / 冻结', held, const Color(0xFFE8C87B)),
+                ('可结算', available, const Color(0xFF92B4F2)),
+              ])
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 84,
+                        child: Text(
+                          row.$1,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color(0xB3FFFFFF),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: LinearProgressIndicator(
+                            value: (row.$2 / maxValue).clamp(0.02, 1.0),
+                            minHeight: 5,
+                            backgroundColor: Colors.white.withValues(alpha: .12),
+                            valueColor: AlwaysStoppedAnimation<Color>(row.$3),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 7),
+                      SizedBox(
+                        width: 54,
+                        child: Text(
+                          '¥${row.$2.toStringAsFixed(0)}',
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xE6FFFFFF),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: const Text('查看结算记录'),
                 ),
             ],
           ),
         ),
       ),
+      const SizedBox(height: 10),
+      Row(
+        children: [
+          const Icon(
+            CupertinoIcons.info_circle,
+            size: 12,
+            color: faint,
+          ),
+          const SizedBox(width: 5),
+          Expanded(
+            child: Text(
+              '结算由俱乐部处理，请核对实际到账；演示记录不代表真实收入。',
+              style: typeCaption,
+            ),
+          ),
+        ],
+      ),
+      const SectionTitle('每笔服务的分成'),
+      if (entries.isEmpty)
+        const EmptyState('暂时没有收入记录', '完成服务并由客户确认后，会生成相应账目。'),
+      for (final e in entries)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            clipBehavior: Clip.antiAlias,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: stageFill(
+                            e['state'] == 'available'
+                                ? 'completed'
+                                : e['state'] == 'held'
+                                ? 'awaiting_confirmation'
+                                : 'cancelled',
+                          ),
+                          borderRadius: BorderRadius.circular(9),
+                        ),
+                        child: Icon(
+                          e['state'] == 'available'
+                              ? Icons.check_rounded
+                              : e['state'] == 'held'
+                              ? Icons.hourglass_bottom_rounded
+                              : Icons.receipt_long_outlined,
+                          size: 15,
+                          color: ink,
+                        ),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '服务 #${e['orderId'].toString().substring(0, 8)}',
+                              style: typeBodySmall.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            Text(when(e['createdAt']), style: typeCaption),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        '¥${money(e, 'memberCents')}',
+                        style: typeNumber,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 7),
+                  Row(
+                    children: [
+                      Tag(
+                        const {
+                              'held': '待确认 / 冻结',
+                              'available': '可结算',
+                              'settled': '已记录结算',
+                              'reversed': '已撤销',
+                            }[e['state']] ??
+                            '待处理',
+                        fill: e['state'] == 'available' ? sage : sand,
+                        color: ink,
+                      ),
+                      const Spacer(),
+                      if (e['settlementId'] != null)
+                        TextButton(
+                          onPressed: () => textSheet(
+                            context,
+                            '结算凭据',
+                            _settlement(e['settlementId']),
+                          ),
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size(0, 30),
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                          ),
+                          child: const Text('查看结算记录'),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
     ];
   }
 
@@ -875,16 +1230,29 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
         ? const ClubSkeleton(kind: SkeletonKind.availability)
         : PageList(
             children: [
-              const Text(
-                '可接时段',
-                style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('可接时段', style: typeTitle),
+                        const SizedBox(height: 2),
+                        Text(
+                          '北京时间 · 由你维护，俱乐部按此时段派单',
+                          style: typeSecondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    '${slots.length} 段',
+                    style: typeNumber,
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              const Text(
-                '北京时间',
-                style: TextStyle(fontSize: 15, color: muted, height: 1.8),
-              ),
-              const SizedBox(height: 20),
               if (error != null)
                 EmptyState(
                   '暂时无法加载排班',
@@ -894,28 +1262,91 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
               if (error == null) ...[
                 if (slots.isEmpty)
                   const EmptyState('还没有开放时段', '添加可接时段后，俱乐部才能向你派单。'),
-                ...slots.asMap().entries.map(
-                  (e) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.schedule_rounded),
-                    title: Text(when(e.value['startAt'])),
-                    subtitle: Text('至 ${when(e.value['endAt'])}'),
-                    trailing: IconButton(
-                      tooltip: '移除此时段',
-                      onPressed: widget.repo.isLocal
-                          ? null
-                          : () => setState(() => slots.removeAt(e.key)),
-                      icon: const Icon(Icons.close_rounded, size: 20),
+                for (final slot in slots)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Material(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      clipBehavior: Clip.antiAlias,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(11, 10, 6, 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: sage,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    slotDay(slot['startAt']),
+                                    style: typeLabel.copyWith(fontSize: 13),
+                                  ),
+                                  Text('日', style: typeCaption),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 9),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    when(slot['startAt']),
+                                    style: typeBodySmall.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 1),
+                                  Text(
+                                    '至 ${when(slot['endAt'])}',
+                                    style: typeSecondary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              tooltip: '移除此时段',
+                              onPressed: widget.repo.isLocal
+                                  ? null
+                                  : () => setState(
+                                      () => slots.remove(slot),
+                                    ),
+                              icon: const Icon(
+                                Icons.close_rounded,
+                                size: 17,
+                                color: faint,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
                 OutlinedButton.icon(
                   onPressed: widget.repo.isLocal ? null : add,
-                  icon: const Icon(Icons.add_rounded),
+                  icon: const Icon(Icons.add_rounded, size: 17),
                   label: const Text('添加可接时段'),
                 ),
+                if (widget.repo.isLocal)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      '离线只读演示：排班修改需要连接俱乐部 API。',
+                      style: typeCaption,
+                    ),
+                  ),
               ],
+              DemoStamp(
+                widget.repo,
+                text: '排班数据来自成员演示快照，仅用于界面预览。',
+              ),
             ],
           ),
   );

@@ -3,96 +3,114 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0c1210">
-  <meta name="description" content="OpenNI 三角洲行动视觉专题：以战地档案的方式浏览游戏模式、地图与陪练小队，并进入 App 预约体验。非游戏官方网站。">
-  <title>三角洲行动 · 战地档案 | OpenNI</title>
+  <meta name="theme-color" content="#070c0a">
+  <meta name="description" content="OpenNI 三角洲行动视觉专题「战地档案」：以 3D 分层画面、逐字排版与滚动叙事浏览游戏模式、地图与陪练小队，并进入 App 预约体验。非游戏官方网站。">
+  <title>战地档案 · 三角洲行动 | OpenNI</title>
   <link rel="icon" href="/icon.svg">
   <link rel="preload" as="image" href="./assets/operations-scene.jpg">
   <link rel="preload" as="image" href="./assets/operation-role.webp">
   <link rel="stylesheet" href="./delta.css">
   <script type="module" src="./delta.js"></script>
 </head>
-<body class="is-entry stage-booting">
+<body class="stage-booting has-cursor">
   <a class="skip" href="#modes">跳到行动方式</a>
 
-  <div class="stage" aria-hidden="true">
-    <canvas id="delta-stage"></canvas>
-    <div class="stage-fallback">
-      <img id="fallback-plate" src="./assets/operations-scene.jpg" alt="" fetchpriority="high">
-      <img id="fallback-operator" src="./assets/operation-role.webp" alt="" fetchpriority="high">
-      <span class="fallback-grain"></span>
+  <div class="loader" id="loader" role="dialog" aria-modal="true" aria-labelledby="loader-title">
+    <div class="loader-inner">
+      <div class="loader-top">
+        <span>OPENNI / FIELD DOSSIER</span>
+        <span class="loader-count"><b id="loader-progress">000</b><i>%</i></span>
+      </div>
+      <div class="loader-bar" aria-hidden="true"><i id="loader-fill"></i></div>
+      <div class="loader-main">
+        <p class="loader-kicker">DELTA FORCE — VISUAL ARCHIVE</p>
+        <h1 class="loader-title" id="loader-title">战地档案<span aria-hidden="true">.</span></h1>
+        <p class="loader-sub">三角洲行动 · 非官方视觉专题<br>装载战术画面、逐字档案与 Three.js 场景</p>
+      </div>
+      <div class="loader-actions">
+        <button class="loader-enter" id="enter-sound" type="button" disabled>开启声音进入 <span aria-hidden="true">↗</span></button>
+        <button class="loader-quiet" id="enter-silent" type="button" disabled>静音进入</button>
+      </div>
+      <div class="loader-meta" aria-hidden="true"><span>3D / WEBGL2</span><span>01 — 05</span><span>2026</span></div>
     </div>
   </div>
-  <div class="frame" aria-hidden="true"></div>
+
+  <div class="cursor" id="cursor" aria-hidden="true"><i></i><span id="cursor-label"></span></div>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="stage-fallback" aria-hidden="true">
+    <img id="fallback-plate" src="./assets/operations-scene.jpg" alt="">
+    <img id="fallback-operator" src="./assets/operation-role.webp" alt="">
+    <span class="fallback-grain"></span>
+  </div>
+  <div class="frame" aria-hidden="true">
+    <b class="corner tl"></b><b class="corner tr"></b><b class="corner bl"></b><b class="corner br"></b>
+  </div>
 
   <header class="topbar">
     <a class="brand" href="/" aria-label="返回 OpenNI 官网">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 25 16 3l13 22H3Zm9-5h8l-4-7-4 7Z" fill="currentColor" fill-rule="evenodd"/></svg>
-      <span>OpenNI</span><i aria-hidden="true"></i><span class="edition">三角洲行动 · 战地档案</span>
+      <span>OpenNI</span><i aria-hidden="true"></i><span class="edition">战地档案</span>
     </a>
     <nav class="chapter-nav" aria-label="章节导航">
-      <a href="#entry" data-nav="entry"><b>00</b><span>入局</span></a>
+      <a href="#entry" data-nav="hero"><b>00</b><span>入局</span></a>
       <a href="#modes" data-nav="modes"><b>01</b><span>战法</span></a>
-      <a href="#maps" data-nav="maps"><b>02</b><span>地形</span></a>
+      <a href="#maps" data-nav="terrain"><b>02</b><span>地形</span></a>
       <a href="#squad" data-nav="squad"><b>03</b><span>小队</span></a>
       <a href="#deploy" data-nav="deploy"><b>04</b><span>部署</span></a>
     </nav>
     <div class="topbar-actions">
-      <span class="hud-clock" id="hud-clock" aria-hidden="true">--:--:--</span>
+      <button class="icon-button" id="sound-toggle" type="button" aria-pressed="false" aria-label="开启环境声">声</button>
+      <button class="icon-button" id="motion-toggle" type="button" aria-pressed="false" aria-label="暂停动态">动</button>
+      <button class="icon-button menu-button" id="open-menu" type="button" aria-haspopup="dialog" aria-label="打开章节菜单"><i></i><i></i></button>
       <a class="pill" href="/demo/?screen=service&amp;device=iphone">体验预约 <span aria-hidden="true">↗</span></a>
     </div>
   </header>
 
-  <aside class="rail" aria-label="滚动章节进度">
+  <aside class="rail" aria-label="章节进度">
     <span class="rail-track" aria-hidden="true"><i id="rail-progress"></i></span>
     <ol>
-      <li><a href="#entry" data-rail="entry"><span>00</span><em>入局</em></a></li>
+      <li><a href="#entry" data-rail="hero"><span>00</span><em>入局</em></a></li>
       <li><a href="#modes" data-rail="modes"><span>01</span><em>战法</em></a></li>
-      <li><a href="#maps" data-rail="maps"><span>02</span><em>地形</em></a></li>
+      <li><a href="#maps" data-rail="terrain"><span>02</span><em>地形</em></a></li>
       <li><a href="#squad" data-rail="squad"><span>03</span><em>小队</em></a></li>
       <li><a href="#deploy" data-rail="deploy"><span>04</span><em>部署</em></a></li>
     </ol>
     <span class="rail-note" aria-hidden="true">OPENNI / FIELD DOSSIER</span>
   </aside>
 
-  <div class="hud hud-top" aria-hidden="true">
-    <span id="hud-chapter">CH.00 / ENTRY</span>
-    <span class="hud-sep"></span>
-    <span id="hud-scroll">SCROLL 000%</span>
-    <span class="hud-sep"></span>
-    <span id="hud-viewport">VIEWPORT —</span>
-    <span class="hud-sep"></span>
-    <span id="hud-stage">STAGE —</span>
+  <div class="hud" aria-hidden="true">
+    <span id="hud-chapter">CH.00 / ENTRY</span><span class="hud-sep"></span>
+    <span id="hud-scroll">SCROLL 000%</span><span class="hud-sep"></span>
+    <span id="hud-viewport">VIEWPORT —</span><span class="hud-sep"></span>
+    <span id="hud-stage">STAGE 3D</span><span class="hud-sep"></span>
+    <span id="hud-clock">--:--:--</span>
   </div>
 
   <main>
-    <section id="entry" class="chapter entry" data-chapter="entry" data-plate="./assets/operations-scene.jpg" data-operator="on" data-code="ENTRY" aria-labelledby="entry-title">
-      <div class="entry-sticky">
-        <div class="entry-meta">
-          <p class="eyebrow"><span class="dot" aria-hidden="true"></span>OPENNI / 三角洲行动 · 视觉专题</p>
-          <p class="entry-index">档案 001 — 战术射击 · 小队协作</p>
+    <section id="entry" class="chapter chapter-hero" data-chapter="hero" data-plate="./assets/operations-scene.jpg" data-code="ENTRY" data-theme="dark" aria-labelledby="entry-title">
+      <div class="hero-sticky">
+        <div class="hero-meta">
+          <p class="eyebrow"><span class="dot"></span>OPENNI / 三角洲行动 · 视觉专题</p>
+          <p class="hero-index">档案 001 — 战术射击 · 小队协作</p>
         </div>
-        <div class="ghost" aria-hidden="true">DELTA</div>
-        <h1 id="entry-title"><span>三角洲</span><span class="line-bottom">行动<i aria-hidden="true">.</i></span></h1>
-        <p class="entry-lead">一次默契的组队，<br>从有人补位开始。</p>
-        <div class="entry-bottom">
+        <div class="hero-ghost" aria-hidden="true">DELTA</div>
+        <h1 class="hero-title" id="entry-title"><span class="type-line">三角洲</span><span class="type-line line-bottom">行动<i aria-hidden="true">.</i></span></h1>
+        <p class="hero-lead">一次默契的组队，<br>从有人补位开始。</p>
+        <div class="hero-bottom">
           <a class="scroll-cue" href="#modes"><span class="cue-arrow" aria-hidden="true">↓</span><span>进入战地档案</span></a>
-          <p class="entry-note">非官方游戏视觉专题。<br>画面使用已核源的官方公开素材，经自研着色器重新处理。</p>
-          <button id="motion-toggle" class="quiet" type="button" aria-pressed="false">暂停动态 <span aria-hidden="true">Ⅱ</span></button>
+          <p class="hero-note">非官方游戏视觉专题。<br>画面使用已核源的官方公开素材，经 Three.js 重构。</p>
+          <button class="hold-button" id="hold-button" type="button" data-cursor="按住"><span class="hold-ring" aria-hidden="true"></span>按住 · 战地呼吸</button>
         </div>
-        <div class="entry-tags" aria-hidden="true"><span>FIELD DOSSIER</span><span>01 / 05</span><span>OPENNI VISUAL STUDY</span></div>
+        <div class="hero-tags" aria-hidden="true"><span>FIELD DOSSIER</span><span>01 / 05</span><span>THREE.JS STUDY</span></div>
       </div>
     </section>
 
-    <section id="modes" class="chapter modes is-light" data-chapter="modes" data-plate="./assets/operations-scene.jpg" data-code="MODES" aria-labelledby="modes-title">
+    <section id="modes" class="chapter chapter-modes is-paper" data-chapter="modes" data-plate="./assets/operations-scene.jpg" data-code="MODES" aria-labelledby="modes-title">
       <div class="sheet modes-sheet">
-        <div class="sheet-top">
-          <span class="eyebrow">01 / 行动方式</span>
-          <span class="sheet-note">两种战法，同一套配合。</span>
-        </div>
+        <div class="sheet-top"><span class="eyebrow">01 / 行动方式</span><span class="sheet-note">两种战法，同一套配合。</span></div>
         <span class="sheet-ghost" aria-hidden="true">01</span>
         <div class="modes-heading">
-          <h2 id="modes-title">选择你的<br><em>行动方式。</em></h2>
+          <h2 id="modes-title" class="reveal-type">选择你的<br><em>行动方式。</em></h2>
           <button class="film-button" id="open-film" type="button">
             <span class="play-icon" aria-hidden="true">▶</span>
             <span>观看游戏影像<small>官方画面 · 00:11</small></span>
@@ -100,14 +118,10 @@
         </div>
         <div class="modes-tabs" role="tablist" aria-label="选择游戏模式">
           <button type="button" role="tab" id="tab-operations" aria-selected="true" aria-controls="modes-panel" data-mode="operations">
-            <span class="tab-index">01</span>
-            <span class="tab-body"><strong>烽火地带</strong><small>探索 / 搜集 / 撤离</small></span>
-            <span class="tab-arrow" aria-hidden="true">↗</span>
+            <span class="tab-index">01</span><span class="tab-body"><strong>烽火地带</strong><small>探索 / 搜集 / 撤离</small></span><span class="tab-arrow" aria-hidden="true">↗</span>
           </button>
           <button type="button" role="tab" id="tab-warfare" aria-selected="false" tabindex="-1" aria-controls="modes-panel" data-mode="warfare">
-            <span class="tab-index">02</span>
-            <span class="tab-body"><strong>全面战场</strong><small>进攻 / 防守 / 协同</small></span>
-            <span class="tab-arrow" aria-hidden="true">↗</span>
+            <span class="tab-index">02</span><span class="tab-body"><strong>全面战场</strong><small>进攻 / 防守 / 协同</small></span><span class="tab-arrow" aria-hidden="true">↗</span>
           </button>
         </div>
         <div id="modes-panel" class="modes-detail" role="tabpanel" aria-labelledby="tab-operations">
@@ -120,23 +134,21 @@
           </dl>
           <a class="text-link" href="https://df.qq.com/" target="_blank" rel="noreferrer">前往游戏官网 <span aria-hidden="true">↗</span></a>
         </div>
-        <div class="sheet-bottom"><span>OPENNI / DELTA DOSSIER</span><span id="modes-hint">选择模式，画面随之切换</span></div>
+        <div class="sheet-bottom"><span>OPENNI / DELTA DOSSIER</span><span id="modes-hint">选择模式，3D 场景随之切换</span></div>
       </div>
-      <div class="window modes-window">
-        <span class="window-corner tl" aria-hidden="true"></span>
-        <span class="window-corner tr" aria-hidden="true"></span>
-        <span class="window-corner bl" aria-hidden="true"></span>
-        <span class="window-corner br" aria-hidden="true"></span>
+      <div class="stage-window modes-window" data-cursor="切换">
+        <span class="window-corner tl" aria-hidden="true"></span><span class="window-corner tr" aria-hidden="true"></span>
+        <span class="window-corner bl" aria-hidden="true"></span><span class="window-corner br" aria-hidden="true"></span>
         <div class="window-hud" aria-hidden="true"><span id="modes-window-index">01 / 02</span><span id="modes-window-label">OPERATIONS</span></div>
-        <p class="window-caption" id="modes-caption" aria-live="polite">烽火地带 · 城市战斗场景</p>
+        <p class="window-caption" id="modes-caption" aria-live="polite">烽火地带 · 3D 场景</p>
       </div>
     </section>
 
-    <section id="maps" class="chapter maps" data-chapter="maps" data-plate="./assets/spaceport-scene.jpg" data-code="TERRAIN" aria-labelledby="maps-title">
+    <section id="maps" class="chapter chapter-maps" data-chapter="terrain" data-plate="./assets/spaceport-scene.jpg" data-code="TERRAIN" aria-labelledby="maps-title">
       <div class="maps-sticky">
         <div class="maps-head">
           <p class="eyebrow">02 / 地形情报</p>
-          <h2 id="maps-title">每一张地图，<br><em>都值得重新判断。</em></h2>
+          <h2 id="maps-title" class="reveal-type">每一张地图，<br><em>都值得重新判断。</em></h2>
           <p class="maps-intro">从开阔地到建筑内部，和小队一起观察地形、沟通路线。</p>
         </div>
         <div class="maps-readout" aria-live="polite">
@@ -144,19 +156,21 @@
           <h3 id="map-name">航天基地</h3>
           <p class="readout-sub" id="map-subtitle">SPACE CITY</p>
           <p class="readout-copy" id="map-description">从开阔区域到建筑内部，和小队一起观察地形、沟通路线。</p>
+          <div class="readout-scale" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
         </div>
         <div class="maps-controls">
-          <button class="scan-button" id="rescan" type="button"><span aria-hidden="true">◎</span> 重新扫描</button>
+          <div class="maps-side">
+            <button class="scan-button" id="rescan" type="button"><span aria-hidden="true">◎</span> 重新扫描</button>
+            <p class="drag-hint">拖动画面 · 调整战术视角</p>
+          </div>
           <div class="map-tabs" role="tablist" aria-label="选择地图">
             <button type="button" role="tab" id="tab-spaceport" aria-selected="true" aria-controls="map-readout" data-map="spaceport">
               <img src="./assets/spaceport-scene.jpg" alt="" width="3840" height="2210" loading="lazy">
-              <span class="map-tab-body"><strong>航天基地</strong><small>SPACE CITY</small></span>
-              <span class="map-tab-arrow" aria-hidden="true">↗</span>
+              <span class="map-tab-body"><strong>航天基地</strong><small>SPACE CITY</small></span><span class="map-tab-arrow" aria-hidden="true">↗</span>
             </button>
             <button type="button" role="tab" id="tab-valley" aria-selected="false" tabindex="-1" aria-controls="map-readout" data-map="valley">
               <img src="./assets/longbow-valley-scene.jpg" alt="" width="3840" height="2210" loading="lazy">
-              <span class="map-tab-body"><strong>长弓溪谷</strong><small>LAYALI GROVE</small></span>
-              <span class="map-tab-arrow" aria-hidden="true">↗</span>
+              <span class="map-tab-body"><strong>长弓溪谷</strong><small>LAYALI GROVE</small></span><span class="map-tab-arrow" aria-hidden="true">↗</span>
             </button>
           </div>
         </div>
@@ -164,60 +178,42 @@
       </div>
     </section>
 
-    <section id="squad" class="chapter squad is-light" data-chapter="squad" data-plate="./assets/operations-scene.jpg" data-operator="on" data-code="SQUAD" aria-labelledby="squad-title">
+    <section id="squad" class="chapter chapter-squad is-paper" data-chapter="squad" data-plate="./assets/operations-scene.jpg" data-code="SQUAD" aria-labelledby="squad-title">
       <div class="squad-grid">
         <div class="squad-sheet squad-top">
           <p class="eyebrow">03 / 小队集结</p>
-          <h2 id="squad-title">一个人的枪法，<br><em>四个人的战局。</em></h2>
+          <h2 id="squad-title" class="reveal-type">一个人的枪法，<br><em>四个人的战局。</em></h2>
           <p class="squad-lead">在 OpenNI，找到能补上你空缺的队友：<br>指挥、教练、搭子与全能位。</p>
         </div>
         <div class="squad-sheet squad-left" aria-hidden="true"><span class="vlabel">SQUAD ASSEMBLY / OPENNI</span></div>
-        <div class="squad-window">
+        <div class="stage-window squad-window" data-cursor="查看成员">
           <div class="window-hud window-hud-squad" aria-hidden="true"><span>OPERATOR LINK</span><span id="squad-link-state">WAITING</span></div>
-          <span class="squad-bracket tl" aria-hidden="true"></span>
-          <span class="squad-bracket tr" aria-hidden="true"></span>
-          <span class="squad-bracket bl" aria-hidden="true"></span>
-          <span class="squad-bracket br" aria-hidden="true"></span>
+          <span class="squad-bracket tl" aria-hidden="true"></span><span class="squad-bracket tr" aria-hidden="true"></span>
+          <span class="squad-bracket bl" aria-hidden="true"></span><span class="squad-bracket br" aria-hidden="true"></span>
           <span class="squad-scanline" aria-hidden="true"></span>
-          <p class="squad-window-caption" aria-hidden="true">SQUAD ASSEMBLY · 04 SLOTS</p>
+          <p class="squad-window-caption" aria-hidden="true">SQUAD ASSEMBLY · 04 SLOTS · CLICK A PORTRAIT</p>
         </div>
         <div class="squad-sheet squad-right">
-          <p class="squad-note">示例成员来自 OpenNI App 的虚构演示数据，不是真实陪练、签约人员或客户身份。</p>
+          <p class="squad-note">示例成员来自 OpenNI App 的虚构演示数据，不是真实陪练、签约人员或客户身份。点击 3D 立绘可打开对应成员页。</p>
           <a class="pill dark" href="/demo/?screen=players&amp;device=iphone">查看成员页 <span aria-hidden="true">↗</span></a>
         </div>
         <div class="squad-sheet squad-bottom">
           <ol class="squad-roster">
-            <li class="member" style="--member:#2455E7">
-              <img src="./assets/squad-ayu.webp" alt="" width="512" height="512" loading="lazy">
-              <div><span class="member-role">小队指挥</span><strong>阿屿</strong><small>耐心沟通 · 战术协作</small></div>
-              <a href="/demo/?screen=player&amp;device=iphone" aria-label="打开阿屿的成员页">↗</a>
-            </li>
-            <li class="member" style="--member:#137B57">
-              <img src="./assets/squad-echo.webp" alt="" width="512" height="512" loading="lazy">
-              <div><span class="member-role">战术教练</span><strong>Echo</strong><small>对局复盘 · 思路教学</small></div>
-              <a href="/demo/?screen=player&amp;device=iphone" aria-label="打开 Echo 的成员页">↗</a>
-            </li>
-            <li class="member" style="--member:#AC4B38">
-              <img src="./assets/squad-xiaoman.webp" alt="" width="512" height="512" loading="lazy">
-              <div><span class="member-role">开黑搭子</span><strong>小满</strong><small>友好交流 · 团队协作</small></div>
-              <a href="/demo/?screen=player&amp;device=iphone" aria-label="打开小满的成员页">↗</a>
-            </li>
-            <li class="member" style="--member:#7356AA">
-              <img src="./assets/squad-north.webp" alt="" width="512" height="512" loading="lazy">
-              <div><span class="member-role">全能队友</span><strong>North</strong><small>节奏稳定 · 灵活补位</small></div>
-              <a href="/demo/?screen=player&amp;device=iphone" aria-label="打开 North 的成员页">↗</a>
-            </li>
+            <li class="member" style="--member:#2455E7"><img src="./assets/squad-ayu.webp" alt="" width="512" height="512" loading="lazy"><div><span class="member-role">小队指挥</span><strong>阿屿</strong><small>耐心沟通 · 战术协作</small></div><a href="/demo/?screen=player&amp;device=iphone" aria-label="打开阿屿的成员页">↗</a></li>
+            <li class="member" style="--member:#137B57"><img src="./assets/squad-echo.webp" alt="" width="512" height="512" loading="lazy"><div><span class="member-role">战术教练</span><strong>Echo</strong><small>对局复盘 · 思路教学</small></div><a href="/demo/?screen=player&amp;device=iphone" aria-label="打开 Echo 的成员页">↗</a></li>
+            <li class="member" style="--member:#AC4B38"><img src="./assets/squad-xiaoman.webp" alt="" width="512" height="512" loading="lazy"><div><span class="member-role">开黑搭子</span><strong>小满</strong><small>友好交流 · 团队协作</small></div><a href="/demo/?screen=player&amp;device=iphone" aria-label="打开小满的成员页">↗</a></li>
+            <li class="member" style="--member:#7356AA"><img src="./assets/squad-north.webp" alt="" width="512" height="512" loading="lazy"><div><span class="member-role">全能队友</span><strong>North</strong><small>节奏稳定 · 灵活补位</small></div><a href="/demo/?screen=player&amp;device=iphone" aria-label="打开 North 的成员页">↗</a></li>
           </ol>
           <p class="roster-caption">OPENNI MEMBERS / DEMO DATA</p>
         </div>
       </div>
     </section>
 
-    <section id="deploy" class="chapter deploy" data-chapter="deploy" data-plate="./assets/warfare-scene.jpg" data-code="DEPLOY" aria-labelledby="deploy-title">
+    <section id="deploy" class="chapter chapter-deploy" data-chapter="deploy" data-plate="./assets/warfare-scene.jpg" data-code="DEPLOY" aria-labelledby="deploy-title">
       <div class="deploy-sticky">
         <div class="deploy-copy">
           <p class="eyebrow">04 / 部署</p>
-          <h2 id="deploy-title">下一局，<br><em>别再一个人排。</em></h2>
+          <h2 id="deploy-title" class="reveal-type">下一局，<br><em>别再一个人排。</em></h2>
           <p class="deploy-lead">选择模式、地图与时段，<br>把位置交给能补位的人。</p>
           <div class="deploy-actions">
             <a class="pill" href="/demo/?screen=service&amp;device=iphone">体验三角洲预约 <span aria-hidden="true">↗</span></a>
@@ -225,10 +221,8 @@
           </div>
           <p class="deploy-note">预览使用虚构俱乐部与示例数据。App 截图来自实际运行界面。</p>
         </div>
-        <a class="deploy-preview" href="/demo/?screen=service&amp;device=iphone" aria-label="打开三角洲服务 App 预览">
-          <span class="preview-disc" aria-hidden="true"></span>
-          <img src="/screens/service.png" width="780" height="1688" loading="lazy" alt="OpenNI 三角洲服务页面的实际运行截图">
-          <span class="preview-badge" aria-hidden="true">APP / SERVICE</span>
+        <a class="deploy-link" href="/demo/?screen=service&amp;device=iphone" data-cursor="打开 App">
+          <span>3D 手机 · 点击打开 App</span><span aria-hidden="true">↗</span>
         </a>
       </div>
     </section>
@@ -238,23 +232,26 @@
     <a href="/" class="footer-wordmark" aria-label="返回 OpenNI">OpenNI<span aria-hidden="true">↗</span></a>
     <div class="footer-meta">
       <p>三角洲行动 · 战地档案 — 非游戏官方网站</p>
-      <nav aria-label="页脚">
-        <a href="./sources.html">素材来源与说明</a>
-        <a href="/guide/">项目文档</a>
-        <a href="https://github.com/nph-cn/openni-club" target="_blank" rel="noreferrer">GitHub ↗</a>
-      </nav>
+      <nav aria-label="页脚"><a href="./sources.html">素材来源与说明</a><a href="/guide/">项目文档</a><a href="https://github.com/nph-cn/openni-club" target="_blank" rel="noreferrer">GitHub ↗</a></nav>
     </div>
   </footer>
 
   <dialog id="film-dialog" aria-labelledby="film-title">
-    <div class="film-toolbar">
-      <h2 id="film-title">三角洲行动 · 官方游戏影像</h2>
-      <button id="close-film" class="quiet" type="button" aria-label="关闭影像">关闭 ×</button>
-    </div>
-    <video id="film-video" controls playsinline preload="none" poster="./assets/film-poster.jpg">
-      <source data-src="./assets/global-hero.mp4" type="video/mp4">
-    </video>
+    <div class="film-toolbar"><h2 id="film-title">三角洲行动 · 官方游戏影像</h2><button id="close-film" class="quiet" type="button" aria-label="关闭影像">关闭 ×</button></div>
+    <video id="film-video" controls playsinline preload="none" poster="./assets/film-poster.jpg"><source data-src="./assets/global-hero.mp4" type="video/mp4"></video>
     <p>画面来源：三角洲行动国际官网。片段为官方公开展示影像。</p>
+  </dialog>
+
+  <dialog id="menu-dialog" aria-labelledby="menu-title">
+    <div class="menu-head"><h2 id="menu-title">战地档案</h2><button id="close-menu" class="quiet" type="button" aria-label="关闭菜单">关闭 ×</button></div>
+    <nav class="menu-nav" aria-label="章节">
+      <a href="#entry" data-menu="hero"><span>00</span><strong>入局</strong><em>ENTRY</em></a>
+      <a href="#modes" data-menu="modes"><span>01</span><strong>行动方式</strong><em>MODES</em></a>
+      <a href="#maps" data-menu="terrain"><span>02</span><strong>地形情报</strong><em>TERRAIN</em></a>
+      <a href="#squad" data-menu="squad"><span>03</span><strong>小队集结</strong><em>SQUAD</em></a>
+      <a href="#deploy" data-menu="deploy"><span>04</span><strong>部署</strong><em>DEPLOY</em></a>
+    </nav>
+    <p class="menu-foot">非官方视觉专题 · OpenNI 2026</p>
   </dialog>
 
   <p class="stage-status sr-only" id="stage-status" role="status" aria-live="polite"></p>
