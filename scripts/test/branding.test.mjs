@@ -32,7 +32,7 @@ test('name and logo generate two isolated brands across Flutter, mini, backend a
     assert.equal(seed.club.name, flutter.name); assert.ok(seed.services.length); assert.ok(seed.announcements[0].title.includes(flutter.name));
     assert.equal(JSON.stringify(seed).includes('北岸'), false);
     const localCatalog = JSON.parse(await readFile(join(f.root, 'apps/mobile/assets/catalog.json'), 'utf8'));
-    assert.deepEqual(localCatalog, { services: seed.services, players: seed.players, announcements: seed.announcements });
+    assert.deepEqual(localCatalog, { services: seed.services, players: seed.players, announcements: seed.announcements, banners: seed.banners });
     const contents = JSON.parse(await readFile(join(f.root, 'apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json'), 'utf8'));
     const icon = contents.images.find(x => x.idiom === 'ios-marketing');
     const metadata = await sharp(join(f.root, 'apps/mobile/ios/Runner/Assets.xcassets/AppIcon.appiconset', icon.filename)).metadata();

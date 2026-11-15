@@ -8,8 +8,8 @@
     "source": "apps/miniprogram/pages/home/home.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:16:09.202Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-services",
@@ -20,8 +20,8 @@
     "source": "apps/miniprogram/pages/services/services.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:17:54.369Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-service",
@@ -32,8 +32,8 @@
     "source": "apps/miniprogram/pages/service/service.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:16:23.710Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-players",
@@ -44,8 +44,8 @@
     "source": "apps/miniprogram/pages/players/players.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:17:39.652Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-player",
@@ -56,8 +56,8 @@
     "source": "apps/miniprogram/pages/player/player.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:17:07.660Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-booking",
@@ -68,8 +68,8 @@
     "source": "apps/miniprogram/pages/booking/booking.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:17:21.689Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-orders",
@@ -80,8 +80,8 @@
     "source": "apps/miniprogram/pages/orders/orders.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:18:03.630Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-order",
@@ -92,8 +92,8 @@
     "source": "apps/miniprogram/pages/order/order.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:18:14.017Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-profile",
@@ -104,8 +104,8 @@
     "source": "apps/miniprogram/pages/profile/profile.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:18:29.770Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-announcements",
@@ -116,8 +116,8 @@
     "source": "apps/miniprogram/pages/announcements/announcements.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:20:02.554Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-settings",
@@ -128,8 +128,8 @@
     "source": "apps/miniprogram/pages/settings/settings.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:18:39.594Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-member",
@@ -140,8 +140,8 @@
     "source": "apps/miniprogram/pages/member/member.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:19:08.752Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-availability",
@@ -152,8 +152,8 @@
     "source": "apps/miniprogram/pages/availability/availability.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:19:41.425Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-earnings",
@@ -164,8 +164,8 @@
     "source": "apps/miniprogram/pages/earnings/earnings.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:19:23.686Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   },
   {
     "id": "mini-notifications",
@@ -176,7 +176,7 @@
     "source": "apps/miniprogram/pages/notifications/notifications.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · cool white / graphite",
-    "capturedAt": "2026-11-14T22:18:55.203Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
+    "capturedAt": "2026-11-15T08:55:53.873Z"
   }
 ]

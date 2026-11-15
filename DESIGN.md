@@ -20,3 +20,11 @@ References inspected: official Bixin App Store promotional screenshots for hiera
 All demonstration people, orders and balances are fictional. Original generated demo portraits are labeled as such. Never fabricate availability, ratings, transaction volume, successful payments or store approvals to decorate a screen.
 
 Reference update: actual Grok logged-out UI, x.ai/grok and Heron AI website were viewed. Codrops Heron (2026-10-12) and bleibtgleich26 (2026-09-23) articles informed meaningful product interaction and restrained composition; no third-party assets are redistributed.
+
+## 2026-11-15 user correction
+
+Website direction retained; ornamental marketing copy removed. Use literal labels: 电竞俱乐部开源应用、用户端、成员端、管理后台、配置俱乐部、文档. No 主场 metaphor or explanatory lines beside every function.
+
+App design is being replaced with image-led real game content: official game covers/icons, configurable club banners, image-supported service cards and member profiles. Abstract contour artwork is not an acceptable substitute for game imagery. Game artwork provenance and third-party rights stay separate from the MIT code license. Keep sample-data disclosure in application information and transaction decisions rather than every navigation bar. Never claim a real paid order or identity that did not occur.
+
+Documentation is a Read surface: grouped left navigation, searchable content, article table of contents, copyable commands, numbered actions and previous/next links. It is not a marketing landing page.

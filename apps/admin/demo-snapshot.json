@@ -23,7 +23,7 @@
   },
   "orders": [
     {
-      "id": "adffd5fb-556b-4c58-b747-017fa6cf0fd4",
+      "id": "7fffca7e-aed1-48fa-ace1-bf7da3d24eb6",
       "serviceId": "s3",
       "serviceTitle": "无畏契约 · 组队小时陪",
       "playerId": null,
@@ -49,7 +49,7 @@
         "title": "无畏契约 · 组队小时陪",
         "game": "无畏契约",
         "category": "小时陪",
-        "description": "一位成员提供团队语音、角色协作和组队对局，按约定时间结束。",
+        "description": "团队语音 · 角色协作",
         "priceCents": 2900,
         "durationMinutes": 60,
         "tags": [
@@ -58,7 +58,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+        "gameIconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/cbf4460132cdfeb2a97fad5f9dd25ba0bc058f76-128x128.png",
+        "bannerUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -74,17 +76,17 @@
       },
       "events": [
         {
-          "id": "9d2fdc17-c77c-46c0-857d-416a8b5b4a60",
+          "id": "b20031aa-e004-41cc-8787-dc42bf3c9ca3",
           "type": "created",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "892d2350-3d33-4b5c-b69e-76fcf0d778fa",
+          "id": "caf471a3-f1ef-4433-aab8-1cd54a80c98e",
           "type": "assigned",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
@@ -99,7 +101,7 @@
       "dispute": null
     },
     {
-      "id": "8e1956f4-c9a8-4421-bded-d70458feb04d",
+      "id": "043f597f-6651-415c-a027-3a8438fe331f",
       "serviceId": "s2",
       "serviceTitle": "三角洲 · 对局复盘",
       "playerId": null,
@@ -125,7 +127,7 @@
         "title": "三角洲 · 对局复盘",
         "game": "三角洲行动",
         "category": "复盘",
-        "description": "与一位教练共同查看你提供的对局记录，梳理路线、报点和决策，交付文字复盘。",
+        "description": "路线分析 · 决策复盘 · 文字建议",
         "priceCents": 6900,
         "durationMinutes": 60,
         "tags": [
@@ -134,7 +136,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "review",
         "billingUnit": "session",
@@ -154,12 +158,12 @@
       },
       "events": [
         {
-          "id": "24850db9-279a-46f3-ac0e-549938f238a9",
+          "id": "a140e4e9-cdce-43a3-adad-50423585e82e",
           "type": "created",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         }
@@ -169,7 +173,7 @@
       "dispute": null
     },
     {
-      "id": "d76db3a0-40a5-424e-b4c8-8f9fb79600a5",
+      "id": "14c40ab5-274a-4a01-997e-9baa94369c64",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -195,7 +199,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -204,7 +208,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -225,17 +231,17 @@
       },
       "events": [
         {
-          "id": "383ed561-c5ea-487a-b0a4-7d0fac2152ac",
+          "id": "9a69bddd-f8d4-40bd-ab5d-1e93efd8a34d",
           "type": "created",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "8363c333-bd36-4873-a53b-a224b8b0376e",
+          "id": "5b997a5a-ff76-4dec-82df-569e10587be8",
           "type": "assigned",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
@@ -250,7 +256,7 @@
       "dispute": null
     },
     {
-      "id": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+      "id": "ac05d6db-293a-4911-9223-a6c69af58c9c",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -276,7 +282,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -285,7 +291,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -306,17 +314,17 @@
       },
       "events": [
         {
-          "id": "cfebfbce-c134-4125-9996-7b0351fdacfc",
+          "id": "299c14ae-6f60-4314-9528-1e5979796299",
           "type": "created",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "e6f0901e-2f30-40ab-a311-4b9cce147423",
+          "id": "d6e998d1-4a69-47ae-bf67-655cfb02b430",
           "type": "assigned",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
@@ -326,7 +334,7 @@
           "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "7926412b-415c-41e3-baaa-1a15214da923",
+          "id": "3f131037-8184-49fe-94b1-6158e1865a60",
           "type": "accepted",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
@@ -336,7 +344,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "d5e737ed-905a-4dd7-aa52-4292662f9531",
+          "id": "6b53eb97-34e0-453d-a2b0-3d4246e7fe6d",
           "type": "started",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
@@ -351,7 +359,7 @@
       "dispute": null
     },
     {
-      "id": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "id": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -377,7 +385,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -386,7 +394,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -407,17 +417,17 @@
       },
       "events": [
         {
-          "id": "9a20cfcc-2fd5-4d5f-965c-7e2b25aef400",
+          "id": "ed817e36-3c4c-48fe-91e3-da719408f70a",
           "type": "created",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "36a1e58e-a724-4cf1-ab2f-b41263188088",
+          "id": "c5eaf6ef-5b6f-48d4-afe7-d0835e814fbc",
           "type": "assigned",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -427,7 +437,7 @@
           "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "bb346aa3-a6d7-4ca7-a680-130e3c37f548",
+          "id": "311c1aa4-53ab-4e24-9f7f-9d18b0f3d69d",
           "type": "accepted",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -437,7 +447,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "022a32e8-a4a8-4780-8fd1-90be050f67e7",
+          "id": "11c91558-53a7-4768-8bd0-17858f69b023",
           "type": "started",
           "at": "2026-11-15T12:00:00.000Z",
           "actor": {
@@ -447,7 +457,7 @@
           "message": "成员已开始服务。"
         },
         {
-          "id": "2371678b-1da1-4fdf-9d22-a47f8d6af420",
+          "id": "55d1f1d2-f256-4d33-9a06-d1d11d8a66cd",
           "type": "delivery_submitted",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -457,17 +467,17 @@
           "message": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。"
         },
         {
-          "id": "8455873a-7aa9-4fd3-9d33-7e196f7aafbe",
+          "id": "3cb64d50-a2d9-48e4-abc4-bdb01dfdc752",
           "type": "confirmed",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "客户已确认交付，成员收入转为可结算。"
         },
         {
-          "id": "2ed953b0-7236-4098-824d-ec0276673cae",
+          "id": "f4f0f8a3-6d8a-4a72-b09f-3d213c166dcb",
           "type": "settlement_recorded",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -490,7 +500,7 @@
       "dispute": null
     },
     {
-      "id": "c53bde6b-66d3-434a-963e-7d550f252d9d",
+      "id": "ebca379e-39d1-4edd-85b3-797de7be216b",
       "serviceId": "s2",
       "serviceTitle": "三角洲 · 对局复盘",
       "playerId": null,
@@ -516,7 +526,7 @@
         "title": "三角洲 · 对局复盘",
         "game": "三角洲行动",
         "category": "复盘",
-        "description": "与一位教练共同查看你提供的对局记录，梳理路线、报点和决策，交付文字复盘。",
+        "description": "路线分析 · 决策复盘 · 文字建议",
         "priceCents": 6900,
         "durationMinutes": 60,
         "tags": [
@@ -525,7 +535,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "review",
         "billingUnit": "session",
@@ -545,17 +557,17 @@
       },
       "events": [
         {
-          "id": "a9f1dd55-2156-45d9-b020-4700d2753634",
+          "id": "edcef373-20c8-422c-940e-4bdf1347e299",
           "type": "created",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "1a9da887-88c0-4ed1-824b-cbc59742cc45",
+          "id": "8487ac1a-7e63-4f92-ada9-15caa1ffa020",
           "type": "assigned",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -565,7 +577,7 @@
           "message": "已指派 Echo，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "1180e390-0e47-4ea1-920b-e5b961943d80",
+          "id": "e327c2e3-45ae-4088-a72e-bf5b56825dd6",
           "type": "accepted",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -575,7 +587,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "aabb0696-426a-463c-9a94-65cfdbe2571f",
+          "id": "c9d68c94-bab9-44dc-ae32-9d69bd8888f2",
           "type": "started",
           "at": "2026-11-15T12:00:00.000Z",
           "actor": {
@@ -585,7 +597,7 @@
           "message": "成员已开始服务。"
         },
         {
-          "id": "6b69722b-9b95-4634-af39-d9ca6825a6f4",
+          "id": "976c3ae1-f4f6-453d-b556-d88d21ddfaf8",
           "type": "delivery_submitted",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -595,12 +607,12 @@
           "message": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。"
         },
         {
-          "id": "e3f40797-2d80-4aaf-b420-276d98212467",
+          "id": "60b7d638-f9b0-48dd-ac2f-763a6d40a2b2",
           "type": "disputed",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "复盘记录需要补充"
         }
@@ -612,7 +624,7 @@
       },
       "review": null,
       "dispute": {
-        "id": "30a70424-5830-4473-b1d1-26194d5ab73e",
+        "id": "33347b9c-21f6-40f8-a0ad-abf8b62f4496",
         "reason": "复盘记录需要补充",
         "details": "演示问题：希望补充第二场对局的复盘说明。",
         "status": "open",
@@ -623,7 +635,7 @@
       }
     },
     {
-      "id": "9fb538b3-f3f8-4d62-9fa9-7fccdc3037e9",
+      "id": "d01df6dc-e1e3-4c70-ae1d-f3f1db7189a1",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -649,7 +661,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -658,7 +670,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -679,17 +693,17 @@
       },
       "events": [
         {
-          "id": "337b7e42-fa77-489b-9149-45759f6f8434",
+          "id": "d8251bb5-2192-4259-a66e-a1e8aea84165",
           "type": "created",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "740b1854-c89b-492c-bf4b-b01587e5032e",
+          "id": "eeeadab5-41fb-45c0-9bac-2b14ee2b5c46",
           "type": "assigned",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -699,7 +713,7 @@
           "message": "已指派 North，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "57f1880f-3dbe-40d5-8bee-f0b9f81e3a37",
+          "id": "d993ed61-5467-45a5-84cb-c98b40087ea9",
           "type": "accepted",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -709,7 +723,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "b1bb056c-efa3-4d5d-8d2e-a538afab7c3c",
+          "id": "1180c46b-cbeb-4514-8fc6-be46308450f6",
           "type": "started",
           "at": "2026-11-15T12:00:00.000Z",
           "actor": {
@@ -719,7 +733,7 @@
           "message": "成员已开始服务。"
         },
         {
-          "id": "1c5819d4-4062-4f74-b2af-bba4337b257a",
+          "id": "119255cf-2979-41aa-8d15-89479eae553d",
           "type": "delivery_submitted",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -829,7 +843,7 @@
       "title": "三角洲 · PC 小时陪",
       "game": "三角洲行动",
       "category": "小时陪",
-      "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+      "description": "路线沟通 · 报点协作",
       "priceCents": 3900,
       "durationMinutes": 60,
       "tags": [
@@ -838,7 +852,9 @@
       ],
       "inclusions": [],
       "requirements": [],
-      "coverUrl": "",
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+      "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
       "platform": "PC",
       "serviceType": "hourly",
       "billingUnit": "hour",
@@ -883,7 +899,7 @@
       "title": "三角洲 · 对局复盘",
       "game": "三角洲行动",
       "category": "复盘",
-      "description": "与一位教练共同查看你提供的对局记录，梳理路线、报点和决策，交付文字复盘。",
+      "description": "路线分析 · 决策复盘 · 文字建议",
       "priceCents": 6900,
       "durationMinutes": 60,
       "tags": [
@@ -892,7 +908,9 @@
       ],
       "inclusions": [],
       "requirements": [],
-      "coverUrl": "",
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+      "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+      "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
       "platform": "PC",
       "serviceType": "review",
       "billingUnit": "session",
@@ -915,7 +933,7 @@
       "title": "无畏契约 · 组队小时陪",
       "game": "无畏契约",
       "category": "小时陪",
-      "description": "一位成员提供团队语音、角色协作和组队对局，按约定时间结束。",
+      "description": "团队语音 · 角色协作",
       "priceCents": 2900,
       "durationMinutes": 60,
       "tags": [
@@ -924,7 +942,9 @@
       ],
       "inclusions": [],
       "requirements": [],
-      "coverUrl": "",
+      "coverUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "gameIconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/cbf4460132cdfeb2a97fad5f9dd25ba0bc058f76-128x128.png",
+      "bannerUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
       "platform": "PC",
       "serviceType": "hourly",
       "billingUnit": "hour",
@@ -943,7 +963,7 @@
       "title": "英雄联盟 · 双排小时陪",
       "game": "英雄联盟",
       "category": "小时陪",
-      "description": "一位成员与你双排，预约前沟通位置与时段。双排指两位玩家，不是两位服务成员。",
+      "description": "位置沟通 · 双排组队",
       "priceCents": 3500,
       "durationMinutes": 60,
       "tags": [
@@ -952,7 +972,9 @@
       ],
       "inclusions": [],
       "requirements": [],
-      "coverUrl": "",
+      "coverUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "gameIconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/565197caf987af4e4da307df6e2b235a28714736-837x469.jpg",
+      "bannerUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
       "platform": "PC",
       "serviceType": "hourly",
       "billingUnit": "hour",
@@ -972,31 +994,57 @@
   "announcements": [
     {
       "id": "a1",
-      "title": "欢迎来到北岸，一起找到同频队友",
-      "body": "这是 OpenNI Club 的演示公告。你可以浏览服务、了解成员并体验预约。所有订单均为模拟预约，不扣款、不提供真实游戏服务。",
+      "title": "预约须知",
+      "body": "预约前确认设备、地图和上线时间，按服务约定沟通需求。请勿提交游戏密码、身份证或其他无关个人信息。",
       "publishedAt": "2026-11-15T01:00:00.000Z",
       "archived": false
     },
     {
       "id": "a2",
-      "title": "预约前，先把这些小事说清楚",
-      "body": "预约时填写你希望的上线时间、联系方式和偏好。不要提交游戏密码、身份证或支付凭证。真实俱乐部上线前需要配置客服、隐私政策和订单规则。",
+      "title": "改期与售后",
+      "body": "需要改期或更换成员，请联系俱乐部客服。对服务交付有疑问，可在订单中申请售后，并说明问题与相关记录。",
       "publishedAt": "2026-11-14T02:00:00.000Z",
       "archived": false
     },
     {
       "id": "a3",
-      "title": "友好交流，从每一次报点开始",
-      "body": "尊重队友，文明交流。不要分享账号，不使用外挂或任何破坏公平竞技的工具。出现争议时通过俱乐部客服处理。",
+      "title": "文明协作",
+      "body": "尊重队友，文明交流。双方各自使用自己的游戏账号，不使用外挂或破坏公平竞技的工具。",
       "publishedAt": "2026-11-13T04:00:00.000Z",
       "archived": false
+    }
+  ],
+  "banners": [
+    {
+      "id": "b-delta",
+      "title": "三角洲行动",
+      "imageUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "serviceId": "s1",
+      "game": "三角洲行动",
+      "sortOrder": 0
+    },
+    {
+      "id": "b-valorant",
+      "title": "无畏契约",
+      "imageUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "serviceId": "s3",
+      "game": "无畏契约",
+      "sortOrder": 1
+    },
+    {
+      "id": "b-league",
+      "title": "英雄联盟",
+      "imageUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "serviceId": "s4",
+      "game": "英雄联盟",
+      "sortOrder": 2
     }
   ],
   "club": {
     "apiBaseUrl": "",
     "city": "线上俱乐部",
     "clubId": "northshore",
-    "configHash": "e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980",
+    "configHash": "3398608fe8d5ddf8ee3be096b8af4dd9875471bfa3db57d2811e3e1590648d3f",
     "demoData": true,
     "description": "北岸电竞是 OpenNI Club 的虚构演示俱乐部。这里展示俱乐部、队友与预约的完整体验。所有人物、服务和价格均为演示数据，与游戏发行商无关联。",
     "id": "northshore",
@@ -1022,8 +1070,8 @@
   "settlements": {
     "entries": [
       {
-        "id": "71b5080f-09ee-452a-80f7-945981222e82",
-        "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+        "id": "6ac14f7d-4a3e-4a35-b980-e02b5888aabe",
+        "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
         "playerId": "p1",
         "grossCents": 3900,
         "clubCents": 780,
@@ -1032,12 +1080,12 @@
         "createdAt": "2026-11-15T13:00:00.000Z",
         "availableAt": "2026-11-15T13:00:00.000Z",
         "settledAt": "2026-11-15T13:00:00.000Z",
-        "settlementId": "12741755-0d64-49be-b959-611be19342ae",
+        "settlementId": "151b7d2e-3602-4efa-967f-04c07fbd79d0",
         "demo": true
       },
       {
-        "id": "db9f0f1d-4b5b-4385-af63-23a4ffcfb2c5",
-        "orderId": "c53bde6b-66d3-434a-963e-7d550f252d9d",
+        "id": "772cc100-affa-48e4-96f0-6d5560ce080e",
+        "orderId": "ebca379e-39d1-4edd-85b3-797de7be216b",
         "playerId": "p2",
         "grossCents": 6900,
         "clubCents": 1380,
@@ -1050,8 +1098,8 @@
         "demo": true
       },
       {
-        "id": "d637f385-f0ba-43e9-ac36-6b03b03be568",
-        "orderId": "9fb538b3-f3f8-4d62-9fa9-7fccdc3037e9",
+        "id": "f76a42d1-fea4-446e-a4ee-96852f6bfde7",
+        "orderId": "d01df6dc-e1e3-4c70-ae1d-f3f1db7189a1",
         "playerId": "p4",
         "grossCents": 3900,
         "clubCents": 780,
@@ -1073,13 +1121,13 @@
     "currency": "CNY",
     "settlements": [
       {
-        "id": "12741755-0d64-49be-b959-611be19342ae",
+        "id": "151b7d2e-3602-4efa-967f-04c07fbd79d0",
         "paymentReference": "DEMO-RECEIPT-NO-TRANSFER",
         "note": "只读演示凭据，没有真实打款。",
         "createdAt": "2026-11-15T13:00:00.000Z",
         "memberCents": 3120,
         "entryIds": [
-          "71b5080f-09ee-452a-80f7-945981222e82"
+          "6ac14f7d-4a3e-4a35-b980-e02b5888aabe"
         ],
         "demo": true,
         "moneyTransferred": false,
@@ -1090,7 +1138,7 @@
   },
   "disputes": [
     {
-      "id": "c53bde6b-66d3-434a-963e-7d550f252d9d",
+      "id": "ebca379e-39d1-4edd-85b3-797de7be216b",
       "serviceId": "s2",
       "serviceTitle": "三角洲 · 对局复盘",
       "playerId": null,
@@ -1116,7 +1164,7 @@
         "title": "三角洲 · 对局复盘",
         "game": "三角洲行动",
         "category": "复盘",
-        "description": "与一位教练共同查看你提供的对局记录，梳理路线、报点和决策，交付文字复盘。",
+        "description": "路线分析 · 决策复盘 · 文字建议",
         "priceCents": 6900,
         "durationMinutes": 60,
         "tags": [
@@ -1125,7 +1173,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "review",
         "billingUnit": "session",
@@ -1145,17 +1195,17 @@
       },
       "events": [
         {
-          "id": "a9f1dd55-2156-45d9-b020-4700d2753634",
+          "id": "edcef373-20c8-422c-940e-4bdf1347e299",
           "type": "created",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "1a9da887-88c0-4ed1-824b-cbc59742cc45",
+          "id": "8487ac1a-7e63-4f92-ada9-15caa1ffa020",
           "type": "assigned",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -1165,7 +1215,7 @@
           "message": "已指派 Echo，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "1180e390-0e47-4ea1-920b-e5b961943d80",
+          "id": "e327c2e3-45ae-4088-a72e-bf5b56825dd6",
           "type": "accepted",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -1175,7 +1225,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "aabb0696-426a-463c-9a94-65cfdbe2571f",
+          "id": "c9d68c94-bab9-44dc-ae32-9d69bd8888f2",
           "type": "started",
           "at": "2026-11-15T12:00:00.000Z",
           "actor": {
@@ -1185,7 +1235,7 @@
           "message": "成员已开始服务。"
         },
         {
-          "id": "6b69722b-9b95-4634-af39-d9ca6825a6f4",
+          "id": "976c3ae1-f4f6-453d-b556-d88d21ddfaf8",
           "type": "delivery_submitted",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -1195,12 +1245,12 @@
           "message": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。"
         },
         {
-          "id": "e3f40797-2d80-4aaf-b420-276d98212467",
+          "id": "60b7d638-f9b0-48dd-ac2f-763a6d40a2b2",
           "type": "disputed",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "复盘记录需要补充"
         }
@@ -1212,7 +1262,7 @@
       },
       "review": null,
       "dispute": {
-        "id": "30a70424-5830-4473-b1d1-26194d5ab73e",
+        "id": "33347b9c-21f6-40f8-a0ad-abf8b62f4496",
         "reason": "复盘记录需要补充",
         "details": "演示问题：希望补充第二场对局的复盘说明。",
         "status": "open",

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "artworkLicense": "Third-party publisher rights; excluded from MIT code license",
+  "assets": [
+    {
+      "game": "三角洲行动",
+      "purpose": "coverUrl",
+      "url": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "source": "https://df.qq.com/index.shtml",
+      "rightsHolder": "Tencent / Delta Force",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "三角洲行动",
+      "purpose": "gameIconUrl",
+      "url": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+      "source": "https://df.qq.com/index.shtml",
+      "rightsHolder": "Tencent / Delta Force",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "三角洲行动",
+      "purpose": "coverUrl",
+      "url": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+      "source": "https://df.qq.com/index.shtml",
+      "rightsHolder": "Tencent / Delta Force",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "无畏契约",
+      "purpose": "coverUrl",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "source": "https://playvalorant.com/en-us/media/",
+      "rightsHolder": "Riot Games",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "无畏契约",
+      "purpose": "gameIconUrl",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/cbf4460132cdfeb2a97fad5f9dd25ba0bc058f76-128x128.png",
+      "source": "https://playvalorant.com/en-us/media/",
+      "rightsHolder": "Riot Games",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "英雄联盟",
+      "purpose": "coverUrl",
+      "url": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "source": "https://developer.riotgames.com/docs/lol#data-dragon",
+      "rightsHolder": "Riot Games",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    },
+    {
+      "game": "英雄联盟",
+      "purpose": "gameIconUrl",
+      "url": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/565197caf987af4e4da307df6e2b235a28714736-837x469.jpg",
+      "source": "https://www.leagueoflegends.com/en-us/",
+      "rightsHolder": "Riot Games",
+      "license": "Not MIT; subject to publisher terms",
+      "checkedAt": "2026-11-15",
+      "verified": "Downloaded from official URL and visually inspected; no standalone publisher image files bundled; UI screenshots include referenced artwork"
+    }
+  ]
+}

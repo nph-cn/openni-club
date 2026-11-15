@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'repository.dart';
+import 'discover.dart' show ServiceArt;
 import 'ui.dart';
 
 class BookingPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  final scroll = ScrollController(keepScrollOffset: false);
   final form = GlobalKey<FormState>(),
       contact = TextEditingController(),
       note = TextEditingController();
@@ -71,10 +73,12 @@ class _BookingPageState extends State<BookingPage> {
       contact.text = 'demo-player';
       reviewing = true;
     });
+    resetReviewScroll();
   }
 
   @override
   void dispose() {
+    scroll.dispose();
     contact.dispose();
     note.dispose();
     super.dispose();
@@ -158,6 +162,13 @@ class _BookingPageState extends State<BookingPage> {
     }
   }
 
+  void resetReviewScroll() {
+    FocusScope.of(context).unfocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && scroll.hasClients) scroll.jumpTo(0);
+    });
+  }
+
   Future<void> next() async {
     if (!form.currentState!.validate()) return;
     if (playerId == null || selectedSlot == null) {
@@ -168,6 +179,7 @@ class _BookingPageState extends State<BookingPage> {
       reviewing = true;
       failure = null;
     });
+    resetReviewScroll();
   }
 
   Future<void> submit() async {
@@ -277,33 +289,36 @@ class _BookingPageState extends State<BookingPage> {
           key: form,
           child: PageList(
             key: ValueKey(reviewing),
+            controller: scroll,
             children: [
               Row(
                 children: [
-                  Tag(
-                    reviewing ? '02 / 确认预约' : '01 / 选择安排',
-                    fill: sage,
-                    color: forest,
+                  SizedBox(
+                    width: 78,
+                    height: 86,
+                    child: ServiceArt(s, radius: 12),
                   ),
-                  const Spacer(),
-                  Text(
-                    '${s['durationMinutes']} 分钟',
-                    style: const TextStyle(fontSize: 14, color: muted),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${s['title']}',
+                          style: const TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 7),
+                        Text(
+                          '${s['durationMinutes']} 分钟 · ${s['gameMode'] ?? s['game']}',
+                          style: const TextStyle(fontSize: 14, color: muted),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 18),
-              Text(
-                '${s['title']}',
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                '${s['game']} · ${s['category']}',
-                style: const TextStyle(fontSize: 15, color: muted),
               ),
               const Divider(),
               if (!reviewing) ...[
@@ -508,9 +523,7 @@ class _BookingPageState extends State<BookingPage> {
                   maxLength: 64,
                   decoration: InputDecoration(
                     labelText: '联系方式',
-                    hintText: repo.isProduction
-                        ? '手机或俱乐部可联系到你的方式'
-                        : '演示请填写 demo-player',
+                    hintText: '微信号或手机号',
                   ),
                   validator: (v) => v == null || v.trim().length < 3
                       ? '请填写至少 3 个字符的联系方式'
@@ -554,6 +567,14 @@ class _BookingPageState extends State<BookingPage> {
                   icon: const Icon(Icons.edit_outlined, size: 17),
                   label: const Text('修改预约安排'),
                 ),
+                if (!repo.isProduction)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '预览预约，不收取费用。',
+                      style: TextStyle(fontSize: 14, color: muted),
+                    ),
+                  ),
                 CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,

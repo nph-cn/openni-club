@@ -1,12 +1,32 @@
-for (const pre of document.querySelectorAll('pre')) {
-  const code = pre.querySelector('code');
-  if (!code) continue;
-  const button = document.createElement('button');
-  button.className = 'copy-code'; button.textContent = '复制'; button.setAttribute('aria-label','复制代码');
-  button.onclick = async () => {
-    try { await navigator.clipboard.writeText(code.textContent); button.textContent = '已复制'; }
-    catch { button.textContent = '请手动选中复制'; }
-    setTimeout(()=>button.textContent='复制',2000);
-  };
-  pre.append(button);
+const $=selector=>document.querySelector(selector);
+for(const pre of document.querySelectorAll('article pre')){
+ const code=pre.querySelector('code');if(!code)continue;
+ const wrapper=document.createElement('div'),toolbar=document.createElement('div'),language=document.createElement('span'),button=document.createElement('button');
+ wrapper.className='code-wrapper';toolbar.className='code-toolbar';const kind=[...code.classList].find(name=>name.startsWith('language-'))?.slice(9)||'';
+ language.textContent=({sh:'Terminal',bash:'Terminal',powershell:'PowerShell',json:'JSON',yaml:'YAML',text:'Text'})[kind]||kind||'Code';button.className='copy-code';button.type='button';button.textContent='复制';button.setAttribute('aria-label','复制代码');
+ button.onclick=async()=>{try{await navigator.clipboard.writeText(code.textContent);button.textContent='已复制';}catch{button.textContent='请手动复制';}setTimeout(()=>button.textContent='复制',2000);};
+ pre.before(wrapper);toolbar.append(language,button);wrapper.append(toolbar,pre);
 }
+const searchDialog=$('#doc-search'),searchInput=$('#doc-search-input'),searchResults=$('#doc-search-results'),searchStatus=$('#search-status');
+let searchIndex=null,indexPromise=null,searchRequest=0;
+async function getIndex(){if(searchIndex)return searchIndex;if(!indexPromise)indexPromise=fetch('/guide/search-index.json').then(response=>{if(!response.ok)throw Error('index');return response.json();}).then(items=>(searchIndex=items)).catch(error=>{indexPromise=null;throw error;});return indexPromise;}
+function textNode(tag,value,className){const element=document.createElement(tag);element.textContent=value;if(className)element.className=className;return element;}
+function highlight(element,value,query){if(!query){element.textContent=value;return;}const position=value.toLowerCase().indexOf(query.toLowerCase());if(position<0){element.textContent=value;return;}element.append(document.createTextNode(value.slice(0,position)),textNode('mark',value.slice(position,position+query.length)),document.createTextNode(value.slice(position+query.length)));}
+function snippet(value,terms){const positions=terms.map(term=>value.toLowerCase().indexOf(term)).filter(n=>n>=0),position=positions.length?Math.min(...positions):0,start=Math.max(0,position-25);return(start?'…':'')+value.slice(start,start+125)+(value.length>start+125?'…':'');}
+async function search(){const request=++searchRequest,query=searchInput.value.trim().toLowerCase();searchStatus.textContent='正在加载搜索索引…';try{const items=await getIndex();if(request!==searchRequest)return;const terms=query.split(/\s+/).filter(Boolean);let results;
+ if(!query){const seen=new Set();results=items.filter(item=>{if(seen.has(item.title))return false;seen.add(item.title);return true;}).slice(0,6);searchStatus.textContent='常用页面';}
+ else{results=items.map(item=>{const title=`${item.title} ${item.heading}`.toLowerCase(),body=item.text.toLowerCase();if(!terms.every(term=>title.includes(term)||body.includes(term)))return null;const score=terms.reduce((sum,term)=>sum+(item.heading.toLowerCase()===term?12:title.includes(term)?6:1),0);return{item,score};}).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,14).map(result=>result.item);searchStatus.textContent=`找到 ${results.length}${results.length===14?' 个以上':' 个'}结果`;}
+ searchResults.replaceChildren();if(!results.length){searchResults.append(textNode('p','没有找到相关内容，试试“品牌”“微信”或“打包”。','search-empty'));return;}
+ for(const item of results){const link=document.createElement('a');link.className='search-result';link.href=item.url;const section=textNode('span',item.title,'result-section'),title=textNode('span','','result-title');highlight(title,item.heading,query);if(item.title!==item.heading)link.append(section);link.append(title);if(query){const summary=textNode('span','','result-snippet');highlight(summary,snippet(item.text,terms),query);link.append(summary);}link.onclick=()=>searchDialog.close();searchResults.append(link);}
+ }catch{if(request!==searchRequest)return;searchResults.replaceChildren();searchStatus.textContent='搜索索引暂时无法加载，请关闭后重试。';}}
+function openSearch(){if(!searchDialog.open)searchDialog.showModal();searchInput.focus();searchInput.select();search();}
+document.querySelectorAll('.search-trigger').forEach(button=>button.onclick=openSearch);searchInput.oninput=search;
+searchDialog.addEventListener('keydown',event=>{const links=[...searchResults.querySelectorAll('a')],index=links.indexOf(document.activeElement);if(event.key==='ArrowDown'){event.preventDefault();links[Math.min(index+1,links.length-1)]?.focus();}else if(event.key==='ArrowUp'){event.preventDefault();if(index<=0)searchInput.focus();else links[index-1].focus();}else if(event.key==='Enter'&&document.activeElement===searchInput){event.preventDefault();links[0]?.click();}});
+document.addEventListener('keydown',event=>{if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();openSearch();}else if(event.key==='/'&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)&&!document.querySelector('dialog[open]')){event.preventDefault();openSearch();}});
+for(const dialog of document.querySelectorAll('dialog')){dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});}
+document.querySelectorAll('[data-close-dialog]').forEach(button=>button.onclick=()=>document.getElementById(button.dataset.closeDialog).close());$('#open-doc-menu').onclick=()=>$('#doc-menu').showModal();
+const mobileToc=$('.mobile-toc');mobileToc.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>mobileToc.open=false));
+const headings=[...document.querySelectorAll('article h2,article h3')],tocLinks=[...document.querySelectorAll('.toc-link')];
+function setCurrent(id){for(const link of tocLinks){const active=decodeURIComponent(link.hash.slice(1))===id;link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');}}
+if(headings.length){const observer=new IntersectionObserver(entries=>{const visible=entries.filter(entry=>entry.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top);if(visible.length)setCurrent(visible[0].target.id);},{rootMargin:'-110px 0px -55% 0px',threshold:0});headings.forEach(heading=>observer.observe(heading));setCurrent(decodeURIComponent(location.hash.slice(1))||headings[0].id);}
+window.addEventListener('hashchange',()=>{if(location.hash)setCurrent(decodeURIComponent(location.hash.slice(1)));});

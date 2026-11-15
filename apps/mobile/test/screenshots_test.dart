@@ -1,3 +1,5 @@
+import 'catalog_media_cache.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,6 +47,7 @@ void main() {
       // The offline member preview is explicitly read-only; no fake write success.
       await repo.loadDemoPreview();
       if (memberScreens.contains(screen)) await repo.loadMemberData();
+      await tester.runAsync(primeCatalogMedia);
       final key = GlobalKey();
       await tester.pumpWidget(
         RepaintBoundary(

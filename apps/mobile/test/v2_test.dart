@@ -1,3 +1,5 @@
+import 'test_catalog.dart';
+
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -57,7 +59,7 @@ void main() {
         }),
       )..token = 'customer';
       final result = await repo.book(
-        service: {...demoServices.first, 'priceCents': 1},
+        service: {...await catalogService(repo), 'priceCents': 1},
         variantId: 'pc-120',
         date: DateTime(2030),
         contact: 'demo',

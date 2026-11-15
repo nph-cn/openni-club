@@ -20,14 +20,14 @@ function render() {
  }
 }
 function renderFlows(shown){
- const journeys=[{name:'选服务与成员',keys:['home','services','players','player','service']},{name:'下单',keys:['service','service_120','booking','checkout','order']},{name:'履约与售后',keys:['orders','order','support']},{name:'成员工作台',keys:['member','member_orders','member_order','delivery','availability','earnings','member_notifications']},{name:'派单与结算',keys:['admin-overview','admin-dispatch','admin-order','admin-disputes','admin-settlements']},{name:'品牌与资料',keys:['profile','settings','notifications','announcements','admin-club','admin-services','admin-players','admin-announcements','admin-connection']}];
+ const journeys=[{name:'选服务与成员',keys:['home','services','players','player','service']},{name:'下单',keys:['service','service_120','booking','checkout','order']},{name:'履约与售后',keys:['orders','order','support']},{name:'成员工作台',keys:['member','member_orders','member_order','delivery','availability','earnings','member_notifications']},{name:'派单与结算',keys:['admin-overview','admin-dispatch','admin-order','admin-disputes','admin-settlements']},{name:'品牌与资料',keys:['profile','settings','notifications','announcements','admin-club','admin-services','admin-banners','admin-players','admin-announcements','admin-connection']}];
  for(const journey of journeys){const items=journey.keys.flatMap(id=>shown.filter(s=>s.id===id||s.id===`mini-${id}`));if(!items.length)continue;const section=node('section',undefined,'flow-item'),head=node('header');head.append(node('h3',journey.name),node('span',`${items.length} 个界面`));const row=node('div',undefined,'flow-screens');for(const [index,screen] of items.entries()){const button=node('button',undefined,'flow-screen');button.append(screenImage(screen),node('span',`${String(index+1).padStart(2,'0')}  ${screen.title}`));button.onclick=()=>show(screen);row.append(button);}section.append(head,row);$('#flow-gallery').append(section);}
 }
 function show(screen){
- currentId=screen.id;$('#detail-title').textContent=screen.title;$('#detail-desc').textContent=screen.description;$('#detail-role').textContent=`${names.role[screen.role]||'客户'}体验`;
- $('#detail-platform').textContent=names.platform[screen.platform];$('#detail-state').textContent=({available:'服务详情',discovery:'首页',profile:'成员档案',in_progress:'服务中',pending:'待处理',demo:'演示',empty:'空状态',ready:'已就绪'}[screen.state]||'运行截图');$('#detail-flow').textContent=names.flow[screen.flow]||'产品界面';
+ currentId=screen.id;$('#detail-title').textContent=screen.title;
+ $('#detail-platform').textContent=names.platform[screen.platform];$('#detail-flow').textContent=names.flow[screen.flow]||'产品界面';
  const source=screen.source||'apps/mobile/lib/screens.dart';$('#detail-source').replaceChildren(Object.assign(node('a',source+' ↗'),{href:'https://github.com/nph-cn/openni-club/blob/main/'+source,target:'_blank',rel:'noreferrer'}));
- $('#detail-img').src=screen.image;$('#detail-img').alt=screen.title;$('#detail-demo').href=screen.demo||(screen.platform==='admin'?'/admin/':screen.platform==='mini'?'/guide/05-wechat-release.html':`/demo/?screen=${encodeURIComponent(screen.id)}`);$('#detail-demo').textContent=screen.platform==='mini'?'查看小程序运行方式 ↗':'打开交互演示 ↗';$('#detail-download').href=screen.image;dialog.classList.toggle('wide-detail',screen.platform==='admin');
+ $('#detail-img').src=screen.image;$('#detail-img').alt=screen.title;$('#detail-demo').href=screen.demo||(screen.platform==='admin'?'/admin/':screen.platform==='mini'?'/guide/05-wechat-release.html':`/demo/?screen=${encodeURIComponent(screen.id)}`);$('#detail-demo').textContent=screen.platform==='mini'?'查看小程序运行方式 ↗':(screen.platform==='admin'?'打开后台 ↗':'打开 App ↗');$('#detail-download').href=screen.image;dialog.classList.toggle('wide-detail',screen.platform==='admin');
  const list=matched(),index=list.findIndex(s=>s.id===screen.id);$('#detail-position').textContent=`${index+1} / ${list.length}`;$('#previous-screen').disabled=index<=0;$('#next-screen').disabled=index>=list.length-1;
  if(!dialog.open)dialog.showModal();
 }
@@ -49,9 +49,9 @@ try{const response=await fetch('/screens.json');if(!response.ok)throw Error();sc
 
 // Role changes show actual runtime captures; no invented dashboard or payment state.
 const stageRoles={
- customer:{image:'/screens/home.png',alt:'北岸电竞玩家首页真实运行截图',caption:'一起上场',steps:['选服务','约成员','确认订单'],browse:'浏览玩家界面',demo:'/demo/'},
- member:{image:'/screens/member.png',alt:'北岸电竞成员工作台真实运行截图',caption:'把每一场，配合好',steps:['确认接单','开始服务','提交交付'],browse:'浏览成员界面',demo:'/demo/?screen=member'},
- operator:{image:'/screens/admin-dispatch.png',alt:'北岸电竞运营派单工作台真实运行截图',caption:'每一单，都有着落',steps:[],browse:'浏览运营界面',demo:'/admin/'}
+ customer:{image:'/screens/home.png',alt:'北岸电竞玩家首页真实运行截图',caption:'用户首页',browse:'查看用户端界面',demo:'/demo/'},
+ member:{image:'/screens/member.png',alt:'北岸电竞成员工作台真实运行截图',caption:'成员工作台',browse:'查看成员端界面',demo:'/demo/?screen=member'},
+ operator:{image:'/screens/admin-dispatch.png',alt:'北岸电竞运营派单工作台真实运行截图',caption:'派单工作台',browse:'查看后台界面',demo:'/admin/'}
 };
 const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)');
 let stageRequest=0;
@@ -62,8 +62,7 @@ async function setStage(key){
  if(request!==stageRequest)return;
  const target=$('#stage-image');target.src=config.image;target.alt=config.alt;
  $('#product-stage').dataset.role=key;$('#stage-caption').textContent=config.caption;
- $('#stage-steps').replaceChildren(...config.steps.map(text=>node('span',text)));
- $('#stage-launch').href=config.demo;$('#stage-browse').dataset.exploreRole=key;
+ $('#stage-launch').href=config.demo;$('#stage-launch').textContent=key==='operator'?'打开后台 ↗':'打开 App ↗';$('#stage-browse').dataset.exploreRole=key;
  $('#stage-browse').replaceChildren(node('span',config.browse),node('span','↘'));
  $('#stage-panel').setAttribute('aria-labelledby',`role-${key}`);
  document.querySelectorAll('[data-stage-role]').forEach(button=>{const selected=button.dataset.stageRole===key;button.setAttribute('aria-selected',String(selected));button.tabIndex=selected?0:-1;});

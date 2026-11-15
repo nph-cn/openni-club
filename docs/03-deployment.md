@@ -1,81 +1,150 @@
-# 域名、Cloudflare 和服务器部署
+# 域名与服务器
 
-本章把三件事分开完成：DNS 告诉访客去哪里；网站展示产品；API 保存订单。把域名加入 Cloudflare 不等于已经部署网站或 API。
+本章使用仓库自带的 Docker Compose，在一台服务器上运行 API、运营后台和品牌配置页。先完成 [本地启动](01-quickstart.md) 与 [生成应用配置](10-single-config-workflow.md)。
 
-## 1. 将已有域名的 DNS 托管到 Cloudflare
+## 1. 确定访问地址
 
-`openni.im` 这样的已注册根域名可按 Cloudflare Full setup 接入；不必把域名注册商转到 Cloudflare。域名仍在原注册商续费，DNS 在 Cloudflare 管理。[官方 Full setup 文档](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
+下文用 `api.example.com` 表示你的 API 域名，操作时全部替换为自己拥有的域名。
 
-1. 登录自己的 Cloudflare，进入 Domains，选择接入域名，输入根域名，不带 `https://`。
-2. 选择适合的套餐；初期可评估 Free。检查扫描得到的 DNS 记录。若有邮箱，先保存 MX、SPF、DKIM、DMARC；扫描不保证找全。
-3. Cloudflare 分配两个名称服务器。逐字复制你这次看到的值，不复制别人教程中的示例。
-4. 登录域名注册商 → 域名详情 → Nameservers / 名称服务器 → Custom / 自定义，替换原名称服务器，保存。
-5. 返回 Cloudflare 检查状态，等待 Active。使用 DNS 查询工具查看 NS，不能仅凭页面显示“已保存”认定全球生效。
-6. 如果旧 DNSSEC 存在，按 Cloudflare 迁移说明处理旧 DS 记录，避免无效签名导致解析失败；不要臆造 `.im` 支持某种 DNSSEC 配置。
+| 用途 | 地址示例 |
+| --- | --- |
+| API 健康检查 | `https://api.example.com/health` |
+| 客户端 API 地址 | `https://api.example.com/api/v1` |
+| 运营后台 | `https://api.example.com/admin/` |
+| 品牌配置页 | `https://api.example.com/studio/` |
 
-只修改目标域名。邮件和其他子域记录需要保留；没有源站时先不填写随意的 IP。Cloudflare 的代理和缓存规则应对订单、登录、个人信息接口禁用缓存。
+服务器需要公网 IP、Docker Engine 与 Compose，并允许公网访问 80、443 端口。API 使用 SQLite 文件，必须保留持久化磁盘；不能直接部署成没有持久化磁盘的云函数或 Cloudflare Worker。
 
-## 2. 推荐的部署边界
+## 2. 将 DNS 接入 Cloudflare
 
-| 服务 | 示例地址 | 运行位置 |
-| --- | --- | --- |
-| 公开网站 / 截图库 | `https://example.com` | 静态网站托管 |
-| API | `https://api.example.com/api/v1` | 支持 Node 24 与持久化磁盘的服务器/容器 |
-| 管理后台 | `https://admin.example.com` | 静态托管或同源发布；API 仍需管理员鉴权 |
+已有的 `openni.im` 这类根域名可以使用 Cloudflare Full setup。域名仍在原注册商续费，名称服务器和 DNS 记录交给 Cloudflare 管理。[Cloudflare 官方接入说明](https://developers.cloudflare.com/dns/zone-setups/full-setup/setup/)
 
-本 API 使用 Node.js SQLite 文件，不能直接当作 Cloudflare Worker 或没有持久化磁盘的函数部署。若未来迁移 D1，需要专门适配数据库层和事务语义。单机 SQLite 适合初期独立俱乐部；多副本部署不能各写各的本地数据库。
+1. 登录自己的 Cloudflare，在 **Domains** 中添加域名，只填写根域名，不带 `https://`。
+2. 选择套餐并核对已有记录。如果域名有邮箱，保存原来的 MX、SPF、DKIM、DMARC 记录。
+3. 复制 Cloudflare 分配的两个名称服务器。每个域名分配的值可能不同，使用自己控制台中的值。
+4. 打开注册商的域名详情，找到 **Nameservers / 名称服务器 → Custom / 自定义**，填入这两个值并保存。
+5. 返回 Cloudflare 等待域名状态变为 **Active**，再用 DNS 查询工具核对 NS 记录。
+6. 如果原域名启用了 DNSSEC，按 Cloudflare 的迁移步骤处理旧 DS 记录，避免解析失败。
 
-## 3. 部署演示 API
+接着进入 Cloudflare 的 **DNS → 记录 → 添加记录**：
 
-先在隔离测试服务器验证。安装 Node 24，上传源代码，创建服务器专用 `.env`，设置固定 DATA_DIR，创建随机管理员令牌和精确 CORS_ORIGINS。禁止把 .env 放进网站公开目录。
+| 字段 | 填写内容 |
+| --- | --- |
+| 类型 | `A` |
+| 名称 | `api` |
+| IPv4 地址 | 服务器的公网 IP |
+| 代理状态 | 首次配置先使用「仅 DNS」 |
+| TTL | 自动 |
 
-从仓库根目录启动：
+**检查结果：** `api.你的域名` 能解析到服务器公网 IP。没有 IPv6 服务时不要添加 AAAA 记录。
+
+## 3. 准备服务器文件
+
+连接服务器后，按服务器系统安装 [Docker Engine](https://docs.docker.com/engine/install/)、Compose、Git 和 Node.js 24。执行以下命令检查：
 
 ```sh
-node --env-file=.env services/api/src/server.mjs
+docker --version
+docker compose version
+node --version
+git --version
 ```
 
-长期运行使用宿主机服务管理或容器重启策略，不依赖你电脑的终端。若使用项目 Dockerfile，构建前先读文件确认工作目录、暴露端口和数据目录，再将 SQLite 目录挂载到持久化卷；不能只把容器镜像当备份。
-
-配置反向代理终止 HTTPS，将 API 请求转给本地端口。Cloudflare 到源站也使用有效证书，SSL/TLS 采用 Full (strict)；不要用关闭证书验证解决连接问题。服务器防火墙只开放必要入口。
-
-连接后检查：
+下载代码并安装生成器依赖：
 
 ```sh
-curl --fail https://api.example.com/health
-curl --fail https://api.example.com/api/v1/club
+git clone https://github.com/nph-cn/openni-club.git
+cd openni-club
+npm ci
 ```
 
-这里的 example.com 必须换成你自己的域名。浏览器可打开接口不代表移动端已经正确配置，继续用客户端完成预约、查询和取消。
-
-## 4. 从演示到正式服务
-
-`production` 模式关闭演示身份，按实际配置启用小程序或原生微信登录；支付使用独立开关。代码中已有下单、验签、查单、全额退款及退款状态同步。配置方式见 [微信接入教程](09-wechat-adapters.md)，真实商户与设备验收见 [验收表](07-release-checklist.md)。匿名生成的 demo 身份不能用于真实经营数据。
-
-生产环境至少需要：可靠身份、权限、有效 HTTPS、服务端密钥、私密数据卷、备份、日志脱敏、限流和错误监控。域名是否适合中国大陆部署/小程序合法域名，以及备案材料，以所选托管商、微信后台和 [工信部备案系统](https://beian.miit.gov.cn/) 核验为准；不要把 `.im` 可以解析理解成一定满足备案/平台准入。
-
-## 5. 更新与恢复
-
-更新前记录当前版本并备份数据库；SQLite 开启 WAL 时不能只随手复制主文件，使用 SQLite 一致性备份工具或停写后完整备份。保留加密的离机副本，定期在空测试目录恢复并核对订单数量。每次升级先测试迁移，再切换服务；失败时回退应用与匹配的数据库版本。不要用删除 data 目录“修复”线上错误。
-
-## 6. 使用 Docker Compose 部署 HTTPS API 与后台
-
-在有公网 IP 的服务器安装 Docker Engine 和 Compose。给 `api.你的域名` 添加 A 记录，若配 AAAA 则 IPv6 必须也能到这台服务器。首次签发证书可先用 Cloudflare DNS only；确认源站证书正常后再开启代理，并使用 Full (strict)。80/443 需要可从公网到达，不能已有其他服务占用。[Caddy 自动 HTTPS 要求](https://caddyserver.com/docs/automatic-https)
-
-在仓库根目录先运行 `npm ci`（生成器与品牌向导使用这些依赖），再执行 `cp deploy/.env.example deploy/.env`。编辑 `deploy/.env`：填 `API_DOMAIN`（只填主机名）、证书联系邮箱、至少 32 字符随机 `ADMIN_TOKEN`、真实后台 HTTPS origin 和微信配置。`.env` 不放在网站目录；需要支付时把 PEM 放进 `deploy/secrets/`，允许容器 node 用户读取，限制无关用户访问。
-
-先按 [单配置教程](10-single-config-workflow.md) 生成自己的 `generated/club/`。Compose 只读挂载这个目录，API 自动读取公开品牌和首启 seed，已有数据库不会被重新初始化。更换配置后重新生成并重启 API；不要让演示配置覆盖正式品牌。
-
-在 `deploy` 目录运行：
+将自己的配置包放入 `config/`。如果还未制作，先使用 [品牌配置页](https://openni.im/studio/) 导出，再按 [配置教程](10-single-config-workflow.md) 放置 `club.json` 与 Logo。检查并生成：
 
 ```sh
+node scripts/configure-club.mjs --check config/club.json --mode production
+node scripts/configure-club.mjs --apply config/club.json --mode production
+```
+
+**检查结果：** `generated/club/` 中出现 `public.json`、`seed.json`、`manifest.json` 和政策页面。正式校验未通过时，按输出补齐真实经营资料和平台身份，不要通过切回测试模式绕过。
+
+## 4. 填写服务端配置
+
+在仓库根目录执行：
+
+```sh
+cp deploy/.env.example deploy/.env
+```
+
+用编辑器打开 `deploy/.env`，逐项填写：
+
+| 字段 | 填写方法 |
+| --- | --- |
+| `API_DOMAIN` | `api.你的域名`，不带协议或路径 |
+| `ACME_EMAIL` | 接收证书通知的邮箱 |
+| `API_MODE` | 正式环境保持 `production` |
+| `ADMIN_TOKEN` | 至少 32 字符的随机管理员令牌 |
+| `CORS_ORIGINS` | 允许访问 API 的完整网页来源，如 `https://api.你的域名`；多个来源用逗号分隔 |
+| `WECHAT_*` | 按 [微信登录与支付](09-wechat-adapters.md) 填写自己的平台信息 |
+
+将文件里的 `api.example.com` 回调地址换成自己的 API 域名。支付配置未完成时，保留 `WECHAT_PAY_ENABLED=false` 和 `WECHAT_NATIVE_PAY_ENABLED=false`。
+
+需要支付时，把商户 PEM 文件放进 `deploy/secrets/`。环境变量中的 `/run/openni-secrets/` 是容器内的路径，对应这个目录。确认容器的 node 用户能读取文件，且无关用户不能读取。
+
+`deploy/.env`、管理员令牌和私钥不放进公开网站或 Git。后台连接时需要的 API 地址是公开信息，管理员令牌是秘密信息。
+
+## 5. 启动服务
+
+进入部署目录执行：
+
+```sh
+cd deploy
 docker compose config --quiet
 docker compose up -d --build
 docker compose ps
 ```
 
-`config --quiet` 只校验、不打印解析后的秘密。只向宿主机开放 80/443；API 的 8787 仅容器网络可访问。SQLite 保存在命名卷 `openni-club_api-data`，证书在单独持久化卷；重建容器不清空它们。不要使用 `down -v` 作为日常重启命令。
+`config --quiet` 只校验配置，不打印解析后的秘密。Caddy 会申请 HTTPS 证书并把 API 请求转发到容器内部的 8787 端口。
 
-打开 `https://api.你的域名/health`，再打开 `https://api.你的域名/admin/`，用管理员令牌连接同一 API。品牌向导位于同源 `/studio/`，导出的文件仍需生成、检查和部署，不会直接覆写运行中的数据库。俱乐部目录先替换演示内容，再做真实微信联调。公开截图网站与 Web 客户端可独立部署仓库 `dist/`；本 Compose 提供 API、运营后台和品牌向导，不会自动构建或发布应用商店包。
+**检查结果：** `api` 为 `healthy`，`caddy` 为运行状态。浏览器打开 `https://api.你的域名/health`，能看到健康状态 JSON。
 
-如果证书申请失败，检查 DNS、端口和 Caddy 日志；不关闭 TLS 验证。可运行 `docker compose logs --tail=50 caddy`；分享日志前确认没有私人数据。更新用 `docker compose up -d --build`，更新前先做一致性备份。
+若准备启用 Cloudflare 代理，先确认源站证书已经正常，再把记录切换为「已代理」，SSL/TLS 采用 **Full (strict)**。不要用关闭 TLS 校验解决证书错误。[Caddy HTTPS 要求](https://caddyserver.com/docs/automatic-https)
+
+## 6. 连接后台和客户端
+
+打开 `https://api.你的域名/admin/`，点击 **连接俱乐部**，填写：
+
+- API 地址：`https://api.你的域名/api/v1`
+- 管理员令牌：刚才在 `deploy/.env` 中设置的 `ADMIN_TOKEN`
+
+连接后进入服务目录，填写自己的服务、规格与价格；再维护成员、排班、公告和图片。不要继续使用项目自带的示例经营资料。
+
+在 `config/club.json` 的 `endpoints.apiBaseUrl` 填写同一 API 地址，重新生成配置并构建客户端。正式模式需要真实微信身份；先按微信章节完成登录，再验证下单、派单、接单和订单查询。
+
+**检查结果：** 后台能读取自己的俱乐部目录；客户端登录后能查询自己的订单；另一个账号不能读取前一账号的订单。
+
+## 7. 更新与备份
+
+数据库位于 Compose 命名卷 `openni-club_api-data`。证书使用独立的 Caddy 数据卷，普通容器重建不会清空它们。日常重启不要使用 `docker compose down -v`。
+
+更新前先记录当前版本并做一致性备份。SQLite 开启 WAL 时，使用 SQLite 一致性备份工具，或停止写入后完整备份；不要只复制正在写入的主数据库文件。定期在测试目录恢复一次，确认订单和账本能正常读取。
+
+更新代码与配置后，在 `deploy/` 执行：
+
+```sh
+docker compose up -d --build
+docker compose ps
+```
+
+**检查结果：** 服务重新变为健康状态，历史订单仍在。若更新失败，恢复之前的应用版本与匹配的数据库备份，不要删除数据目录来排错。
+
+## 常见问题
+
+| 现象 | 检查项 |
+| --- | --- |
+| 无法签发证书 | 域名是否解析到服务器、80/443 是否可从公网访问、是否被其他服务占用 |
+| API 容器退出 | `docker compose logs --tail=50 api`；检查环境配置、数据卷权限与 Node 版本 |
+| 后台无法连接 | API 地址是否包含 `/api/v1`、令牌是否一致、`CORS_ORIGINS` 是否包含后台完整来源 |
+| 小程序提示非法域名 | 在微信后台填写自己的合法服务器域名，并使用有效 HTTPS 证书 |
+| 更新后出现新的空目录 | 检查 Compose 项目名、数据卷和 `DATA_DIR`，不要把新建卷误认为原数据丢失 |
+| 公开网站没有启动 | 此 Compose 提供 API、后台和品牌配置页；公开网站与 Web App 需另外构建并发布 `dist/` |
+
+域名备案、服务类目与平台准入按所选托管商、微信控制台及 [工信部备案系统](https://beian.miit.gov.cn/) 的实际要求核验。域名可以解析，并不代表已经完成应用发布要求。

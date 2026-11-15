@@ -15,7 +15,8 @@
   }
   redir /admin /admin/ 308
   redir /studio /studio/ 308
-  redir /guide/* https://github.com/nph-cn/openni-club/tree/main/docs 302
+  redir /guide /guide/ 308
+  redir /guide/* https://openni.im{uri} 302
   @shared path /style.css /library.css /icon.svg /fonts/*
   handle @shared {
     root * /srv/showcase

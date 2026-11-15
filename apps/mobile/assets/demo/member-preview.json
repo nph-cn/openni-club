@@ -5,8 +5,8 @@
   "readOnly": true,
   "me": {
     "user": {
-      "id": "53fe2474-1349-40cc-9b1e-43a3afac6a3e",
-      "name": "演示成员"
+      "id": "11c261f8-0c0d-477e-accd-df6da5837003",
+      "name": "阿屿"
     },
     "role": "member",
     "playerId": "p1",
@@ -31,7 +31,7 @@
   },
   "orders": [
     {
-      "id": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "id": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -57,7 +57,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -66,7 +66,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -87,17 +89,17 @@
       },
       "events": [
         {
-          "id": "9a20cfcc-2fd5-4d5f-965c-7e2b25aef400",
+          "id": "ed817e36-3c4c-48fe-91e3-da719408f70a",
           "type": "created",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "36a1e58e-a724-4cf1-ab2f-b41263188088",
+          "id": "c5eaf6ef-5b6f-48d4-afe7-d0835e814fbc",
           "type": "assigned",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -107,7 +109,7 @@
           "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "bb346aa3-a6d7-4ca7-a680-130e3c37f548",
+          "id": "311c1aa4-53ab-4e24-9f7f-9d18b0f3d69d",
           "type": "accepted",
           "at": "2026-11-15T11:45:00.000Z",
           "actor": {
@@ -117,7 +119,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "022a32e8-a4a8-4780-8fd1-90be050f67e7",
+          "id": "11c91558-53a7-4768-8bd0-17858f69b023",
           "type": "started",
           "at": "2026-11-15T12:00:00.000Z",
           "actor": {
@@ -127,7 +129,7 @@
           "message": "成员已开始服务。"
         },
         {
-          "id": "2371678b-1da1-4fdf-9d22-a47f8d6af420",
+          "id": "55d1f1d2-f256-4d33-9a06-d1d11d8a66cd",
           "type": "delivery_submitted",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -137,17 +139,17 @@
           "message": "已按约定完成小队沟通练习，并一起复盘关键报点。无游戏账号密码交换。"
         },
         {
-          "id": "8455873a-7aa9-4fd3-9d33-7e196f7aafbe",
+          "id": "3cb64d50-a2d9-48e4-abc4-bdb01dfdc752",
           "type": "confirmed",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "客户已确认交付，成员收入转为可结算。"
         },
         {
-          "id": "2ed953b0-7236-4098-824d-ec0276673cae",
+          "id": "f4f0f8a3-6d8a-4a72-b09f-3d213c166dcb",
           "type": "settlement_recorded",
           "at": "2026-11-15T13:00:00.000Z",
           "actor": {
@@ -170,7 +172,7 @@
       "dispute": null
     },
     {
-      "id": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+      "id": "ac05d6db-293a-4911-9223-a6c69af58c9c",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -196,7 +198,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -205,7 +207,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -226,17 +230,17 @@
       },
       "events": [
         {
-          "id": "cfebfbce-c134-4125-9996-7b0351fdacfc",
+          "id": "299c14ae-6f60-4314-9528-1e5979796299",
           "type": "created",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "e6f0901e-2f30-40ab-a311-4b9cce147423",
+          "id": "d6e998d1-4a69-47ae-bf67-655cfb02b430",
           "type": "assigned",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
@@ -246,7 +250,7 @@
           "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
         },
         {
-          "id": "7926412b-415c-41e3-baaa-1a15214da923",
+          "id": "3f131037-8184-49fe-94b1-6158e1865a60",
           "type": "accepted",
           "at": "2026-11-15T13:05:00.000Z",
           "actor": {
@@ -256,7 +260,7 @@
           "message": "成员已接单，预约时间已锁定。"
         },
         {
-          "id": "d5e737ed-905a-4dd7-aa52-4292662f9531",
+          "id": "6b53eb97-34e0-453d-a2b0-3d4246e7fe6d",
           "type": "started",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
@@ -271,7 +275,7 @@
       "dispute": null
     },
     {
-      "id": "d76db3a0-40a5-424e-b4c8-8f9fb79600a5",
+      "id": "14c40ab5-274a-4a01-997e-9baa94369c64",
       "serviceId": "s1",
       "serviceTitle": "三角洲 · PC 小时陪",
       "playerId": null,
@@ -297,7 +301,7 @@
         "title": "三角洲 · PC 小时陪",
         "game": "三角洲行动",
         "category": "小时陪",
-        "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+        "description": "路线沟通 · 报点协作",
         "priceCents": 3900,
         "durationMinutes": 60,
         "tags": [
@@ -306,7 +310,9 @@
         ],
         "inclusions": [],
         "requirements": [],
-        "coverUrl": "",
+        "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+        "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+        "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
         "platform": "PC",
         "serviceType": "hourly",
         "billingUnit": "hour",
@@ -327,17 +333,17 @@
       },
       "events": [
         {
-          "id": "383ed561-c5ea-487a-b0a4-7d0fac2152ac",
+          "id": "9a69bddd-f8d4-40bd-ab5d-1e93efd8a34d",
           "type": "created",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
             "role": "customer",
-            "name": "演示客户 · 林"
+            "name": "林"
           },
           "message": "已提交演示预约，不产生真实付款。"
         },
         {
-          "id": "8363c333-bd36-4873-a53b-a224b8b0376e",
+          "id": "5b997a5a-ff76-4dec-82df-569e10587be8",
           "type": "assigned",
           "at": "2026-11-15T13:15:00.000Z",
           "actor": {
@@ -355,8 +361,8 @@
   "earnings": {
     "entries": [
       {
-        "id": "71b5080f-09ee-452a-80f7-945981222e82",
-        "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+        "id": "6ac14f7d-4a3e-4a35-b980-e02b5888aabe",
+        "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
         "playerId": "p1",
         "grossCents": 3900,
         "clubCents": 780,
@@ -365,7 +371,7 @@
         "createdAt": "2026-11-15T13:00:00.000Z",
         "availableAt": "2026-11-15T13:00:00.000Z",
         "settledAt": "2026-11-15T13:00:00.000Z",
-        "settlementId": "12741755-0d64-49be-b959-611be19342ae",
+        "settlementId": "151b7d2e-3602-4efa-967f-04c07fbd79d0",
         "demo": true
       }
     ],
@@ -378,13 +384,13 @@
     "currency": "CNY",
     "settlements": [
       {
-        "id": "12741755-0d64-49be-b959-611be19342ae",
+        "id": "151b7d2e-3602-4efa-967f-04c07fbd79d0",
         "paymentReference": "DEMO-RECEIPT-NO-TRANSFER",
         "note": "只读演示凭据，没有真实打款。",
         "createdAt": "2026-11-15T13:00:00.000Z",
         "memberCents": 3120,
         "entryIds": [
-          "71b5080f-09ee-452a-80f7-945981222e82"
+          "6ac14f7d-4a3e-4a35-b980-e02b5888aabe"
         ],
         "demo": true,
         "moneyTransferred": false,
@@ -457,52 +463,52 @@
   },
   "notifications": [
     {
-      "id": "771e6aaa-08fd-4b4c-8d16-e1999930fc58",
+      "id": "6bf69d9b-432b-4712-b996-4b157b98dd77",
       "role": "member",
       "type": "order_assigned",
       "title": "有一条预约等待接单",
       "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
-      "orderId": "d76db3a0-40a5-424e-b4c8-8f9fb79600a5",
+      "orderId": "14c40ab5-274a-4a01-997e-9baa94369c64",
       "createdAt": "2026-11-15T13:15:00.000Z",
       "readAt": null
     },
     {
-      "id": "0c6c53a9-e5bc-43b3-83e9-5c63e4c5b824",
+      "id": "95975b77-f598-4e1d-9ff5-a79b2a9d8e0d",
       "role": "member",
       "type": "order_assigned",
       "title": "有一条预约等待接单",
       "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
-      "orderId": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+      "orderId": "ac05d6db-293a-4911-9223-a6c69af58c9c",
       "createdAt": "2026-11-15T13:05:00.000Z",
       "readAt": null
     },
     {
-      "id": "1425e3cd-276a-4670-8f27-34dbbb6d6615",
+      "id": "928917ea-ae22-4877-9361-4fb8b841d39d",
       "role": "member",
       "type": "settlement_recorded",
       "title": "结算凭据已记录",
       "body": "请核对实际收款；这不是系统自动转账。",
-      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "createdAt": "2026-11-15T13:00:00.000Z",
       "readAt": null
     },
     {
-      "id": "965cdf82-a01a-4722-886a-866d0ea4fda8",
+      "id": "640f434e-4be7-42eb-855b-d7bd65d7ab02",
       "role": "member",
       "type": "order_completed",
       "title": "客户已确认完成",
       "body": "本单收入已转为可结算，请查看收入明细。",
-      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "createdAt": "2026-11-15T13:00:00.000Z",
       "readAt": null
     },
     {
-      "id": "e8c7f5b3-4483-403e-9f37-1b7ae63f89a6",
+      "id": "d3aa50ec-d4bf-4a0f-b017-d1371b69e5d8",
       "role": "member",
       "type": "order_assigned",
       "title": "有一条预约等待接单",
       "body": "三角洲 · PC 小时陪，预计成员收入 ¥31.20。",
-      "orderId": "0d6b04d3-4df9-4527-bc7e-f83ed6b5674f",
+      "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "createdAt": "2026-11-15T11:45:00.000Z",
       "readAt": null
     }

@@ -108,7 +108,6 @@ class _MemberPageState extends State<MemberPage> {
     return ClubPage(
       repo: repo,
       title: heading,
-      demoLabel: repo.isLocal ? '只读演示' : '演示',
       tab: tab,
       actions: [
         IconButton(
@@ -507,7 +506,7 @@ class _MemberPageState extends State<MemberPage> {
                             }
                             Navigator.pop(ctx, true);
                           },
-                    child: Text(repo.isLocal ? '只读演示 · 不提交' : '提交给客户确认'),
+                    child: const Text('提交给客户确认'),
                   ),
                 ],
               ),
@@ -808,13 +807,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                 if (mounted) setState(() => saving = false);
               }
             },
-      child: Text(
-        widget.repo.isLocal
-            ? '只读演示'
-            : saving
-            ? '正在保存…'
-            : '保存可接时段',
-      ),
+      child: Text(saving ? '正在保存…' : '保存可接时段'),
     ),
     child: PageList(
       children: [

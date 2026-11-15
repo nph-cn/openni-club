@@ -83,7 +83,7 @@ class _OrdersPageState extends State<OrdersPage> {
           if (items.isEmpty)
             EmptyState(
               '这里还没有预约',
-              '找到喜欢的服务，和合拍的队友一起开始。',
+              '选择服务并预约时段。',
               action: FilledButton(
                 onPressed: () => context.go('/services'),
                 child: const Text('去发现服务'),
@@ -269,16 +269,6 @@ class _OrderPageState extends State<OrderPage> {
       child: PageList(
         children: [
           const SizedBox(height: 6),
-          Row(
-            children: [
-              const Spacer(),
-              Text(
-                '#${o['id'].toString().split('-').last.substring(0, o['id'].toString().split('-').last.length.clamp(0, 8))}',
-                style: const TextStyle(fontSize: 13, color: muted),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
           Text(
             title,
             style: const TextStyle(
@@ -297,17 +287,13 @@ class _OrderPageState extends State<OrderPage> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: sage,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.sports_esports_outlined,
-                        size: 23,
-                        color: forest,
+                    SizedBox(
+                      width: 82,
+                      height: 82,
+                      child: ServiceArt(
+                        repo.findService(o['serviceId']) ??
+                            Json.from(o['serviceSnapshot'] ?? {}),
+                        radius: 12,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -419,6 +405,7 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ],
           const Divider(),
+          PairRow('订单编号', '${o['id']}'),
           PairRow('联系方式', '${o['contact']}'),
           PairRow(
             '预约备注',
@@ -521,7 +508,7 @@ class _OrderPageState extends State<OrderPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Text(
-                '这一场，感觉如何？',
+                '评价服务',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -550,7 +537,7 @@ class _OrderPageState extends State<OrderPage> {
               TextField(
                 controller: comment,
                 maxLength: 200,
-                decoration: const InputDecoration(labelText: '说说这次配合（选填）'),
+                decoration: const InputDecoration(labelText: '评价内容（选填）'),
               ),
               const SizedBox(height: 16),
               FilledButton(

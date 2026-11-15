@@ -211,7 +211,6 @@ class ClubPage extends StatelessWidget {
     this.actions,
     this.appBar = true,
     this.onBack,
-    this.demoLabel = '演示',
   });
   final ClubRepository repo;
   final Widget child;
@@ -221,7 +220,6 @@ class ClubPage extends StatelessWidget {
   final List<Widget>? actions;
   final bool appBar;
   final VoidCallback? onBack;
-  final String demoLabel;
   @override
   Widget build(BuildContext context) {
     final apple = appleChrome(context), media = MediaQuery.of(context);
@@ -325,16 +323,7 @@ class ClubPage extends StatelessWidget {
                             }
                           },
                     ),
-              actions: [
-                if (!repo.isProduction)
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: actions?.isNotEmpty == true ? 8 : 20,
-                    ),
-                    child: Center(child: DemoMarker(label: demoLabel)),
-                  ),
-                ...?actions,
-              ],
+              actions: actions,
             ),
       body: _PageInsets(
         top: apple && appBar ? kToolbarHeight + media.padding.top : 0,
@@ -389,32 +378,21 @@ class ClubPage extends StatelessWidget {
   }
 }
 
-class DemoMarker extends StatelessWidget {
-  const DemoMarker({super.key, this.label = '演示'});
-  final String label;
-  @override
-  Widget build(BuildContext context) => Text(
-    label,
-    style: const TextStyle(
-      fontSize: 13,
-      fontWeight: FontWeight.w400,
-      color: muted,
-    ),
-  );
-}
-
 class PageList extends StatelessWidget {
   const PageList({
     super.key,
     required this.children,
     this.padding = const EdgeInsets.fromLTRB(20, 8, 20, 28),
+    this.controller,
   });
+  final ScrollController? controller;
   final List<Widget> children;
   final EdgeInsets padding;
   @override
   Widget build(BuildContext context) {
     final inset = _PageInsets.of(context);
     return ListView(
+      controller: controller,
       padding:
           padding +
           EdgeInsets.only(top: inset?.top ?? 0, bottom: inset?.bottom ?? 0),

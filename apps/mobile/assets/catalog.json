@@ -1,22 +1,48 @@
 {
   "announcements": [
     {
-      "body": "这是 OpenNI Club 的演示公告。你可以浏览服务、了解成员并体验预约。所有订单均为模拟预约，不扣款、不提供真实游戏服务。",
+      "body": "预约前确认设备、地图和上线时间，按服务约定沟通需求。请勿提交游戏密码、身份证或其他无关个人信息。",
       "id": "a1",
       "publishedAt": "2026-11-15T09:00:00+08:00",
-      "title": "欢迎来到北岸，一起找到同频队友"
+      "title": "预约须知"
     },
     {
-      "body": "预约时填写你希望的上线时间、联系方式和偏好。不要提交游戏密码、身份证或支付凭证。真实俱乐部上线前需要配置客服、隐私政策和订单规则。",
+      "body": "需要改期或更换成员，请联系俱乐部客服。对服务交付有疑问，可在订单中申请售后，并说明问题与相关记录。",
       "id": "a2",
       "publishedAt": "2026-11-14T10:00:00+08:00",
-      "title": "预约前，先把这些小事说清楚"
+      "title": "改期与售后"
     },
     {
-      "body": "尊重队友，文明交流。不要分享账号，不使用外挂或任何破坏公平竞技的工具。出现争议时通过俱乐部客服处理。",
+      "body": "尊重队友，文明交流。双方各自使用自己的游戏账号，不使用外挂或破坏公平竞技的工具。",
       "id": "a3",
       "publishedAt": "2026-11-13T12:00:00+08:00",
-      "title": "友好交流，从每一次报点开始"
+      "title": "文明协作"
+    }
+  ],
+  "banners": [
+    {
+      "game": "三角洲行动",
+      "id": "b-delta",
+      "imageUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "serviceId": "s1",
+      "sortOrder": 0,
+      "title": "三角洲行动"
+    },
+    {
+      "game": "无畏契约",
+      "id": "b-valorant",
+      "imageUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "serviceId": "s3",
+      "sortOrder": 1,
+      "title": "无畏契约"
+    },
+    {
+      "game": "英雄联盟",
+      "id": "b-league",
+      "imageUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "serviceId": "s4",
+      "sortOrder": 2,
+      "title": "英雄联盟"
     }
   ],
   "players": [
@@ -86,11 +112,14 @@
   ],
   "services": [
     {
+      "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
       "billingUnit": "hour",
       "category": "小时陪",
-      "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "description": "路线沟通 · 报点协作",
       "durationMinutes": 60,
       "game": "三角洲行动",
+      "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
       "gameMode": "烽火地带",
       "id": "s1",
       "maps": [
@@ -136,11 +165,14 @@
       ]
     },
     {
+      "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
       "billingUnit": "session",
       "category": "复盘",
-      "description": "与一位教练共同查看你提供的对局记录，梳理路线、报点和决策，交付文字复盘。",
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img2.jpg",
+      "description": "路线分析 · 决策复盘 · 文字建议",
       "durationMinutes": 60,
       "game": "三角洲行动",
+      "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
       "gameMode": "烽火地带",
       "id": "s2",
       "maps": [
@@ -163,11 +195,14 @@
       "title": "三角洲 · 对局复盘"
     },
     {
+      "bannerUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
       "billingUnit": "hour",
       "category": "小时陪",
-      "description": "一位成员提供团队语音、角色协作和组队对局，按约定时间结束。",
+      "coverUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "description": "团队语音 · 角色协作",
       "durationMinutes": 60,
       "game": "无畏契约",
+      "gameIconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/cbf4460132cdfeb2a97fad5f9dd25ba0bc058f76-128x128.png",
       "gameMode": "普通对局",
       "id": "s3",
       "maps": [],
@@ -186,11 +221,14 @@
       "title": "无畏契约 · 组队小时陪"
     },
     {
+      "bannerUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
       "billingUnit": "hour",
       "category": "小时陪",
-      "description": "一位成员与你双排，预约前沟通位置与时段。双排指两位玩家，不是两位服务成员。",
+      "coverUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "description": "位置沟通 · 双排组队",
       "durationMinutes": 60,
       "game": "英雄联盟",
+      "gameIconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/565197caf987af4e4da307df6e2b235a28714736-837x469.jpg",
       "gameMode": "召唤师峡谷",
       "id": "s4",
       "maps": [

@@ -130,5 +130,17 @@
     "height": 1806,
     "capture": "CUA / Safari / read-only API-derived demo snapshot",
     "viewport": "1740×903 CSS pixels at 2× scale"
+  },
+  {
+    "id": "admin-banners",
+    "file": "admin-banners.png",
+    "title": "首页横幅",
+    "role": "operator",
+    "flow": "account",
+    "source": "apps/admin/content.js",
+    "width": 3480,
+    "height": 1806,
+    "capture": "CUA / Safari / API-derived preview after live local save verification",
+    "viewport": "1740×903 CSS pixels at 2× scale"
   }
 ]

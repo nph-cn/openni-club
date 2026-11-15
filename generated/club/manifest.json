@@ -3,12 +3,12 @@
     {
       "bytes": 1428,
       "path": "generated/club/public.json",
-      "sha256": "cac39eacbf79e9320a7a6f2509cf844919cc7b7097399abf1ffce11e8a08e211"
+      "sha256": "f6528de136a119d61b8145eda67291c2a14ee83287dab8dcd08fd1faf012f3ba"
     },
     {
       "bytes": 1428,
       "path": "apps/mobile/assets/brand.json",
-      "sha256": "cac39eacbf79e9320a7a6f2509cf844919cc7b7097399abf1ffce11e8a08e211"
+      "sha256": "f6528de136a119d61b8145eda67291c2a14ee83287dab8dcd08fd1faf012f3ba"
     },
     {
       "bytes": 24367,
@@ -28,7 +28,7 @@
     {
       "bytes": 1537,
       "path": "apps/miniprogram/utils/brand.generated.js",
-      "sha256": "dc207ece8dcfe1dfadc37e0c2b4455126d7a639210acedacf7c0296e714c3ee7"
+      "sha256": "192554bc59149c13033ee442ba8c2ed5f22bebcb1c09b3cdce40eb8637116878"
     },
     {
       "bytes": 575,
@@ -36,14 +36,14 @@
       "sha256": "380fe7d633c0232ce209c597a06aec9d331feb37a0d4556b5c3ac5cc0d1dcd8f"
     },
     {
-      "bytes": 7916,
+      "bytes": 9422,
       "path": "generated/club/seed.json",
-      "sha256": "eab35603aa0339e244290489be77bb24b1cab328bd9227cd3391171c0730af41"
+      "sha256": "993753b9afb9d10ef1fd1537be917745c8a0acc4bee5d4db5b44c1e4dc867f38"
     },
     {
-      "bytes": 6429,
+      "bytes": 7935,
       "path": "apps/mobile/assets/catalog.json",
-      "sha256": "9d86c745e54f44255bc42317b406fa5197d0210f08c40abad68d29d7064b5783"
+      "sha256": "b64cfa536c52be0a511f7430fdef110e7cf9eec3f953841422484f623d493f8d"
     },
     {
       "bytes": 924,
@@ -197,7 +197,7 @@
     }
   ],
   "clubId": "northshore",
-  "configHash": "e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980",
+  "configHash": "3398608fe8d5ddf8ee3be096b8af4dd9875471bfa3db57d2811e3e1590648d3f",
   "distribution": {
     "androidApplicationId": "club.openni.c5ccdaffc95",
     "appleTeamId": "",

@@ -65,7 +65,7 @@ export function createApp(config) {
     CREATE TABLE IF NOT EXISTS metadata(key TEXT PRIMARY KEY,value TEXT NOT NULL);`);
   if(!db.prepare("SELECT value FROM metadata WHERE key='catalog_initialized'").get()){
     db.exec('BEGIN IMMEDIATE');try{
-      for(const [kind,items] of Object.entries(config.initialSeed?{services:config.initialSeed.services,players:config.initialSeed.players,announcements:config.initialSeed.announcements}:{services,players,announcements}))for(const item of items)db.prepare('INSERT INTO catalog(kind,id,body) VALUES(?,?,?)').run(kind,item.id,JSON.stringify(content(kind,item)));
+      for(const [kind,items] of Object.entries(config.initialSeed?{services:config.initialSeed.services,players:config.initialSeed.players,announcements:config.initialSeed.announcements,banners:config.initialSeed.banners||[]}:{services,players,announcements,banners:[]}))for(const item of items)db.prepare('INSERT INTO catalog(kind,id,body) VALUES(?,?,?)').run(kind,item.id,JSON.stringify(content(kind,item)));
       db.prepare('INSERT INTO metadata VALUES(?,?)').run('club',JSON.stringify(config.initialSeed?.club||{...club,demoData:true}));
       db.prepare('INSERT INTO metadata VALUES(?,?)').run('catalog_initialized','true');db.exec('COMMIT');
     }catch(err){db.exec('ROLLBACK');throw err;}
@@ -140,7 +140,14 @@ export function createApp(config) {
     if(kind==='services') {
       if(!Number.isInteger(data.priceCents)||data.priceCents<1||data.priceCents>10000000)throw fail(400,'VALIDATION','价格须为 1 至 10000000 分之间的整数。');
       if(!Number.isInteger(data.durationMinutes)||data.durationMinutes<15||data.durationMinutes>720)throw fail(400,'VALIDATION','时长须为 15 至 720 分钟之间的整数。');
-      return {id,title:str(data.title,'服务名称',100),game:str(data.game,'游戏',60),category:str(data.category,'类别',40),description:str(data.description,'介绍',3000),priceCents:data.priceCents,durationMinutes:data.durationMinutes,tags:list(data.tags||[],'标签'),inclusions:list(data.inclusions||[],'服务包含',240),requirements:list(data.requirements||[],'预约要求',240),coverUrl:image(data.coverUrl,'服务封面'),...validateServiceSpec(data,fail),variants:validateVariants(data.variants,fail)};
+      return {id,title:str(data.title,'服务名称',100),game:str(data.game,'游戏',60),category:str(data.category,'类别',40),description:str(data.description,'介绍',3000),priceCents:data.priceCents,durationMinutes:data.durationMinutes,tags:list(data.tags||[],'标签'),inclusions:list(data.inclusions||[],'服务包含',240),requirements:list(data.requirements||[],'预约要求',240),coverUrl:image(data.coverUrl,'服务封面'),gameIconUrl:image(data.gameIconUrl,'游戏图标'),bannerUrl:image(data.bannerUrl,'游戏横幅'),...validateServiceSpec(data,fail),variants:validateVariants(data.variants,fail)};
+    }
+    if(kind==='banners'){
+      const imageUrl=image(str(data.imageUrl,'横幅图片',2048),'横幅图片'),serviceId=str(data.serviceId,'目标服务',64,false),game=str(data.game,'目标游戏',60,false),sortOrder=data.sortOrder??0;
+      if(!serviceId&&!game)throw fail(400,'VALIDATION','横幅须关联一个服务或游戏。');
+      if(serviceId&&!db.prepare("SELECT 1 FROM catalog WHERE kind='services' AND id=? AND archived=0").get(serviceId))throw fail(400,'VALIDATION','横幅关联的服务不存在或已归档。');
+      if(!Number.isInteger(sortOrder)||sortOrder<0||sortOrder>1000)throw fail(400,'VALIDATION','排序须为 0 至 1000 的整数。');
+      return {id,title:str(data.title,'横幅标题',100),imageUrl,serviceId,game,sortOrder};
     }
     if(kind==='players') {
       if(!/^#[0-9a-fA-F]{6}$/.test(data.color||''))throw fail(400,'VALIDATION','头像颜色须为 #RRGGBB。');
@@ -247,6 +254,7 @@ export function createApp(config) {
         if(route==='/club')return send(res,200,{...clubData(),demo:config.mode==='demo'});
         if(route==='/services')return send(res,200,catalog('services'));
         if(route==='/players')return send(res,200,catalog('players'));
+        if(route==='/banners')return send(res,200,catalog('banners').filter(b=>!b.serviceId||entry('services',b.serviceId)).sort((a,b)=>a.sortOrder-b.sortOrder||a.id.localeCompare(b.id)));
         if(route==='/announcements')return send(res,200,catalog('announcements'));
         const match=/^\/(services|players)\/([^/]+)$/.exec(route);
         if(match){const item=entry(match[1],match[2]);if(!item)throw fail(404,'NOT_FOUND','内容不存在。');return send(res,200,item);}
@@ -362,7 +370,7 @@ export function createApp(config) {
             return send(res,200,clubData());
           }
         }
-        const resource=/^\/admin\/(services|players|announcements)(?:\/([^/]+))?$/.exec(route);
+        const resource=/^\/admin\/(services|players|announcements|banners)(?:\/([^/]+))?$/.exec(route);
         if(resource){
           const [,kind,id]=resource;
           if(req.method==='GET'&&!id)return send(res,200,catalog(kind,true));

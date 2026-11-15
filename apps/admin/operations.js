@@ -2,8 +2,8 @@ import {el,money,dateTime,safeImage,apiAddress,shanghaiInput,fromShanghaiInput,f
 import {contentManager} from './content.js';
 
 const $=selector=>document.querySelector(selector);
-const titles={overview:'今日待办',dispatch:'派单工作台',orders:'全部订单',members:'成员与排班',settlements:'收入与结算',disputes:'售后处理',brand:'品牌与发布',connection:'连接与集成',services:'服务目录',announcements:'俱乐部公告'};
-let data={orders:[],players:[],services:[],announcements:[],club:{},overview:{counts:{},totals:{}},settlements:{entries:[],totals:{},settlements:[]},disputes:[]};
+const titles={overview:'今日待办',dispatch:'派单工作台',orders:'全部订单',members:'成员与排班',settlements:'收入与结算',disputes:'售后处理',brand:'品牌与发布',connection:'连接与集成',services:'服务目录',announcements:'俱乐部公告',banners:'首页横幅'};
+let data={orders:[],players:[],services:[],announcements:[],banners:[],club:{},overview:{counts:{},totals:{}},settlements:{entries:[],totals:{},settlements:[]},disputes:[]};
 let workspace='overview',apiBase='',adminToken='',orderFilter='all',orderSearch='',currentOrderId=null,actionSubmit=null,loadVersion=0;
 const connected=()=>Boolean(apiBase&&adminToken);
 const mobileNavigation=matchMedia('(max-width:900px)');
@@ -40,7 +40,7 @@ async function refresh(){
  try{
   let next;
   if(connected()){
-   const paths={overview:'/admin/overview',orders:'/admin/orders',players:'/admin/players',services:'/admin/services',announcements:'/admin/announcements',club:'/admin/club',settlements:'/admin/settlements',disputes:'/admin/disputes',config:'/admin/config/status'};
+   const paths={overview:'/admin/overview',orders:'/admin/orders',players:'/admin/players',services:'/admin/services',announcements:'/admin/announcements',banners:'/admin/banners',club:'/admin/club',settlements:'/admin/settlements',disputes:'/admin/disputes',config:'/admin/config/status'};
    const results=await Promise.all(Object.entries(paths).map(async([key,path])=>[key,await request(path)]));next=Object.fromEntries(results);
   }else{const response=await fetch('/admin/demo-snapshot.json',{cache:'no-store'});if(!response.ok)throw Error('示例数据暂时无法读取。');next=await response.json();}
   if(version!==loadVersion)return;
@@ -58,7 +58,7 @@ function render(){
  $('#open-connection').textContent=connected()?'连接设置':'连接俱乐部';$('#preview-banner').hidden=connected();
  $('#dispatch-count').textContent=data.overview.counts.awaitingAssignment||0;$('#dispute-count').textContent=data.overview.counts.disputed||0;
  document.querySelectorAll('[data-workspace],[data-section]').forEach(node=>{const active=(node.dataset.workspace||node.dataset.section)===workspace;node.classList.toggle('selected',active);node.setAttribute('aria-current',active?'page':'false');});
- const isContent=['services','announcements'].includes(workspace);$('#content-panel').hidden=!isContent;$('#orders-panel').hidden=isContent;
+ const isContent=['services','announcements','banners'].includes(workspace);$('#content-panel').hidden=!isContent;$('#orders-panel').hidden=isContent;
  if(isContent){content.show(workspace);return;}
  const views={overview:renderOverview,dispatch:renderDispatch,orders:renderOrders,members:renderMembers,settlements:renderSettlements,disputes:renderDisputes,brand:renderBrand,connection:renderConnection};
  $('#ops-content').replaceChildren(views[workspace]());

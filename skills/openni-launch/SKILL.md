@@ -17,6 +17,8 @@ description: 带领电竞俱乐部部署和配置 OpenNI Club，核验 Flutter�
 
 按用户当前任务读取 [阶段手册](references/stages.md)。每次解释下一小步的目的、操作位置、预期结果和一个常见失败；用户已授权的本地配置与验证直接完成。缺少账号/主体信息时先完成不依赖它的工作，最后给出具体材料清单。
 
+零基础用户从 `docs/index.md` 和 `docs/01-quickstart.md` 开始；面向经营者的阅读入口是 [OpenNI 文档](https://openni.im/guide/)。换首页横幅、游戏图标或服务封面时，读 `third_party/GAME_MEDIA.md`：首次安装用 `initialCatalog`，已有数据库用管理后台「首页横幅」「服务目录」，不要重置数据库来换图。代码的 MIT 协议不包含发行商游戏图片的使用授权。
+
 ## 不可混淆的状态
 
 - 没有 `API_BASE_URL` 的 Flutter 是内置演示；连接 API 后是服务端演示。不得把任何一种称作真实支付或正式身份。

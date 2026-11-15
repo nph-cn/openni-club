@@ -48,6 +48,9 @@ function validateCatalog(catalog, issues) {
     for (const row of rows) {
       if (!row || typeof row !== 'object' || Array.isArray(row) || typeof row.id !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(row.id) || ids.has(`${type}:${row.id}`)) { issues.push(`initialCatalog.${type} 含无效或重复 ID`); continue; }
       ids.add(`${type}:${row.id}`);
+      for(const key of ['coverUrl','gameIconUrl','bannerUrl','imageUrl','avatarUrl'])if(row[key]){try{const u=new URL(row[key]);if(u.protocol!=='https:'||u.username||u.password||row[key].length>2048)throw Error();}catch{issues.push(`initialCatalog.${type}.${key} 必须是有效 HTTPS 图片地址`);}}
+      if(type==='banners'&&((typeof row.title!=='string'||!row.title.trim())||!row.imageUrl||(!row.serviceId&&!row.game)||!Number.isInteger(row.sortOrder??0)||(row.sortOrder??0)<0||(row.sortOrder??0)>1000))issues.push('initialCatalog.banners 需要标题、图片、目标服务或游戏及有效排序');
+      if(type==='banners'&&row.serviceId&&!catalog.services?.some(s=>s.id===row.serviceId))issues.push('initialCatalog.banners 目标服务不存在');
       if (type === 'services' && (typeof row.title !== 'string' || !row.title.trim() || !Number.isSafeInteger(row.priceCents) || row.priceCents <= 0 || !Number.isSafeInteger(row.durationMinutes) || row.durationMinutes < 15)) issues.push('initialCatalog.services 需要名称、正整数分价格和至少15分钟时长');
       if (type === 'players' && (typeof row.name !== 'string' || !row.name.trim() || !Array.isArray(row.games))) issues.push('initialCatalog.players 需要名称及游戏列表');
       if (type === 'announcements' && (typeof row.title !== 'string' || typeof row.body !== 'string')) issues.push('initialCatalog.announcements 需要标题和正文');

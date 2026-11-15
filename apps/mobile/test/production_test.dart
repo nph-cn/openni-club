@@ -1,3 +1,5 @@
+import 'test_catalog.dart';
+
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -100,7 +102,7 @@ void main() {
     );
     repo.club = {...productionClub};
     await repo.book(
-      service: {...demoServices.first, 'priceCents': 1},
+      service: {...await catalogService(repo), 'priceCents': 1},
       variantId: 'pc-60',
       date: DateTime(2030),
       contact: 'contact',
@@ -214,6 +216,7 @@ void main() {
       persist: false,
       wechat: sdk,
     );
+    await tester.runAsync(() => catalogService(repo));
     await tester.pumpWidget(
       OpenNIApp(repository: repo, initialScreen: 'booking'),
     );
@@ -238,14 +241,14 @@ void main() {
       OpenNIApp(repository: repo, initialScreen: 'settings'),
     );
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('清除演示资料'));
-    await tester.tap(find.text('清除演示资料'));
+    await tester.ensureVisible(find.text('清除本地数据'));
+    await tester.tap(find.text('清除本地数据'));
     await tester.pumpAndSettle();
     expect(repo.orders, hasLength(1));
     await tester.tap(find.text('保留资料'));
     await tester.pumpAndSettle();
     expect(repo.orders, hasLength(1));
-    await tester.tap(find.text('清除演示资料'));
+    await tester.tap(find.text('清除本地数据'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('确认清除'));
     await tester.pumpAndSettle();

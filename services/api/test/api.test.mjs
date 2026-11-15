@@ -236,3 +236,21 @@ test('catalog survives restart and production does not accept persisted demo ses
   assert.equal((await call('/api/v1/club')).data.name,'持久化俱乐部');
   assert.equal((await call('/api/v1/orders',{token:session.token})).status,401);
 });
+
+test('media catalog validates HTTPS, persists edits, orders banners and hides archived targets',async t=>{
+  const {call}=await setup(t);
+  for(const value of ['javascript:alert(1)','http://example.test/image.jpg','https://user:pass@example.test/image.jpg'])assert.equal((await call('/api/v1/admin/services/s1',{method:'PATCH',token:admin,body:{gameIconUrl:value}})).status,400);
+  const media={coverUrl:'https://images.example/cover.jpg',gameIconUrl:'https://images.example/icon.png',bannerUrl:'https://images.example/banner.jpg'};
+  assert.equal((await call('/api/v1/admin/services/s1',{method:'PATCH',token:admin,body:media})).status,200);
+  for(const [key,value]of Object.entries(media))assert.equal((await call('/api/v1/services/s1')).data[key],value);
+  const banner={id:'banner-1',title:'游戏服务',imageUrl:media.bannerUrl,serviceId:'s1',sortOrder:2};
+  assert.equal((await call('/api/v1/admin/banners',{method:'POST',body:banner})).status,401);
+  assert.equal((await call('/api/v1/admin/banners',{method:'POST',token:admin,body:{...banner,serviceId:'missing'}})).status,400);
+  assert.equal((await call('/api/v1/admin/banners',{method:'POST',token:admin,body:banner})).status,201);
+  assert.equal((await call('/api/v1/admin/banners',{method:'POST',token:admin,body:{...banner,id:'banner-2',sortOrder:1}})).status,201);
+  assert.deepEqual((await call('/api/v1/banners')).data.map(b=>b.id),['banner-2','banner-1']);
+  await call('/api/v1/admin/banners/banner-2',{method:'DELETE',token:admin});
+  assert.deepEqual((await call('/api/v1/banners')).data.map(b=>b.id),['banner-1']);
+  await call('/api/v1/admin/services/s1',{method:'DELETE',token:admin});
+  assert.deepEqual((await call('/api/v1/banners')).data,[]);
+});

@@ -1,9 +1,9 @@
-# Native mini program screenshots
+# 原生小程序页面截图
 
-The 15 PNGs listed in manifest.json were captured from the running native WeChat DevTools simulator on 2026-11-15. They are not Flutter renders or HTML mockups. The local demo API served the generated 北岸电竞 brand/catalog, actual availability, orders, notifications and ledger responses. All identities and transactions shown are demo data.
+2026-11-15 在微信开发者工具独立 iPhone 12/13 模拟器中运行真实本地 API 拍摄。15 张 PNG 只裁掉开发工具框架，保留状态栏和安全区，实际尺寸 780×1688；没有重绘界面或借用 Flutter 图片。原始开发工具窗口证据保留在工作目录，不作为公共图库素材。
 
-Original simulator captures are 780×1860 JPEGs. The gallery images extract the actual app rectangle at x=0, y=120, width=780, height=1688, preserving the device status bar and bottom safe area. No page content is redrawn, retouched or resized. Raw proof captures and superseded screenshots remain in the task workspace, outside the public source package.
+首页官方游戏横幅与图标、服务封面均实际 HTTPS 加载；横幅跳服务和游戏图标筛选已点击验证。服务详情固定预约入口。预约表单提交生成实际本地订单，客户端未设置付款成功。成员工作台、开放时段与收入来自真实 API 操作后的演示数据，尚未进行真实商户交易。15 页的精确文件、源代码路径与流程分类在 manifest.json。
 
-The booking example selects the actual PC 60-minute SKU at ¥39 and reads the selected member’s actual evening availability. The order screenshot documents a separate real UI submission of that SKU. Member workbench shows an actual scheduled assignment after the UI accepted it; the API returned scheduled with a new timeline event. All15 pages were recaptured after the cool-white/graphite visual update. Ledger amounts reflect a separate completed demo flow, not actual money.
+本轮客户订单：三角洲 PC 60 分钟，17:51，服务端金额3900分、待派单、不扣款。成员阿屿的20:00待接、21:15已排期及31.20元演示账本由HTTP创建→派单→接单/交付→客户确认流程产生，未直接改数据库。截图展示各次捕获时的实际状态。
 
-Environment: WeChat DevTools Stable 2.01.2510290, base library3.7.12, tourist development mode, standalone iPhone12/13(Pro) simulator. Production WeChat login/payment and physical-device acceptance remain unverified.
+游戏图片与商标属于各自权利人，截图中的游戏素材也不适用 MIT；见 ../../../third_party/GAME_MEDIA.md。成员示例头像为单独记录来源的原创虚构人物。

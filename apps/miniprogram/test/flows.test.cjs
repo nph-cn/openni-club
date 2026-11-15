@@ -38,7 +38,7 @@ test('every registered native page and template exists, JSON parses, bindings ar
   assert.equal(app.pages.length,15);
   for(const p of app.pages){
     const script=fs.readFileSync(path.join(root,p+'.js'),'utf8');new vm.Script(script);
-    const xml=fs.readFileSync(path.join(root,p+'.wxml'),'utf8');assert.ok(xml.includes('template is="demo"'));
+    const xml=fs.readFileSync(path.join(root,p+'.wxml'),'utf8');assert.equal(xml.includes('template is="demo"'),p==='pages/booking/booking');
     assert.ok(!xml.includes('<br'));JSON.parse(fs.readFileSync(path.join(root,p+'.json'),'utf8'));
   }
   for(const tab of app.tabBar.list)assert.ok(app.pages.includes(tab.pagePath));

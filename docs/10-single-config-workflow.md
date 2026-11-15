@@ -1,10 +1,21 @@
-# 一个配置包，生成自己的俱乐部
+# 生成应用配置
 
 先准备名称和一张自己的 Logo；不必打开 Dart、JavaScript、Gradle 或 Xcode 源码改品牌。生成器负责把同一配置应用到 Flutter、微信小程序、后端品牌、原生图标和政策页面。真正的上架仍需要你的发布账号、签名、经营资质和审核结果。
 
 ## 第一步：准备配置包
 
-网页品牌向导可以导出 `club.json` 与 `assets/brand/logo.png`。也可以复制仓库 `config/club.example.json`，把自己的 Logo 放进同目录下 `assets/brand/`，修改两个必需字段：
+网页品牌向导可以导出 `club.json` 与 `assets/brand/logo.png`。解压后，把公开配置与素材放到下面的位置：
+
+```text
+openni-club/
+  config/
+    club.json
+    assets/
+      brand/
+        logo.png
+```
+
+如果下载包中有 `server.env`，将它单独放到服务端的秘密配置中；不要放进 `config/assets/` 或网站目录。也可以复制仓库 `config/club.example.json`，把自己的 Logo 放进同目录下 `assets/brand/`，修改两个必需字段：
 
 ```json
 {
@@ -19,6 +30,33 @@
 Logo 路径相对这份 JSON。支持 PNG、JPEG、WebP、SVG，最大5MB；正式图标原图短边至少512像素，推荐1024像素。SVG 不得引用外部文件或包含脚本。图标按比例缩放并留出安全边距，不重画、不拉伸；iOS 图标生成不透明背景，可用 `brand.iconBackground` 指定背景色。
 
 `brand.primaryColor` 是六位十六进制色值。省略时采用默认主题；`shortName`、介绍和标语都可选。预览模式自动提供明确标记为示例的服务与成员。所有字段见 [Schema](../config/club.schema.json)。
+
+### 准备首批服务与横幅
+
+第一次安装时，用 `initialCatalog` 准备服务、成员、公告和首页横幅。已有数据库使用后台内容，生成配置不会重置它。
+
+服务可填写 `coverUrl`、`gameIconUrl` 和 `bannerUrl`。首页横幅使用 `initialCatalog.banners`，例如：
+
+```json
+{
+  "initialCatalog": {
+    "banners": [
+      {
+        "id": "delta-main",
+        "title": "三角洲行动",
+        "imageUrl": "https://cdn.example.com/club/delta-banner.jpg",
+        "serviceId": "your-service-id",
+        "game": "三角洲行动",
+        "sortOrder": 0
+      }
+    ]
+  }
+}
+```
+
+这是一段需要合并到 `club.json` 的配置，不是完整文件。把图片地址换成自己的公开 HTTPS 地址，`serviceId` 对应同一目录中实际存在的服务。`serviceId` 与 `game` 至少填写一项；同时填写时按服务编号跳转，游戏名称须与服务的 `game` 完全一致。不要直接保留示例域名和 ID。
+
+**检查结果：** 生成后在 App 与小程序检查图片和点击去向；连接 API 后，检查它们读取的是运营后台中的最新内容。当前提供图片地址配置，不会自动替你开通对象存储或上传第三方素材。
 
 ## 第二步：检查、看差异、生成
 

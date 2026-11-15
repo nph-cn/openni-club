@@ -566,8 +566,18 @@ class _AccountPageState extends State<AccountPage> {
             trailing: const Icon(Icons.chevron_right_rounded),
             onTap: () => context.push('/settings'),
           ),
-        if (!repo.isProduction) ...[
+        if (settings && !repo.isProduction) ...[
           const Divider(),
+          const Text(
+            '关于当前预览',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            '俱乐部、成员、订单与金额为示例资料，不提供真实服务或收款。人物为原创虚构形象；游戏图片来自发行商，版权归原权利人。',
+            style: TextStyle(fontSize: 14, color: muted, height: 1.65),
+          ),
+          const SizedBox(height: 16),
           OutlinedButton(
             onPressed: busy
                 ? null
@@ -588,7 +598,7 @@ class _AccountPageState extends State<AccountPage> {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.person_remove_outlined),
-            title: Text(repo.isLocal ? '清除演示资料' : '注销账号'),
+            title: Text(repo.isLocal ? '清除本地数据' : '注销账号'),
             onTap: !repo.isLocal && repo.token == null
                 ? null
                 : () async {

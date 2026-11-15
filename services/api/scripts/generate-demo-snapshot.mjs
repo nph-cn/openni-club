@@ -18,8 +18,8 @@ async function call(path,token,method='GET',body){
   const result=await response.json();if(!response.ok)throw Error(`${method} ${path}: ${JSON.stringify(result)}`);return result;
 }
 try{
-  const customer=(await call('/auth/demo',null,'POST',{name:'演示客户 · 林'})).token;
-  const members={};for(const playerId of ['p1','p2','p3','p4'])members[playerId]=(await call('/auth/demo',null,'POST',{role:'member',playerId,name:'演示成员'})).token;
+  const customer=(await call('/auth/demo',null,'POST',{name:'林'})).token;
+  const members={};for(const playerId of ['p1','p2','p3','p4'])members[playerId]=(await call('/auth/demo',null,'POST',{role:'member',playerId,name:({p1:'阿屿',p2:'Echo',p3:'小满',p4:'North'})[playerId]})).token;
   const eveningSlots=Array.from({length:14},(_,day)=>({startAt:new Date(Math.max(serviceStart-2*3600000+day*86400000,Date.now()+60000)).toISOString(),endAt:new Date(serviceStart+3.5*3600000+day*86400000).toISOString()}));
   for(const playerId of Object.keys(members))await call(`/admin/players/${playerId}/availability`,owner,'PUT',{slots:eveningSlots});
   let index=0;
@@ -53,7 +53,7 @@ try{
   const memberPending=await create('s1','稍晚的预约，等待成员接单。');await assign(memberPending,'p1');
 
   const snapshot={generatedAt:new Date(clock).toISOString(),source:'api-fixture',demo:true};
-  for(const [key,path]of Object.entries({overview:'/admin/overview',orders:'/admin/orders',players:'/admin/players',services:'/admin/services',announcements:'/admin/announcements',club:'/club',settlements:'/admin/settlements',disputes:'/admin/disputes'}))snapshot[key]=await call(path,owner);
+  for(const [key,path]of Object.entries({overview:'/admin/overview',orders:'/admin/orders',players:'/admin/players',services:'/admin/services',announcements:'/admin/announcements',banners:'/banners',club:'/club',settlements:'/admin/settlements',disputes:'/admin/disputes'}))snapshot[key]=await call(path,owner);
   const destination=resolve(root,'apps/admin/demo-snapshot.json'),mobile=resolve(root,'services/api/test/fixtures/order-in-progress.json');
   await mkdir(dirname(destination),{recursive:true});await mkdir(dirname(mobile),{recursive:true});
   await writeFile(destination,JSON.stringify(snapshot,null,2)+'\n');await writeFile(mobile,JSON.stringify(inProgress,null,2)+'\n');

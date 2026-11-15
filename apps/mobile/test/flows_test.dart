@@ -1,3 +1,5 @@
+import 'test_catalog.dart';
+
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -39,6 +41,10 @@ void main() {
       await tester.tap(find.text('核对预约'));
       await tester.pumpAndSettle();
       expect(find.text('核对这次预约'), findsOneWidget);
+      expect(
+        tester.getTopLeft(find.text('三角洲 · PC 小时陪')).dy,
+        greaterThanOrEqualTo(0),
+      );
       await tester.tap(find.text('提交预约'));
       await tester.pumpAndSettle();
       expect(repo.orders, isEmpty);
@@ -138,7 +144,7 @@ void main() {
         client: client,
       );
       await repo.book(
-        service: {...demoServices.first, 'priceCents': 1},
+        service: {...await catalogService(repo), 'priceCents': 1},
         variantId: 'pc-60',
         date: DateTime(2030),
         contact: 'demo',
@@ -179,7 +185,7 @@ void main() {
     );
     await expectLater(
       repo.book(
-        service: demoServices.first,
+        service: await catalogService(repo),
         variantId: 'pc-60',
         date: DateTime(2030),
         contact: 'demo',

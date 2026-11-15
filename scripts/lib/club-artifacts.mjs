@@ -22,7 +22,7 @@ export async function renderArtifacts(loaded) {
     packOptions: { ignore: [{ type: 'folder', value: 'screenshots' }, { type: 'folder', value: 'test' }, { type: 'file', value: 'README.md' }] },
     setting: { es6: true, enhance: true, minified: true, urlCheck: true, minifyWXML: true }, libVersion: '3.7.12' }));
   const catalog = mode === 'production' ? { services: [], players: [], announcements: [] } : defaultCatalog(club);
-  const publicCatalog = { ...catalog, ...source.initialCatalog };
+  const publicCatalog = { banners: [], ...catalog, ...source.initialCatalog };
   put('generated/club/seed.json', json({ club, ...publicCatalog }));
   put('apps/mobile/assets/catalog.json', json(publicCatalog));
   put('generated/club/legal/privacy.html', policyHtml(club, 'privacy')); put('generated/club/legal/terms.html', policyHtml(club, 'terms'));

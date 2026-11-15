@@ -1,7 +1,3 @@
-import 'dart:math' as math;
-
-import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoSlidingSegmentedControl;
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -36,9 +32,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
-    final active = repo.orders
-        .where((o) => !['completed', 'cancelled'].contains(stage(o)))
-        .firstOrNull;
     final games = repo.services.map((s) => '${s['game']}').toSet().toList();
     selectedGame ??= games.firstOrNull;
     final services = repo.services
@@ -47,204 +40,151 @@ class _HomePageState extends State<HomePage> {
     final players = repo.players
         .where((p) => (p['games'] as List).contains(selectedGame))
         .toList();
-    final player = active == null
-        ? null
-        : repo.findPlayer(active['assignedPlayerId'] ?? active['playerId']);
+    final active = repo.orders
+        .where((o) => !['completed', 'cancelled'].contains(stage(o)))
+        .firstOrNull;
     return ClubPage(
       repo: repo,
       tab: 0,
       appBar: false,
       child: PageList(
-        padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
         children: [
           Row(
             children: [
-              BrandMark(repo, size: 32),
-              const SizedBox(width: 10),
+              BrandMark(repo, size: 30),
+              const SizedBox(width: 9),
               Expanded(
                 child: Text(
                   repo.clubName,
                   style: const TextStyle(
-                    fontSize: 23,
+                    fontSize: 22,
                     fontWeight: FontWeight.w600,
-                    letterSpacing: -.4,
                   ),
                 ),
               ),
-              if (!repo.isProduction) const DemoMarker(),
-              const SizedBox(width: 8),
               IconButton(
                 tooltip: '通知',
                 onPressed: () => context.push('/notifications'),
-                icon: const Icon(Icons.notifications_none_rounded, size: 23),
+                icon: const Icon(Icons.notifications_none_rounded),
               ),
             ],
           ),
-          const SizedBox(height: 19),
-          if (active != null) ...[
-            InkWell(
-              onTap: () => context.push('/orders/${active['id']}'),
-              borderRadius: BorderRadius.circular(18),
-              child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: ink,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.timelapse_rounded,
-                                size: 16,
-                                color: Color(0xFFC5CBD6),
-                              ),
-                              const SizedBox(width: 7),
-                              Text(
-                                stageName(stage(active)),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFC5CBD6),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 9),
-                          Text(
-                            '${active['serviceTitle']}',
-                            style: const TextStyle(
-                              fontSize: 19,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 9),
-                          Text(
-                            '${when(active['scheduledAt'], onlyTime: true)}  ·  ${player?['name'] ?? '等待安排'}',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFFC5CBD6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Icon(
-                      Icons.arrow_outward_rounded,
-                      color: Colors.white,
-                      size: 23,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
+          const SizedBox(height: 10),
           InkWell(
             onTap: () => context.go('/services'),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: const Row(
                 children: [
-                  Icon(Icons.search_rounded, size: 22, color: muted),
-                  SizedBox(width: 10),
-                  Text('搜索服务或陪练', style: TextStyle(fontSize: 16, color: muted)),
+                  Icon(Icons.search_rounded, size: 21, color: muted),
+                  SizedBox(width: 9),
+                  Text(
+                    '搜索游戏、服务、陪练',
+                    style: TextStyle(fontSize: 15, color: muted),
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
-          if (games.length > 1 && appleChrome(context))
-            CupertinoSlidingSegmentedControl<String>(
-              groupValue: selectedGame,
-              backgroundColor: const Color(0xFFE7EAF0),
-              thumbColor: Colors.white,
-              padding: const EdgeInsets.all(3),
-              children: {
-                for (final game in games.take(3))
-                  game: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 9,
-                      horizontal: 2,
+          if (repo.banners.isNotEmpty)
+            HomeBanners(repo)
+          else if (services.isNotEmpty)
+            AspectRatio(
+              aspectRatio: 2.25,
+              child: ServiceArt(services.first, radius: 16, banner: true),
+            ),
+          if (active != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: InkWell(
+                onTap: () => context.push('/orders/${active['id']}'),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.timelapse_rounded,
+                      size: 18,
+                      color: brandColor(repo),
                     ),
-                    child: Text(
-                      game,
-                      style: TextStyle(
-                        fontFamily: 'NotoSansSC',
+                    const SizedBox(width: 8),
+                    Text(
+                      stageName(stage(active)),
+                      style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: game == selectedGame
-                            ? FontWeight.w600
-                            : FontWeight.w400,
-                        color: ink,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-              },
-              onValueChanged: (value) {
-                if (value != null) setState(() => selectedGame = value);
-              },
-            ),
-          if (games.length > 1 && !appleChrome(context))
-            SegmentedButton<String>(
-              segments: games
-                  .take(3)
-                  .map(
-                    (game) => ButtonSegment(
-                      value: game,
-                      label: Text(game, style: const TextStyle(fontSize: 14)),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        '${active['serviceTitle']}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13, color: muted),
+                      ),
                     ),
-                  )
-                  .toList(),
-              selected: {selectedGame!},
-              showSelectedIcon: false,
-              onSelectionChanged: (value) =>
-                  setState(() => selectedGame = value.first),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 19,
+                      color: muted,
+                    ),
+                  ],
+                ),
+              ),
             ),
-          const SizedBox(height: 9),
+          const SizedBox(height: 20),
+          Row(
+            children: games
+                .map(
+                  (game) => Expanded(
+                    child: GameSelector(
+                      service: repo.services.firstWhere(
+                        (s) => s['game'] == game,
+                      ),
+                      selected: selectedGame == game,
+                      onTap: () => setState(() => selectedGame = game),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 8),
           SectionTitle(
-            '服务',
+            '游戏服务',
             action: '全部',
             onTap: () => context.go(
               '/services?game=${Uri.encodeComponent(selectedGame ?? '全部')}',
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                for (final item in services.take(2).indexed) ...[
-                  if (item.$1 > 0)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Divider(height: 1),
-                    ),
-                  ServiceFeature(repo: repo, service: item.$2, embedded: true),
-                ],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final entry in services.take(2).indexed) ...[
+                if (entry.$1 > 0) const SizedBox(width: 12),
+                Expanded(
+                  child: ServiceFeature(
+                    repo: repo,
+                    service: entry.$2,
+                    poster: true,
+                  ),
+                ),
               ],
-            ),
+            ],
           ),
-          const SizedBox(height: 9),
+          const SizedBox(height: 12),
           SectionTitle(
-            '陪练',
+            '陪练推荐',
             action: '全部',
             onTap: () => context.push('/players'),
           ),
           ...players.take(3).map((p) => RosterRow(repo: repo, player: p)),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.campaign_outlined),
@@ -258,16 +198,156 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+class HomeBanners extends StatefulWidget {
+  const HomeBanners(this.repo, {super.key});
+  final ClubRepository repo;
+  @override
+  State<HomeBanners> createState() => _HomeBannersState();
+}
+
+class _HomeBannersState extends State<HomeBanners> {
+  int page = 0;
+  @override
+  Widget build(BuildContext context) => AspectRatio(
+    aspectRatio: 2.25,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Stack(
+        children: [
+          PageView.builder(
+            itemCount: widget.repo.banners.length,
+            onPageChanged: (v) => setState(() => page = v),
+            itemBuilder: (context, i) {
+              final banner = widget.repo.banners[i];
+              return InkWell(
+                onTap: () {
+                  final id = '${banner['serviceId'] ?? ''}';
+                  if (widget.repo.findService(id) != null) {
+                    context.push('/services/$id');
+                  } else {
+                    context.go(
+                      '/services?game=${Uri.encodeComponent('${banner['game'] ?? '全部'}')}',
+                    );
+                  }
+                },
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ServiceArt({
+                      'coverUrl': banner['imageUrl'],
+                      'game': banner['game'],
+                    }, radius: 0),
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.center,
+                          end: Alignment.bottomCenter,
+                          colors: [Colors.transparent, Color(0xC910151B)],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 18,
+                      right: 20,
+                      bottom: 24,
+                      child: Text(
+                        '${banner['title']}',
+                        style: const TextStyle(
+                          fontSize: 23,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          if (widget.repo.banners.length > 1)
+            Positioned(
+              left: 18,
+              bottom: 12,
+              child: Row(
+                children: List.generate(
+                  widget.repo.banners.length,
+                  (i) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    margin: const EdgeInsets.only(right: 4),
+                    width: i == page ? 17 : 5,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: i == page ? 1 : .45,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+class GameSelector extends StatelessWidget {
+  const GameSelector({
+    super.key,
+    required this.service,
+    required this.selected,
+    required this.onTap,
+  });
+  final Json service;
+  final bool selected;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(12),
+    child: Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(3),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: selected ? ink : Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          child: SizedBox(
+            width: 47,
+            height: 47,
+            child: ServiceArt(service, radius: 12, icon: true),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          '${service['game']}',
+          style: TextStyle(
+            fontSize: 14,
+            color: selected ? ink : muted,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
 class ServiceFeature extends StatelessWidget {
   const ServiceFeature({
     super.key,
     required this.repo,
     required this.service,
     this.embedded = false,
+    this.poster = false,
   });
   final ClubRepository repo;
   final Json service;
-  final bool embedded;
+  final bool embedded, poster;
   @override
   Widget build(BuildContext context) {
     final variants = serviceVariants(service);
@@ -275,87 +355,138 @@ class ServiceFeature extends StatelessWidget {
         ? service
         : variants.reduce((a, b) => a['priceCents'] < b['priceCents'] ? a : b);
     final quote = {...service, ...lowest};
-    final body = Padding(
-      padding: const EdgeInsets.all(14),
-      child: Row(
+    final title = Text(
+      poster
+          ? '${quote['platform'] == 'mobile' ? '手游' : quote['platform'] ?? ''} ${serviceKind(quote)}'
+                .trim()
+          : '${service['title']}',
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        height: 1.45,
+      ),
+    );
+    final price = RichText(
+      text: TextSpan(
+        style: const TextStyle(fontFamily: 'NotoSansSC', color: ink),
         children: [
-          SizedBox(
-            width: 58,
-            height: 66,
-            child: ServiceArt(service, radius: 10),
+          TextSpan(
+            text: '¥${money(quote)}',
+            style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(width: 13),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${service['title']}',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w500,
-                    height: 1.35,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '${quote['durationMinutes']} 分钟 · ${serviceKind(quote)}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13, color: muted),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '¥${money(quote)}',
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              Text(
-                variants.length > 1 ? '起' : '/${priceUnit(quote)}',
-                style: const TextStyle(fontSize: 13, color: muted),
-              ),
-            ],
+          TextSpan(
+            text: variants.length > 1 ? ' 起' : '/${priceUnit(quote)}',
+            style: const TextStyle(fontSize: 13, color: muted),
           ),
         ],
       ),
     );
     return InkWell(
       onTap: () => context.push('/services/${service['id']}'),
-      borderRadius: BorderRadius.circular(16),
-      child: embedded
-          ? body
-          : Container(
-              decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        decoration: embedded
+            ? null
+            : BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: body,
-            ),
+        padding: poster ? EdgeInsets.zero : const EdgeInsets.all(12),
+        child: poster
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.95,
+                    child: ServiceArt(service, radius: 14),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 10, 10, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        title,
+                        const SizedBox(height: 7),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            price,
+                            const Spacer(),
+                            Text(
+                              '${quote['durationMinutes']}分钟',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : Row(
+                children: [
+                  SizedBox(
+                    width: 90,
+                    height: 102,
+                    child: ServiceArt(service, radius: 11),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        title,
+                        const SizedBox(height: 6),
+                        Text(
+                          '${quote['durationMinutes']} 分钟 · ${serviceKind(quote)}',
+                          style: const TextStyle(fontSize: 13, color: muted),
+                        ),
+                        const SizedBox(height: 9),
+                        price,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }
 
-/// Original game-neutral contour geometry, not game art or a real map.
+/// Catalog media stays at its original HTTPS source. Copyright belongs to its owner.
 class ServiceArt extends StatelessWidget {
-  const ServiceArt(this.service, {super.key, this.radius = 14});
+  const ServiceArt(
+    this.service, {
+    super.key,
+    this.radius = 14,
+    this.icon = false,
+    this.banner = false,
+  });
   final Json service;
   final double radius;
+  final bool icon, banner;
   @override
   Widget build(BuildContext context) {
-    final url = '${service['coverUrl'] ?? ''}';
-    final fallback = CustomPaint(
-      painter: _ContourArt(service['serviceType'] == 'review'),
-      child: const SizedBox.expand(),
+    final field = icon
+        ? 'gameIconUrl'
+        : banner
+        ? 'bannerUrl'
+        : 'coverUrl';
+    final url = '${service[field] ?? service['coverUrl'] ?? ''}';
+    final fallback = ColoredBox(
+      color: sage,
+      child: Center(
+        child: Text(
+          '${service['game'] ?? '游戏服务'}',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: icon ? 11 : 16, color: muted),
+        ),
+      ),
     );
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
@@ -363,93 +494,13 @@ class ServiceArt extends StatelessWidget {
           ? Image.network(
               url,
               fit: BoxFit.cover,
+              alignment: Alignment.center,
+              webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
               errorBuilder: (_, _, _) => fallback,
             )
           : fallback,
     );
   }
-}
-
-class _ContourArt extends CustomPainter {
-  const _ContourArt(this.review);
-  final bool review;
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()
-        ..color = review ? const Color(0xFFE6EAF1) : const Color(0xFFDEE4ED),
-    );
-    final center = Offset(size.width * .67, size.height * .5);
-    final unit = math.max(size.width, size.height);
-    final line = Paint()
-      ..color = const Color(0xFFAFBAC9)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = .65;
-    for (var i = 0; i < 15; i++) {
-      final path = Path();
-      final radius = unit * (.08 + i * .039);
-      for (var j = 0; j <= 90; j++) {
-        final angle = j / 90 * math.pi * 2;
-        final wave =
-            1 +
-            .15 * math.sin(angle * 3 + (review ? 1.4 : .4)) +
-            .07 * math.cos(angle * 5);
-        final point =
-            center +
-            Offset(
-              math.cos(angle) * radius * wave,
-              math.sin(angle) * radius * wave * .74,
-            );
-        if (j == 0) {
-          path.moveTo(point.dx, point.dy);
-        } else {
-          path.lineTo(point.dx, point.dy);
-        }
-      }
-      path.close();
-      canvas.drawPath(path, line);
-    }
-    final route = Path()
-      ..moveTo(size.width * -.08, size.height * .84)
-      ..cubicTo(
-        size.width * .26,
-        size.height * .84,
-        size.width * .35,
-        size.height * .23,
-        size.width * .71,
-        size.height * .33,
-      )
-      ..quadraticBezierTo(
-        size.width * .85,
-        size.height * .4,
-        size.width * 1.08,
-        size.height * .12,
-      );
-    canvas.drawPath(
-      route,
-      Paint()
-        ..color = const Color(0xFF5A6A82)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.3,
-    );
-    canvas.drawCircle(
-      Offset(size.width * .7, size.height * .33),
-      3,
-      Paint()..color = const Color(0xFF273347),
-    );
-    canvas.drawCircle(
-      Offset(size.width * .7, size.height * .33),
-      6,
-      Paint()
-        ..color = const Color(0xFF273347).withValues(alpha: .2)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .7,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_ContourArt old) => old.review != review;
 }
 
 class RosterRow extends StatelessWidget {
@@ -700,33 +751,33 @@ class _ServicePageState extends State<ServicePage> {
       ),
       child: PageList(
         children: [
-          SizedBox(height: 122, child: ServiceArt(service, radius: 20)),
+          SizedBox(height: 192, child: ServiceArt(service, radius: 16)),
           const SizedBox(height: 20),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${s['game']}',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: brandColor(repo),
+              Expanded(
+                child: Text(
+                  '${s['title']}',
+                  style: const TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.w600,
+                    height: 1.35,
+                  ),
                 ),
               ),
-              const SizedBox(width: 10),
-              Text(
-                serviceKind(s),
-                style: const TextStyle(fontSize: 15, color: muted),
+              const SizedBox(width: 16),
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: ServiceArt(service, radius: 10, icon: true),
               ),
             ],
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(
-            '${s['title']}',
-            style: const TextStyle(
-              fontSize: 27,
-              fontWeight: FontWeight.w600,
-              letterSpacing: -.4,
-            ),
+            '${s['game']} · ${serviceKind(s)}',
+            style: const TextStyle(fontSize: 14, color: muted),
           ),
           if (variants.isNotEmpty) ...[
             const SizedBox(height: 19),
@@ -1001,46 +1052,66 @@ class _PlayerPageState extends State<PlayerPage> {
       ),
       child: PageList(
         children: [
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE8ECF2),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
+          SizedBox(
+            height: 245,
+            child: Stack(
+              fit: StackFit.expand,
               children: [
-                Expanded(
+                if (services.isNotEmpty) ServiceArt(services.first, radius: 18),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x1110171D), Color(0xF2161C24)],
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  top: 26,
+                  child: PlayerArt(
+                    repo: repo,
+                    player: p,
+                    width: 127,
+                    height: 170,
+                    radius: 14,
+                  ),
+                ),
+                Positioned(
+                  left: 20,
+                  right: 160,
+                  bottom: 28,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         '${p['name']}',
                         style: const TextStyle(
-                          fontSize: 31,
+                          fontSize: 32,
                           fontWeight: FontWeight.w600,
-                          letterSpacing: -.4,
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 7),
                       Text(
                         '${p['role']}',
-                        style: const TextStyle(fontSize: 16, color: muted),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFFD8DCE1),
+                        ),
                       ),
-                      const SizedBox(height: 23),
+                      const SizedBox(height: 18),
                       Text(
                         (p['games'] as List).join(' / '),
-                        style: const TextStyle(fontSize: 14),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Color(0xFFD8DCE1),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 16),
-                PlayerArt(
-                  repo: repo,
-                  player: p,
-                  width: 120,
-                  height: 146,
-                  radius: 12,
                 ),
               ],
             ),
@@ -1067,7 +1138,7 @@ class _PlayerPageState extends State<PlayerPage> {
             ),
           ),
           const SizedBox(height: 5),
-          SectionTitle('明日可约'),
+          SectionTitle('明日可约时段'),
           if (failure != null)
             TextButton(onPressed: loadSlots, child: const Text('排班加载失败，重试'))
           else if (slots == null)

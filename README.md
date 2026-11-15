@@ -80,4 +80,4 @@ scripts/doctor.mjs   不输出密钥的环境检查
 
 品牌生成与发布状态测试：`node --test scripts/test/*.test.mjs`。仓库展示使用 `config/demo.club.json` 的虚构北岸品牌；`club.example.json` 保留为最简客户模板。自己的公开配置与秘密配置必须分开保存。
 
-项目代码和自编文档采用 [MIT](LICENSE)，可商用和修改，分发时保留版权与许可文本。第三方字体、依赖保留各自许可证；MIT 不授予游戏商标、肖像或第三方素材的权利。详见 [贡献说明](CONTRIBUTING.md) 和 [安全说明](SECURITY.md)。
+项目代码和自编文档采用 [MIT](LICENSE)，可商用和修改，分发时保留版权与许可文本。第三方字体、依赖保留各自许可证；MIT 不授予游戏商标、肖像或第三方素材的权利。官方游戏图的来源、授权边界与替换方法见 [游戏媒体说明](third_party/GAME_MEDIA.md)，这些图片不适用 MIT。详见 [贡献说明](CONTRIBUTING.md) 和 [安全说明](SECURITY.md)。

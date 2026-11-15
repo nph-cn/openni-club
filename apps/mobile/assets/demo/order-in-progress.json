@@ -1,5 +1,5 @@
 {
-  "id": "235b7f19-2ea5-41a1-bf06-b302ea7880d9",
+  "id": "ac05d6db-293a-4911-9223-a6c69af58c9c",
   "serviceId": "s1",
   "serviceTitle": "三角洲 · PC 小时陪",
   "playerId": null,
@@ -25,7 +25,7 @@
     "title": "三角洲 · PC 小时陪",
     "game": "三角洲行动",
     "category": "小时陪",
-    "description": "一位成员与你组队，提供地图路线沟通、报点与协作。按预约时段履约，不承诺游戏收益。",
+    "description": "路线沟通 · 报点协作",
     "priceCents": 3900,
     "durationMinutes": 60,
     "tags": [
@@ -34,7 +34,9 @@
     ],
     "inclusions": [],
     "requirements": [],
-    "coverUrl": "",
+    "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+    "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+    "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
     "platform": "PC",
     "serviceType": "hourly",
     "billingUnit": "hour",
@@ -55,17 +57,17 @@
   },
   "events": [
     {
-      "id": "cfebfbce-c134-4125-9996-7b0351fdacfc",
+      "id": "299c14ae-6f60-4314-9528-1e5979796299",
       "type": "created",
       "at": "2026-11-15T13:05:00.000Z",
       "actor": {
         "role": "customer",
-        "name": "演示客户 · 林"
+        "name": "林"
       },
       "message": "已提交演示预约，不产生真实付款。"
     },
     {
-      "id": "e6f0901e-2f30-40ab-a311-4b9cce147423",
+      "id": "d6e998d1-4a69-47ae-bf67-655cfb02b430",
       "type": "assigned",
       "at": "2026-11-15T13:05:00.000Z",
       "actor": {
@@ -75,7 +77,7 @@
       "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
     },
     {
-      "id": "7926412b-415c-41e3-baaa-1a15214da923",
+      "id": "3f131037-8184-49fe-94b1-6158e1865a60",
       "type": "accepted",
       "at": "2026-11-15T13:05:00.000Z",
       "actor": {
@@ -85,7 +87,7 @@
       "message": "成员已接单，预约时间已锁定。"
     },
     {
-      "id": "d5e737ed-905a-4dd7-aa52-4292662f9531",
+      "id": "6b53eb97-34e0-453d-a2b0-3d4246e7fe6d",
       "type": "started",
       "at": "2026-11-15T13:15:00.000Z",
       "actor": {

@@ -3,7 +3,7 @@ module.exports = {
   "apiBaseUrl": "http://localhost:8787/api/v1",
   "city": "线上俱乐部",
   "clubId": "northshore",
-  "configHash": "e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980",
+  "configHash": "3398608fe8d5ddf8ee3be096b8af4dd9875471bfa3db57d2811e3e1590648d3f",
   "demoData": true,
   "description": "北岸电竞是 OpenNI Club 的虚构演示俱乐部。这里展示俱乐部、队友与预约的完整体验。所有人物、服务和价格均为演示数据，与游戏发行商无关联。",
   "id": "northshore",

@@ -14,3 +14,5 @@ Avoid unnecessary secondary labels and descriptions. Let the layout do the expla
 
 - The platform brand is always written **OpenNI**. Domain/package names remain lowercase; independently configured club names are not overwritten.
 - Current approved reference direction is Codrops/Grok: graphite brand site, cool neutral product UI, precise typography and meaningful product interaction. The former cream/sage visual lock is superseded.
+
+- Latest user feedback: keep the website direction, remove slogans/metaphors (including 主场), use direct product labels. App visual design must show real game imagery and configurable banner placements, not contour placeholders. Avoid repeated demo badges; disclose sample data centrally and preserve honest payment/account boundaries. Beginner guidance belongs in a conventional searchable documentation layout.
