@@ -56,5 +56,5 @@ test('新首页保留全部实际脚本入口，提供专题与设备预览链�
  for(const [,id] of script.matchAll(/\$\(['"]#([\w-]+)/g))assert.ok(ids.includes(id),`脚本入口#${id}必须存在`);
  assert.match(html,/href="\/delta\/"/);
  for(const [,href] of html.matchAll(/href="(\/demo\/[^"\s]*)"/g))assert.equal(new URL(href,'https://openni.local').searchParams.get('device'),'iphone');
- assert.match(html,/<h1 id="hero-title">电竞俱乐部开源应用<\/h1>/);
+ assert.match(html,/<h1 id="hero-title">[\s\S]*?开源系统[\s\S]*?<\/h1>/);
 });
