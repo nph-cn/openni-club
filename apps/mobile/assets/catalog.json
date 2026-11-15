@@ -1,6 +1,18 @@
 {
   "announcements": [
     {
+      "id": "a0",
+      "title": "打手分级与认证上线",
+      "body": "俱乐部启用打手分级：新锐/进阶/精英/王牌。分级依据接单量、客户评分与认证状态，影响派单优先级与分成比例；认证打手会在陪练目录展示徽章。",
+      "publishedAt": "2026-11-16T09:00:00+08:00"
+    },
+    {
+      "id": "a0b",
+      "title": "新增 5 个游戏类目",
+      "body": "即日起开放 CS2、永劫无间、绝地求生、Apex 英雄与守望先锋的演示服务，可在首页游戏类目切换，或在成员目录按游戏筛选。",
+      "publishedAt": "2026-11-16T08:30:00+08:00"
+    },
+    {
       "body": "预约前确认设备、地图和上线时间，按服务约定沟通需求。请勿提交游戏密码、身份证或其他无关个人信息。",
       "id": "a1",
       "publishedAt": "2026-11-15T09:00:00+08:00",
@@ -43,6 +55,22 @@
       "serviceId": "s4",
       "sortOrder": 2,
       "title": "英雄联盟"
+    },
+    {
+      "id": "b-cs2",
+      "game": "CS2",
+      "title": "CS2 · 竞技小时陪",
+      "imageUrl": "assets/games/cs2-cover.webp",
+      "serviceId": "s5",
+      "sortOrder": 3
+    },
+    {
+      "id": "b-naraka",
+      "game": "永劫无间",
+      "title": "永劫无间 · 三排小时陪",
+      "imageUrl": "assets/games/naraka-cover.webp",
+      "serviceId": "s6",
+      "sortOrder": 4
     }
   ],
   "players": [
@@ -59,7 +87,19 @@
       "tags": [
         "耐心沟通",
         "战术协作"
-      ]
+      ],
+      "tier": "A",
+      "tierLabel": "精英",
+      "certified": true,
+      "rating": 4.9,
+      "completedOrders": 326,
+      "level": 34,
+      "hourlyRateCents": 3900,
+      "specialties": [
+        "指挥",
+        "路线规划"
+      ],
+      "joinedAt": "2025-09-18"
     },
     {
       "bio": "逐段查看对局记录，复盘路线、信息交流与决策，整理可执行的改进建议。",
@@ -75,7 +115,19 @@
       "tags": [
         "对局复盘",
         "思路教学"
-      ]
+      ],
+      "tier": "S",
+      "tierLabel": "王牌",
+      "certified": true,
+      "rating": 4.9,
+      "completedOrders": 412,
+      "level": 42,
+      "hourlyRateCents": 6900,
+      "specialties": [
+        "复盘",
+        "战术教学"
+      ],
+      "joinedAt": "2025-06-02"
     },
     {
       "bio": "提供无畏契约与英雄联盟组队服务，预约前沟通位置、模式和时段。",
@@ -91,7 +143,19 @@
       "tags": [
         "友好交流",
         "团队协作"
-      ]
+      ],
+      "tier": "B",
+      "tierLabel": "进阶",
+      "certified": false,
+      "rating": 4.7,
+      "completedOrders": 86,
+      "level": 18,
+      "hourlyRateCents": 2900,
+      "specialties": [
+        "开黑",
+        "氛围"
+      ],
+      "joinedAt": "2026-03-14"
     },
     {
       "bio": "提供三角洲行动与英雄联盟组队服务，按约定时间集合，服务结束后提交交付记录。",
@@ -107,7 +171,140 @@
       "tags": [
         "节奏稳定",
         "灵活补位"
-      ]
+      ],
+      "tier": "A",
+      "tierLabel": "精英",
+      "certified": true,
+      "rating": 4.8,
+      "completedOrders": 205,
+      "level": 27,
+      "hourlyRateCents": 3500,
+      "specialties": [
+        "补位",
+        "节奏"
+      ],
+      "joinedAt": "2025-11-21"
+    },
+    {
+      "id": "p5",
+      "name": "骇爪",
+      "initials": "骇",
+      "role": "突击手",
+      "color": "#B23A48",
+      "bio": "三角洲与 CS2 双修，擅长突破与信息交换；预约前沟通打法与时间，不承诺胜负。",
+      "games": [
+        "三角洲行动",
+        "CS2"
+      ],
+      "tags": [
+        "突破",
+        "信息",
+        "残局"
+      ],
+      "tier": "S",
+      "tierLabel": "王牌",
+      "certified": true,
+      "rating": 4.9,
+      "completedOrders": 368,
+      "level": 40,
+      "hourlyRateCents": 5900,
+      "specialties": [
+        "突破",
+        "残局"
+      ],
+      "joinedAt": "2025-04-09",
+      "avatarAsset": "assets/demo/avatar-nyx.webp"
+    },
+    {
+      "id": "p6",
+      "name": "疾风",
+      "initials": "疾",
+      "role": "狙击手",
+      "color": "#C24E30",
+      "bio": "绝地求生与 Apex 远程位，专注圈型判断与高点控制；提供赛后沟通记录。",
+      "games": [
+        "绝地求生",
+        "Apex 英雄"
+      ],
+      "tags": [
+        "狙击",
+        "圈型",
+        "高点到点"
+      ],
+      "tier": "A",
+      "tierLabel": "精英",
+      "certified": true,
+      "rating": 4.8,
+      "completedOrders": 242,
+      "level": 29,
+      "hourlyRateCents": 4900,
+      "specialties": [
+        "远程",
+        "运营"
+      ],
+      "joinedAt": "2025-08-30",
+      "avatarAsset": "assets/demo/avatar-gale.webp"
+    },
+    {
+      "id": "p7",
+      "name": "深蓝",
+      "initials": "蓝",
+      "role": "自由人",
+      "color": "#2F5D7C",
+      "bio": "三角洲与无畏契约全能补位，擅长道具与残局；只使用自己的游戏账号。",
+      "games": [
+        "三角洲行动",
+        "无畏契约"
+      ],
+      "tags": [
+        "补位",
+        "道具",
+        "残局"
+      ],
+      "tier": "A",
+      "tierLabel": "精英",
+      "certified": true,
+      "rating": 4.7,
+      "completedOrders": 176,
+      "level": 24,
+      "hourlyRateCents": 4200,
+      "specialties": [
+        "补位",
+        "残局"
+      ],
+      "joinedAt": "2026-01-12",
+      "avatarAsset": "assets/demo/avatar-abyss.webp"
+    },
+    {
+      "id": "p8",
+      "name": "银翼",
+      "initials": "翼",
+      "role": "教练",
+      "color": "#6E5A8C",
+      "bio": "英雄联盟与 CS2 教练位，提供位置复盘与训练计划；不代打、不共享账号。",
+      "games": [
+        "英雄联盟",
+        "CS2",
+        "守望先锋"
+      ],
+      "tags": [
+        "复盘",
+        "训练计划",
+        "沟通"
+      ],
+      "tier": "B",
+      "tierLabel": "进阶",
+      "certified": false,
+      "rating": 4.6,
+      "completedOrders": 64,
+      "level": 16,
+      "hourlyRateCents": 3200,
+      "specialties": [
+        "教学",
+        "复盘"
+      ],
+      "joinedAt": "2026-05-03",
+      "avatarAsset": "assets/demo/avatar-wing.webp"
     }
   ],
   "services": [
@@ -247,6 +444,468 @@
       ],
       "teamSize": 1,
       "title": "英雄联盟 · 双排小时陪"
+    },
+    {
+      "id": "s5",
+      "game": "CS2",
+      "title": "CS2 · 竞技小时陪",
+      "serviceType": "hourly",
+      "category": "小时陪",
+      "gameMode": "竞技",
+      "platform": "PC",
+      "billingUnit": "hour",
+      "priceCents": 3200,
+      "durationMinutes": 60,
+      "teamSize": 1,
+      "tags": [
+        "单陪",
+        "道具教学"
+      ],
+      "description": "道具投掷 · 经济局沟通",
+      "coverUrl": "assets/games/cs2-cover.webp",
+      "bannerUrl": "assets/games/cs2-cover.webp",
+      "gameIconUrl": "assets/games/cs2-icon.webp",
+      "maps": [
+        "Mirage",
+        "Inferno"
+      ],
+      "rules": [
+        "一位服务成员，60 分钟。",
+        "双方各自使用自己的游戏账号。",
+        "不承诺段位与比赛结果。"
+      ],
+      "variants": [
+        {
+          "id": "cs2-60",
+          "title": "PC · 60分钟",
+          "durationMinutes": 60,
+          "priceCents": 3200,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，预约 60 分钟。"
+          ]
+        },
+        {
+          "id": "cs2-120",
+          "title": "PC · 120分钟",
+          "durationMinutes": 120,
+          "priceCents": 6100,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，预约 120 分钟。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "game": "永劫无间",
+      "title": "永劫无间 · 三排小时陪",
+      "serviceType": "hourly",
+      "category": "组队",
+      "gameMode": "三排",
+      "platform": "PC",
+      "billingUnit": "hour",
+      "priceCents": 2900,
+      "durationMinutes": 60,
+      "teamSize": 1,
+      "tags": [
+        "三排",
+        "振刀"
+      ],
+      "description": "振刀配合 · 三排运营",
+      "coverUrl": "assets/games/naraka-cover.webp",
+      "bannerUrl": "assets/games/naraka-cover.webp",
+      "gameIconUrl": "assets/games/naraka-icon.webp",
+      "maps": [],
+      "rules": [
+        "一位服务成员，60 分钟。",
+        "不共享账号，不使用外挂。",
+        "服务结束后提交交付记录。"
+      ],
+      "variants": [
+        {
+          "id": "naraka-60",
+          "title": "PC · 60分钟",
+          "durationMinutes": 60,
+          "priceCents": 2900,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，60 分钟。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "game": "绝地求生",
+      "title": "绝地求生 · 四排运营",
+      "serviceType": "hourly",
+      "category": "组队",
+      "gameMode": "四排",
+      "platform": "PC",
+      "billingUnit": "hour",
+      "priceCents": 3600,
+      "durationMinutes": 60,
+      "teamSize": 1,
+      "tags": [
+        "四排",
+        "运营"
+      ],
+      "description": "跳点选择 · 圈型运营",
+      "coverUrl": "assets/games/pubg-cover.webp",
+      "bannerUrl": "assets/games/pubg-cover.webp",
+      "gameIconUrl": "assets/games/pubg-icon.webp",
+      "maps": [
+        "艾伦格",
+        "米拉玛"
+      ],
+      "rules": [
+        "一位服务成员，60 分钟。",
+        "提前沟通跳点与圈型策略。",
+        "不承诺吃鸡。"
+      ],
+      "variants": [
+        {
+          "id": "pubg-60",
+          "title": "PC · 60分钟",
+          "durationMinutes": 60,
+          "priceCents": 3600,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，60 分钟。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "game": "Apex 英雄",
+      "title": "Apex · 三排陪练",
+      "serviceType": "hourly",
+      "category": "组队",
+      "gameMode": "排位",
+      "platform": "PC",
+      "billingUnit": "hour",
+      "priceCents": 3300,
+      "durationMinutes": 60,
+      "teamSize": 1,
+      "tags": [
+        "三排",
+        "英雄搭配"
+      ],
+      "description": "英雄搭配 · 地形转移",
+      "coverUrl": "assets/games/apex-cover.webp",
+      "bannerUrl": "assets/games/apex-cover.webp",
+      "gameIconUrl": "assets/games/apex-icon.webp",
+      "maps": [],
+      "rules": [
+        "一位服务成员，60 分钟。",
+        "不共享账号。",
+        "不承诺段位提升。"
+      ],
+      "variants": [
+        {
+          "id": "apex-60",
+          "title": "PC · 60分钟",
+          "durationMinutes": 60,
+          "priceCents": 3300,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，60 分钟。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "s9",
+      "game": "守望先锋",
+      "title": "守望先锋 · 组排小时陪",
+      "serviceType": "hourly",
+      "category": "组队",
+      "gameMode": "快速比赛",
+      "platform": "PC",
+      "billingUnit": "hour",
+      "priceCents": 3000,
+      "durationMinutes": 60,
+      "teamSize": 1,
+      "tags": [
+        "组排",
+        "位置分工"
+      ],
+      "description": "位置分工 · 集火目标",
+      "coverUrl": "assets/games/overwatch-cover.webp",
+      "bannerUrl": "assets/games/overwatch-cover.webp",
+      "gameIconUrl": "assets/games/overwatch-icon.webp",
+      "maps": [],
+      "rules": [
+        "一位服务成员，60 分钟。",
+        "不承诺比赛胜负。"
+      ],
+      "variants": [
+        {
+          "id": "ow-60",
+          "title": "PC · 60分钟",
+          "durationMinutes": 60,
+          "priceCents": 3000,
+          "platform": "PC",
+          "rules": [
+            "一位服务成员，60 分钟。"
+          ]
+        }
+      ]
+    }
+  ],
+  "games": [
+    {
+      "id": "delta",
+      "name": "三角洲行动",
+      "shortName": "三角洲",
+      "category": "战术射击",
+      "platform": "PC",
+      "accent": "#C6DB6B",
+      "enabled": true,
+      "sortOrder": 1,
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "iconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+      "description": "烽火地带与全面战场，路线、报点与撤离节奏。",
+      "modes": [
+        "烽火地带",
+        "全面战场"
+      ]
+    },
+    {
+      "id": "valorant",
+      "name": "无畏契约",
+      "shortName": "无畏契约",
+      "category": "战术射击",
+      "platform": "PC",
+      "accent": "#FF5B52",
+      "enabled": true,
+      "sortOrder": 2,
+      "coverUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/083baed63d306ee9ba41df4971ac0f6bb0222032-1920x1080.jpg",
+      "iconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/cbf4460132cdfeb2a97fad5f9dd25ba0bc058f76-128x128.png",
+      "description": "角色技能与团队协作，从突破到残局处理。",
+      "modes": [
+        "普通对局",
+        "排位"
+      ]
+    },
+    {
+      "id": "lol",
+      "name": "英雄联盟",
+      "shortName": "英雄联盟",
+      "category": "MOBA",
+      "platform": "PC",
+      "accent": "#C9A227",
+      "enabled": true,
+      "sortOrder": 3,
+      "coverUrl": "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ahri_0.jpg",
+      "iconUrl": "https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/565197caf987af4e4da307df6e2b235a28714736-837x469.jpg",
+      "description": "位置沟通、对线细节与双排节奏。",
+      "modes": [
+        "召唤师峡谷"
+      ]
+    },
+    {
+      "id": "cs2",
+      "name": "CS2",
+      "shortName": "CS2",
+      "category": "战术射击",
+      "platform": "PC",
+      "accent": "#F0A31C",
+      "enabled": true,
+      "sortOrder": 4,
+      "coverUrl": "assets/games/cs2-cover.webp",
+      "iconUrl": "assets/games/cs2-icon.webp",
+      "description": "道具配合、默认架枪与经济局决策。",
+      "modes": [
+        "竞技",
+        "搭档"
+      ]
+    },
+    {
+      "id": "naraka",
+      "name": "永劫无间",
+      "shortName": "永劫",
+      "category": "动作竞技",
+      "platform": "PC",
+      "accent": "#D84C34",
+      "enabled": true,
+      "sortOrder": 5,
+      "coverUrl": "assets/games/naraka-cover.webp",
+      "iconUrl": "assets/games/naraka-icon.webp",
+      "description": "振刀、连招与三排运营，从单挑到团战。",
+      "modes": [
+        "三排",
+        "单排"
+      ]
+    },
+    {
+      "id": "pubg",
+      "name": "绝地求生",
+      "shortName": "PUBG",
+      "category": "战术射击",
+      "platform": "PC",
+      "accent": "#E8B33C",
+      "enabled": true,
+      "sortOrder": 6,
+      "coverUrl": "assets/games/pubg-cover.webp",
+      "iconUrl": "assets/games/pubg-icon.webp",
+      "description": "跳点选择、圈型运营与四排沟通。",
+      "modes": [
+        "四排",
+        "竞技"
+      ]
+    },
+    {
+      "id": "apex",
+      "name": "Apex 英雄",
+      "shortName": "Apex",
+      "category": "战术射击",
+      "platform": "PC",
+      "accent": "#D63C34",
+      "enabled": true,
+      "sortOrder": 7,
+      "coverUrl": "assets/games/apex-cover.webp",
+      "iconUrl": "assets/games/apex-icon.webp",
+      "description": "英雄搭配、地形转移与三人小队决策。",
+      "modes": [
+        "排位",
+        "匹配"
+      ]
+    },
+    {
+      "id": "overwatch",
+      "name": "守望先锋",
+      "shortName": "OW",
+      "category": "团队射击",
+      "platform": "PC",
+      "accent": "#F99E1A",
+      "enabled": true,
+      "sortOrder": 8,
+      "coverUrl": "assets/games/overwatch-cover.webp",
+      "iconUrl": "assets/games/overwatch-icon.webp",
+      "description": "位置分工、集火目标与地图控制。",
+      "modes": [
+        "快速比赛",
+        "竞技"
+      ]
+    }
+  ],
+  "tiers": [
+    {
+      "id": "S",
+      "label": "王牌",
+      "level": 5,
+      "color": "#C6A15B",
+      "minOrders": 300,
+      "minRating": "4.9",
+      "commissionRate": "0.85",
+      "perks": [
+        "优先派单",
+        "专属认证徽章",
+        "可设置两档加价",
+        "参与俱乐部联合活动"
+      ]
+    },
+    {
+      "id": "A",
+      "label": "精英",
+      "level": 4,
+      "color": "#6FA7C9",
+      "minOrders": 150,
+      "minRating": "4.8",
+      "commissionRate": "0.80",
+      "perks": [
+        "认证打手徽章",
+        "个人主页推荐位",
+        "可申请教练类服务"
+      ]
+    },
+    {
+      "id": "B",
+      "label": "进阶",
+      "level": 3,
+      "color": "#8FB27C",
+      "minOrders": 60,
+      "minRating": "4.6",
+      "commissionRate": "0.75",
+      "perks": [
+        "完成基础培训",
+        "可接小时陪与组队单"
+      ]
+    },
+    {
+      "id": "C",
+      "label": "新锐",
+      "level": 2,
+      "color": "#A8A8A8",
+      "minOrders": 0,
+      "minRating": "—",
+      "commissionRate": "0.70",
+      "perks": [
+        "试听期",
+        "完成认证后可升级"
+      ]
+    }
+  ],
+  "clubFeatures": [
+    {
+      "id": "tier-system",
+      "title": "打手分级",
+      "category": "成员体系",
+      "enabled": true,
+      "description": "按接单量、评分与认证状态分为新锐/进阶/精英/王牌四级，分级决定派单优先级与分成比例。"
+    },
+    {
+      "id": "certified",
+      "title": "认证打手",
+      "category": "成员体系",
+      "enabled": true,
+      "description": "完成俱乐部培训与实战考核后展示认证徽章，客户可在陪练目录筛选认证成员。"
+    },
+    {
+      "id": "trial",
+      "title": "试听体验单",
+      "category": "服务能力",
+      "enabled": true,
+      "description": "允许新客户预约 15 分钟试听，试听满意后再转正式预约。"
+    },
+    {
+      "id": "multi-game",
+      "title": "多游戏类目",
+      "category": "服务能力",
+      "enabled": true,
+      "description": "同时开放三角洲行动、无畏契约、英雄联盟、CS2、永劫无间、绝地求生、Apex 与守望先锋 8 个游戏类目。"
+    },
+    {
+      "id": "voice-room",
+      "title": "语音房",
+      "category": "互动能力",
+      "enabled": false,
+      "description": "俱乐部语音频道与开黑房。当前为示例未开通状态，开启需配置实时语音服务。"
+    },
+    {
+      "id": "invoice",
+      "title": "电子发票",
+      "category": "经营能力",
+      "enabled": true,
+      "description": "客户可在订单详情申请电子发票，成员结算单同步计税信息。"
+    },
+    {
+      "id": "membership",
+      "title": "会员卡",
+      "category": "经营能力",
+      "enabled": false,
+      "description": "月卡/次卡与会员专属折扣。示例俱乐部暂未开通。"
+    },
+    {
+      "id": "carry",
+      "title": "上分车队",
+      "category": "服务能力",
+      "enabled": false,
+      "description": "固定车队与赛季冲分套餐，需额外的排班与风控规则。"
     }
   ]
 }

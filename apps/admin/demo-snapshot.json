@@ -771,7 +771,18 @@
       "coverUrl": "",
       "archived": false,
       "boundUserId": null,
-      "memberName": null
+      "memberName": null,
+      "tier": "S",
+      "tierLabel": "王牌",
+      "certified": true,
+      "rating": 4.9,
+      "completedOrders": 186,
+      "hourlyRateCents": 6800,
+      "specialties": [
+        "烽火地带指挥",
+        "路线规划"
+      ],
+      "status": "active"
     },
     {
       "id": "p2",
@@ -792,7 +803,18 @@
       "coverUrl": "",
       "archived": false,
       "boundUserId": null,
-      "memberName": null
+      "memberName": null,
+      "tier": "A",
+      "tierLabel": "资深",
+      "certified": true,
+      "rating": 4.8,
+      "completedOrders": 142,
+      "hourlyRateCents": 5800,
+      "specialties": [
+        "战术复盘",
+        "信息沟通"
+      ],
+      "status": "active"
     },
     {
       "id": "p3",
@@ -813,7 +835,18 @@
       "coverUrl": "",
       "archived": false,
       "boundUserId": null,
-      "memberName": null
+      "memberName": null,
+      "tier": "A",
+      "tierLabel": "资深",
+      "certified": false,
+      "rating": 4.7,
+      "completedOrders": 96,
+      "hourlyRateCents": 4200,
+      "specialties": [
+        "友好开黑",
+        "辅助位"
+      ],
+      "status": "active"
     },
     {
       "id": "p4",
@@ -834,7 +867,82 @@
       "coverUrl": "",
       "archived": false,
       "boundUserId": null,
-      "memberName": null
+      "memberName": null,
+      "tier": "B",
+      "tierLabel": "熟练",
+      "certified": false,
+      "rating": 4.6,
+      "completedOrders": 55,
+      "hourlyRateCents": 3800,
+      "specialties": [
+        "灵活补位",
+        "节奏稳定"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "p5",
+      "name": "青岚",
+      "role": "突破手",
+      "bio": "专注 CS2 与永劫无间的枪法与身法训练，预约前确认平台、模式与练习目标。",
+      "games": [
+        "CS2",
+        "永劫无间"
+      ],
+      "tags": [
+        "枪法训练",
+        "身法指导"
+      ],
+      "initials": "岚",
+      "color": "#2F6B8F",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "archived": false,
+      "boundUserId": null,
+      "memberName": null,
+      "tier": "B",
+      "tierLabel": "熟练",
+      "certified": true,
+      "rating": 4.8,
+      "completedOrders": 73,
+      "hourlyRateCents": 4600,
+      "specialties": [
+        "急停枪法",
+        "身法连招"
+      ],
+      "status": "active"
+    },
+    {
+      "id": "p6",
+      "name": "暮秋",
+      "role": "团队指挥",
+      "bio": "专注 Apex 英雄与守望先锋的阵容配合，目前暂停接单，保留资料与接单资格。",
+      "games": [
+        "Apex 英雄",
+        "守望先锋"
+      ],
+      "tags": [
+        "阵容配合",
+        "语音指挥"
+      ],
+      "initials": "暮",
+      "color": "#8A5A44",
+      "avatarUrl": "",
+      "coverUrl": "",
+      "archived": false,
+      "boundUserId": null,
+      "memberName": null,
+      "tier": "C",
+      "tierLabel": "新锐",
+      "certified": false,
+      "rating": 4.5,
+      "completedOrders": 28,
+      "hourlyRateCents": 3200,
+      "specialties": [
+        "阵容搭配",
+        "报点指挥"
+      ],
+      "status": "paused"
     }
   ],
   "services": [
@@ -989,6 +1097,154 @@
       ],
       "variants": [],
       "archived": false
+    }
+  ],
+  "games": [
+    {
+      "id": "delta",
+      "name": "三角洲行动",
+      "shortName": "三角洲",
+      "category": "战术射击",
+      "accent": "#C9A063",
+      "enabled": true,
+      "playerCount": 3,
+      "serviceCount": 2
+    },
+    {
+      "id": "valorant",
+      "name": "无畏契约",
+      "shortName": "无畏契约",
+      "category": "战术射击",
+      "accent": "#FF4655",
+      "enabled": true,
+      "playerCount": 2,
+      "serviceCount": 1
+    },
+    {
+      "id": "lol",
+      "name": "英雄联盟",
+      "shortName": "英雄联盟",
+      "category": "MOBA",
+      "accent": "#C8AA6E",
+      "enabled": true,
+      "playerCount": 2,
+      "serviceCount": 1
+    },
+    {
+      "id": "cs2",
+      "name": "CS2",
+      "shortName": "CS2",
+      "category": "战术射击",
+      "accent": "#E8A33D",
+      "enabled": true,
+      "playerCount": 1,
+      "serviceCount": 0
+    },
+    {
+      "id": "naraka",
+      "name": "永劫无间",
+      "shortName": "永劫",
+      "category": "动作竞技",
+      "accent": "#C6463A",
+      "enabled": true,
+      "playerCount": 1,
+      "serviceCount": 0
+    },
+    {
+      "id": "pubg",
+      "name": "绝地求生",
+      "shortName": "绝地求生",
+      "category": "战术竞技",
+      "accent": "#F2A33C",
+      "enabled": true,
+      "playerCount": 0,
+      "serviceCount": 0
+    },
+    {
+      "id": "apex",
+      "name": "Apex 英雄",
+      "shortName": "Apex",
+      "category": "战术竞技",
+      "accent": "#DA292A",
+      "enabled": false,
+      "playerCount": 1,
+      "serviceCount": 0
+    },
+    {
+      "id": "overwatch",
+      "name": "守望先锋",
+      "shortName": "守望",
+      "category": "团队射击",
+      "accent": "#F99E1A",
+      "enabled": true,
+      "playerCount": 1,
+      "serviceCount": 0
+    }
+  ],
+  "features": [
+    {
+      "id": "game-catalog",
+      "name": "游戏类目",
+      "category": "经营基础",
+      "description": "按游戏组织服务与打手专长，控制客户端中可预约游戏的可见范围。",
+      "enabled": true,
+      "recommended": false
+    },
+    {
+      "id": "player-tier",
+      "name": "打手分级",
+      "category": "打手管理",
+      "description": "用 S/A/B/C 四级管理打手资历，分级决定推荐顺序与展示排序。",
+      "enabled": true,
+      "recommended": true
+    },
+    {
+      "id": "certified-player",
+      "name": "认证打手",
+      "category": "打手管理",
+      "description": "为通过审核的打手展示认证标识，降低首次下单的信任成本。",
+      "enabled": true,
+      "recommended": true
+    },
+    {
+      "id": "auto-dispatch",
+      "name": "自动派单",
+      "category": "履约效率",
+      "description": "按分级、擅长游戏与排班自动推荐打手，减少人工派单与改派。",
+      "enabled": true,
+      "recommended": true
+    },
+    {
+      "id": "trial",
+      "name": "试听 / 试单",
+      "category": "增长转化",
+      "description": "开放 15 分钟低价试单，让新客户先体验服务再决定正式预约。",
+      "enabled": false,
+      "recommended": true
+    },
+    {
+      "id": "membership",
+      "name": "会员卡",
+      "category": "增长转化",
+      "description": "储值卡、次卡与会员专属权益，提升复购与客户留存。",
+      "enabled": false,
+      "recommended": false
+    },
+    {
+      "id": "invoice",
+      "name": "发票",
+      "category": "财务结算",
+      "description": "收集开票信息并生成开票申请，支持电子发票与历史记录查询。",
+      "enabled": false,
+      "recommended": false
+    },
+    {
+      "id": "analytics",
+      "name": "经营分析",
+      "category": "数据洞察",
+      "description": "查看转化、复购与打手绩效，定位经营问题并跟踪改进效果。",
+      "enabled": false,
+      "recommended": false
     }
   ],
   "announcements": [

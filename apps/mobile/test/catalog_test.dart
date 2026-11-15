@@ -17,9 +17,10 @@ void main() {
         File('screenshots/manifest.json').readAsStringSync(),
       ) as List;
       final ids = manifest.map((row) => row['id'] as String).toList();
-      expect(ids.toSet(), screenNames.toSet());
+      expect(ids.toSet(), {...screenNames, ...interactionScreenNames, ...sectionScreenNames});
       expect(ids.length, ids.toSet().length);
       for (final row in manifest) {
+        expect(screenNames, contains(row['previewScreen']));
         final image = File('screenshots/${row['id']}.png').readAsBytesSync();
         expect(image.take(8), [137, 80, 78, 71, 13, 10, 26, 10]);
         final header = image.buffer.asByteData();
@@ -82,7 +83,7 @@ void main() {
       await tester.tap(find.byTooltip('返回'));
       await tester.pumpAndSettle();
       final selector = find.byWidgetPredicate(
-        (w) => w is GameSelector && w.service['game'] == '无畏契约',
+        (w) => w is GameSelector && w.game['name'] == '无畏契约',
       );
       await tester.ensureVisible(selector);
       await tester.tap(selector);

@@ -11,7 +11,7 @@ const admin='test-only-admin-credential-123456789';
 async function setup(t,mode='demo',overrides={}) {
   const server=createApp({...readConfig({API_MODE:mode,ADMIN_TOKEN:admin,CORS_ORIGINS:'https://club.example',CLUB_CONFIG_PATH:'none'}),dataDir:':memory:',...overrides});
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
-  t.after(()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve);}));
+  t.after(()=>{if(!server.listening)return;return new Promise(resolve=>{server.closeAllConnections();server.close(resolve);});});
   const base=`http://127.0.0.1:${server.address().port}`;
   async function call(path,{token,method='GET',body,origin,extraHeaders={}}={}) {
     const headers={'Content-Type':'application/json',...extraHeaders};
@@ -21,7 +21,7 @@ async function setup(t,mode='demo',overrides={}) {
     return {status:r.status,data:await r.json(),headers:r.headers};
   }
   const login=async()=> (await call('/api/v1/auth/demo',{method:'POST',body:{name:'演示成员'}})).data.token;
-  return {call,login};
+  return {call,login,server};
 }
 const booking=(extra={})=>({serviceId:'s1',playerId:'p1',scheduledAt:new Date(Date.now()+3600000).toISOString(),contact:'demo-contact',note:'模拟预约',idempotencyKey:'test-key',...extra});
 
@@ -225,14 +225,16 @@ test('full refund is idempotent, binds signed callback to saved payment and neve
 });
 
 test('catalog survives restart and production does not accept persisted demo sessions',async t=>{
-  const dataDir=mkdtempSync(join(tmpdir(),'openni-api-'));t.after(()=>rmSync(dataDir,{recursive:true,force:true}));
+  const dataDir=mkdtempSync(join(tmpdir(),'openni-api-')),servers=[];
+  // Windows 必须先关闭所有 SQLite 连接，再移除临时数据库目录。
+  t.after(async()=>{for(const server of servers)if(server.listening)await new Promise(resolve=>{server.closeAllConnections();server.close(resolve);});rmSync(dataDir,{recursive:true,force:true});});
   const config={...readConfig({ADMIN_TOKEN:admin,CLUB_CONFIG_PATH:'none'}),dataDir};
-  const first=createApp(config);await new Promise(r=>first.listen(0,'127.0.0.1',r));
+  const first=createApp(config);servers.push(first);await new Promise(r=>first.listen(0,'127.0.0.1',r));
   const base=`http://127.0.0.1:${first.address().port}/api/v1`;
   const session=await(await fetch(base+'/auth/demo',{method:'POST',headers:{'content-type':'application/json'},body:'{}'})).json();
   await fetch(base+'/admin/club',{method:'PATCH',headers:{'content-type':'application/json',authorization:'Bearer '+admin},body:JSON.stringify({name:'持久化俱乐部'})});
   await new Promise(r=>{first.closeAllConnections();first.close(r);});
-  const {call}=await setup(t,'production',{dataDir,wechat:{appid:'wx-fixture',appSecret:'fixture'}});
+  const second=await setup(t,'production',{dataDir,wechat:{appid:'wx-fixture',appSecret:'fixture'}});servers.push(second.server);const {call}=second;
   assert.equal((await call('/api/v1/club')).data.name,'持久化俱乐部');
   assert.equal((await call('/api/v1/orders',{token:session.token})).status,401);
 });

@@ -151,14 +151,16 @@ test('real full refund freezes available earnings then reverses them once on ver
 });
 
 test('configured brand is authoritative while existing catalog survives a brand revision',async t=>{
-  const dataDir=mkdtempSync(join(tmpdir(),'openni-brand-'));t.after(()=>rmSync(dataDir,{recursive:true,force:true}));
+  const dataDir=mkdtempSync(join(tmpdir(),'openni-brand-')),servers=[];
+  // 先释放重启前后的数据库句柄，避免 Windows 删除仍被占用的文件。
+  t.after(async()=>{for(const server of servers)if(server.listening)await new Promise(resolve=>{server.closeAllConnections();server.close(resolve);});rmSync(dataDir,{recursive:true,force:true});});
   const brand={id:'configured-club',name:'统一品牌甲',demoData:true,configHash:'revision-a'};
-  const first=await setup(t,{dataDir,publicBrand:brand});
+  const first=await setup(t,{dataDir,publicBrand:brand});servers.push(first.server);
   assert.equal((await first.call('/club')).data.configManaged,true);
   assert.equal((await first.call('/admin/club',admin,'PATCH',{name:'不能另存'})).data.error.code,'BRAND_MANAGED_BY_CONFIG');
   assert.equal((await first.call('/admin/services/s1',admin,'PATCH',{priceCents:5500})).status,200);
   await new Promise(resolve=>{first.server.closeAllConnections();first.server.close(resolve);});
-  const second=await setup(t,{dataDir,publicBrand:{...brand,name:'统一品牌乙',configHash:'revision-b'},initialSeed:{club:brand,services:[],players:[],announcements:[]}});
+  const second=await setup(t,{dataDir,publicBrand:{...brand,name:'统一品牌乙',configHash:'revision-b'},initialSeed:{club:brand,services:[],players:[],announcements:[]}});servers.push(second.server);
   assert.equal((await second.call('/club')).data.name,'统一品牌乙');assert.equal((await second.call('/club')).data.configHash,'revision-b');
   assert.equal((await second.call('/services/s1')).data.priceCents,5500);
 });

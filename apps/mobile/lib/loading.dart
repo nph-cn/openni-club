@@ -12,6 +12,8 @@ enum SkeletonKind {
   slots,
   notifications,
   availability,
+  tiers,
+  clubFeatures,
 }
 
 /// A decorative placeholder. Animation belongs to its shared [SkeletonPulse].
@@ -33,13 +35,33 @@ class SkeletonBlock extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Color.alphaBlend(
-          ink.withValues(
-            alpha: MediaQuery.maybeOf(context)?.highContrast == true ? .2 : .08,
-          ),
-          canvas,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(
+              ink.withValues(
+                alpha: MediaQuery.maybeOf(context)?.highContrast == true
+                    ? .2
+                    : .075,
+              ),
+              canvas,
+            ),
+            Color.alphaBlend(
+              ink.withValues(
+                alpha: MediaQuery.maybeOf(context)?.highContrast == true
+                    ? .16
+                    : .045,
+              ),
+              canvas,
+            ),
+          ],
         ),
         borderRadius: BorderRadius.circular(radius),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .55),
+          width: .5,
+        ),
       ),
     ),
   );
@@ -117,29 +139,26 @@ class ClubSkeleton extends StatelessWidget {
 
   final SkeletonKind kind;
 
-  static const _gap = SizedBox(height: 16);
-  static const _smallGap = SizedBox(height: 8);
-
-  Widget _line(double width, {double height = 14}) => Align(
+  Widget _line(double width, {double height = 13}) => Align(
     alignment: Alignment.centerLeft,
-    child: SkeletonBlock(width: width, height: height, radius: 5),
+    child: SkeletonBlock(width: width, height: height, radius: 4),
   );
 
-  Widget _row({double imageWidth = 48, double imageHeight = 54}) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 10),
+  Widget _row({double imageWidth = 44, double imageHeight = 50}) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 7),
     child: Row(
       children: [
-        SkeletonBlock(width: imageWidth, height: imageHeight),
-        const SizedBox(width: 14),
+        SkeletonBlock(width: imageWidth, height: imageHeight, radius: 11),
+        const SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _line(132, height: 18),
-              _smallGap,
+              _line(132, height: 15),
+              const SizedBox(height: 6),
               _line(176),
-              _smallGap,
-              _line(92, height: 12),
+              const SizedBox(height: 6),
+              _line(92, height: 10),
             ],
           ),
         ),
@@ -147,8 +166,8 @@ class ClubSkeleton extends StatelessWidget {
     ),
   );
 
-  Widget _card() => Container(
-    padding: const EdgeInsets.all(16),
+  Widget _card({double imageHeight = 0}) => Container(
+    padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(16),
@@ -156,229 +175,248 @@ class ClubSkeleton extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _line(92, height: 20),
-        _gap,
-        const SkeletonBlock(height: 18, radius: 5),
-        _smallGap,
-        _line(176, height: 12),
-        _gap,
+        if (imageHeight > 0) ...[
+          SkeletonBlock(height: imageHeight, radius: 10),
+          const SizedBox(height: 10),
+        ],
+        _line(92, height: 15),
+        const SizedBox(height: 7),
+        const SkeletonBlock(height: 13, radius: 4),
+        const SizedBox(height: 5),
+        _line(176, height: 10),
+        const SizedBox(height: 9),
         Row(
           children: [
             Expanded(child: _line(112)),
-            const SkeletonBlock(width: 42, height: 20, radius: 5),
+            const SkeletonBlock(width: 42, height: 16, radius: 4),
           ],
         ),
       ],
     ),
   );
 
-  Widget _homePoster() => Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(14),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _homeSection() => const Padding(
+    padding: EdgeInsets.only(top: 16, bottom: 8),
+    child: Row(
       children: [
-        const AspectRatio(
-          aspectRatio: 1.95,
-          child: SkeletonBlock(height: 86, radius: 14),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 10, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _line(100, height: 20),
-              const SizedBox(height: 12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(child: _line(64, height: 28)),
-                  const SkeletonBlock(width: 40, height: 11, radius: 4),
-                ],
-              ),
-            ],
-          ),
-        ),
+        SkeletonBlock(width: 84, height: 17, radius: 4),
+        Spacer(),
+        SkeletonBlock(width: 34, height: 12, radius: 4),
       ],
     ),
   );
 
-  Widget _homeSection() => Padding(
-    padding: const EdgeInsets.only(top: 12, bottom: 10),
-    child: SizedBox(
-      height: 48,
-      child: Row(
-        children: [
-          _line(96, height: 22),
-          const Spacer(),
-          const SkeletonBlock(width: 42, height: 14, radius: 5),
-        ],
-      ),
-    ),
-  );
-
-  Widget _metrics({double height = 100}) => SkeletonBlock(height: height);
 
   Widget _slots() => const Wrap(
     spacing: 8,
     runSpacing: 8,
     children: [
-      SkeletonBlock(width: 102, height: 48),
-      SkeletonBlock(width: 102, height: 48),
-      SkeletonBlock(width: 102, height: 48),
-      SkeletonBlock(width: 102, height: 48),
-      SkeletonBlock(width: 102, height: 48),
-      SkeletonBlock(width: 102, height: 48),
+      SkeletonBlock(width: 74, height: 46),
+      SkeletonBlock(width: 74, height: 46),
+      SkeletonBlock(width: 74, height: 46),
+      SkeletonBlock(width: 74, height: 46),
+      SkeletonBlock(width: 74, height: 46),
+      SkeletonBlock(width: 74, height: 46),
     ],
   );
 
   List<Widget> _body() => switch (kind) {
     SkeletonKind.home => [
+      Row(
+        children: [
+          const SkeletonBlock(width: 32, height: 32, radius: 9),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [_line(110, height: 15), const SizedBox(height: 5), _line(160, height: 11)],
+            ),
+          ),
+          const SkeletonBlock(width: 34, height: 34, radius: 17),
+        ],
+      ),
+      const SizedBox(height: 12),
+      const SkeletonBlock(height: 38, radius: 12),
+      const SizedBox(height: 10),
+      const SkeletonBlock(height: 104, radius: 16),
+      const SizedBox(height: 12),
+      const SkeletonBlock(height: 160, radius: 16),
+      const SizedBox(height: 14),
       SizedBox(
-        height: 48,
+        height: 88,
         child: Row(
           children: [
-            const SkeletonBlock(width: 30, height: 30, radius: 8),
-            const SizedBox(width: 9),
-            _line(120, height: 22),
-            const Spacer(),
-            const SizedBox(
-              width: 48,
-              child: Center(
-                child: SkeletonBlock(width: 20, height: 20, radius: 6),
+            for (var i = 0; i < 4; i++)
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        width: double.infinity,
+                        child: SkeletonBlock(height: 56, radius: 11),
+                      ),
+                      const SizedBox(height: 5),
+                      FractionallySizedBox(
+                        widthFactor: .66,
+                        child: const SizedBox(
+                          width: double.infinity,
+                          child: SkeletonBlock(height: 10, radius: 4),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
           ],
         ),
       ),
+      _homeSection(),
+      _card(imageHeight: 120),
+      const SizedBox(height: 8),
+      _card(),
+      _homeSection(),
+      _row(),
+    ],
+    SkeletonKind.catalog => [
+      const SkeletonBlock(height: 38, radius: 12),
       const SizedBox(height: 10),
-      const SkeletonBlock(height: 44),
-      _gap,
-      const SkeletonBlock(height: 156, radius: 16),
-      const SizedBox(height: 20),
+      const SkeletonBlock(height: 38, radius: 11),
+      const SizedBox(height: 8),
+      const Row(
+        children: [
+          SkeletonBlock(width: 64, height: 30, radius: 15),
+          SizedBox(width: 6),
+          SkeletonBlock(width: 82, height: 30, radius: 15),
+          SizedBox(width: 6),
+          SkeletonBlock(width: 82, height: 30, radius: 15),
+        ],
+      ),
+      const SizedBox(height: 12),
+      for (var i = 0; i < 4; i++) ...[_row(imageWidth: 92, imageHeight: 88), const SizedBox(height: 7)],
+    ],
+    SkeletonKind.order => [
+      const SkeletonBlock(height: 148, radius: 17),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          for (var i = 0; i < 4; i++)
+            const Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: 6),
+                child: SkeletonBlock(height: 14, radius: 4),
+              ),
+            ),
+        ],
+      ),
+      const SizedBox(height: 12),
+      _card(),
+      const SizedBox(height: 10),
+      _row(imageWidth: 48, imageHeight: 52),
+      _homeSection(),
+      for (var i = 0; i < 3; i++) _row(imageWidth: 10, imageHeight: 10),
+    ],
+    SkeletonKind.member => [
+      const SkeletonBlock(height: 182, radius: 19),
+      const SizedBox(height: 10),
       Row(
         children: [
           for (var i = 0; i < 3; i++)
             const Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 56,
-                    child: Center(child: SkeletonBlock(width: 50, height: 50)),
-                  ),
-                  SizedBox(height: 6),
-                  SkeletonBlock(width: 64, height: 20, radius: 5),
-                ],
+              child: Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: SkeletonBlock(height: 38, radius: 12),
               ),
             ),
         ],
       ),
-      _smallGap,
       _homeSection(),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: _homePoster()),
-          const SizedBox(width: 12),
-          Expanded(child: _homePoster()),
-        ],
-      ),
-      const SizedBox(height: 12),
-      _homeSection(),
-      _row(imageWidth: 88, imageHeight: 104),
-    ],
-    SkeletonKind.catalog => [
-      const SkeletonBlock(height: 48),
-      _gap,
-      const Row(
-        children: [
-          SkeletonBlock(width: 64, height: 36, radius: 18),
-          SizedBox(width: 8),
-          SkeletonBlock(width: 92, height: 36, radius: 18),
-          SizedBox(width: 8),
-          SkeletonBlock(width: 92, height: 36, radius: 18),
-        ],
-      ),
-      _gap,
+      _card(imageHeight: 78),
+      const SizedBox(height: 8),
       _card(),
-      _gap,
-      _card(),
-      _gap,
-      _card(),
-    ],
-    SkeletonKind.order => [
-      _line(96, height: 28),
-      _gap,
-      _line(240, height: 30),
-      _smallGap,
-      _line(176),
-      _gap,
-      _card(),
-      _gap,
-      _row(imageWidth: 56, imageHeight: 64),
-      _gap,
-      _line(96, height: 22),
-      _gap,
-      for (var i = 0; i < 3; i++) _row(imageWidth: 12, imageHeight: 12),
-    ],
-    SkeletonKind.member => [
-      _row(imageWidth: 56, imageHeight: 64),
-      _gap,
-      _metrics(height: 110),
-      _gap,
-      const SkeletonBlock(height: 52),
-      _gap,
-      _line(96, height: 22),
-      _gap,
-      _card(),
-      _gap,
-      _line(132, height: 22),
-      _row(),
-      _row(),
     ],
     SkeletonKind.earnings => [
-      _metrics(height: 205),
-      _gap,
+      const SkeletonBlock(height: 196, radius: 19),
+      const SizedBox(height: 10),
       _line(256),
-      _gap,
-      _line(160, height: 22),
-      _gap,
-      for (var i = 0; i < 4; i++) ...[
-        _line(180, height: 18),
-        _smallGap,
-        _line(126, height: 12),
-        _gap,
-        const Divider(height: 1),
-        _gap,
+      _homeSection(),
+      for (var i = 0; i < 3; i++) ...[
+        _card(imageHeight: 0),
+        const SizedBox(height: 8),
       ],
     ],
     SkeletonKind.profile => [
-      _gap,
-      _row(imageWidth: 58, imageHeight: 58),
-      _gap,
-      _metrics(),
-      _gap,
-      for (var i = 0; i < 4; i++) _row(imageWidth: 24, imageHeight: 24),
+      const SkeletonBlock(height: 162, radius: 19),
+      const SizedBox(height: 10),
+      Row(
+        children: const [
+          Expanded(child: SkeletonBlock(height: 52, radius: 15)),
+          SizedBox(width: 8),
+          Expanded(child: SkeletonBlock(height: 52, radius: 15)),
+        ],
+      ),
+      const SizedBox(height: 14),
+      for (var i = 0; i < 5; i++) _row(imageWidth: 24, imageHeight: 24),
     ],
     SkeletonKind.notifications => [
       for (var i = 0; i < 5; i++) ...[
-        _row(imageWidth: 36, imageHeight: 36),
-        _gap,
+        _row(imageWidth: 32, imageHeight: 34),
+        const SizedBox(height: 5),
       ],
     ],
     SkeletonKind.availability => [
-      _line(120, height: 23),
-      _gap,
-      _line(64),
-      _gap,
-      for (var i = 0; i < 3; i++) ...[
-        _row(imageWidth: 24, imageHeight: 24),
-        _smallGap,
+      const SkeletonBlock(width: 110, height: 22, radius: 4),
+      const SizedBox(height: 8),
+      _line(220),
+      const SizedBox(height: 14),
+      for (var i = 0; i < 4; i++) ...[
+        _row(imageWidth: 36, imageHeight: 40),
+        const SizedBox(height: 6),
       ],
-      _gap,
-      const SkeletonBlock(height: 48),
+      const SizedBox(height: 8),
+      const SkeletonBlock(height: 42, radius: 13),
+    ],
+    SkeletonKind.tiers => [
+      const SkeletonBlock(height: 132, radius: 18),
+      const SizedBox(height: 10),
+      const Row(
+        children: [
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+          SizedBox(width: 8),
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+          SizedBox(width: 8),
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+        ],
+      ),
+      _homeSection(),
+      for (var i = 0; i < 3; i++) ...[
+        Row(
+          children: [
+            const SkeletonBlock(width: 3, height: 44, radius: 2),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _line(92, height: 14),
+                  const SizedBox(height: 5),
+                  _line(188, height: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+      ],
+    ],
+    SkeletonKind.clubFeatures => [
+      const SkeletonBlock(height: 138, radius: 18),
+      const SizedBox(height: 14),
+      _homeSection(),
+      for (var i = 0; i < 4; i++) ...[
+        _row(imageWidth: 30, imageHeight: 30),
+        const SizedBox(height: 4),
+      ],
     ],
     SkeletonKind.slots => [],
   };
@@ -389,8 +427,8 @@ class ClubSkeleton extends StatelessWidget {
         ? _slots()
         : PageList(
             padding: kind == SkeletonKind.home
-                ? const EdgeInsets.fromLTRB(20, 10, 20, 24)
-                : const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                ? const EdgeInsets.fromLTRB(16, 8, 16, 22)
+                : const EdgeInsets.fromLTRB(16, 6, 16, 26),
             children: _body(),
           ),
   );

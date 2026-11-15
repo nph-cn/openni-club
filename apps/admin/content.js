@@ -1,4 +1,4 @@
-import {el,money,shanghaiInput,fromShanghaiInput} from './ui.js';
+import {el,icon,money,safeImage,shanghaiInput,fromShanghaiInput} from './ui.js';
 const schemas={
  services:{title:'服务目录',singular:'服务',fields:[['title','服务名称','text',true],['game','游戏','text',true],['category','分类','text',true],['description','服务说明','textarea',true],['priceCents','价格 / 元','money',true],['durationMinutes','时长 / 分钟','number',true],['platform','终端','select',false,['PC','mobile']],['serviceType','服务类型','select',false,['hourly','escort','review']],['gameMode','模式','text'],['billingUnit','计价单位','select',false,['hour','session','target']],['teamSize','服务成员人数','count'],['maps','地图','array'],['tags','标签','array'],['inclusions','包含内容','lines'],['requirements','下单要求','lines'],['rules','服务规则','lines'],['coverUrl','服务封面 / HTTPS','url'],['gameIconUrl','游戏图标 / HTTPS','url'],['bannerUrl','游戏横幅 / HTTPS','url'],['variants','服务规格','variants']]},
  players:{title:'成员资料',singular:'成员',fields:[['name','成员名称','text',true],['role','定位','text',true],['bio','个人介绍','textarea',true],['games','游戏','array',true],['tags','标签','array'],['initials','头像简写','text',true],['color','头像颜色','color',true],['avatarUrl','头像地址 / HTTPS','url'],['coverUrl','封面地址 / HTTPS','url']]},
@@ -7,15 +7,25 @@ const schemas={
 };
 const labels={PC:'电脑端',mobile:'手机端',hourly:'按时组队',escort:'护航',review:'复盘',hour:'小时',session:'次',target:'目标'};
 export function contentManager({request,isConnected,getData,onChange}){
- const $=s=>document.querySelector(s);let section='services',editing=null;
+ const $=s=>document.querySelector(s);let section='services',editing=null,serviceGame='';
  function show(next){section=next;$('#content-title').textContent=schemas[section].title;$('#create-content').textContent=`新增${schemas[section].singular}`;$('#create-content').hidden=!isConnected();render();}
+ function serviceFilter(){
+  const games=getData().games||[],all=getData().services||[];
+  if(!games.length)return null;
+  return el('div',{class:'service-filter'},el('span',{class:'service-filter-label'},'按游戏筛选'),el('div',{class:'ops-chips',role:'group','aria-label':'按游戏筛选服务'},[['','全部游戏'],...games.map(game=>[game.name,`${game.shortName||game.name} ${all.filter(item=>item.game===game.name).length}`])].map(([value,label])=>el('button',{type:'button',class:serviceGame===value?'selected':'',onclick:()=>{serviceGame=value;render();}},label))));
+ }
  function render(){
   const list=$('#content-list');list.classList.toggle('banner-grid',section==='banners');list.replaceChildren();$('#content-message').textContent='';
-  const records=getData()[section]||[];
-  if(!records.length){list.append(el('div',{class:'empty-state'},`还没有${schemas[section].singular}`));return;}
+  const all=getData()[section]||[],records=section==='services'?all.filter(item=>!serviceGame||item.game===serviceGame):all;
+  if(section==='services'){const filter=serviceFilter();if(filter)list.append(filter);}
+  if(!records.length){
+   if(section==='services'&&serviceGame){list.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},`「${serviceGame}」下还没有服务`),el('button',{type:'button',class:'action soft',onclick:()=>{serviceGame='';render();}},'查看全部服务')));return;}
+   list.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},`还没有${schemas[section].singular}`)));return;
+  }
   for(const item of records){
    const row=el('article',{class:`content-row${item.archived?' archived':''}`}),text=el('div',{class:'content-copy'},el('h3',{},item.title||item.name));
    if(section==='services'){
+    const cover=safeImage(item.coverUrl);if(cover){row.classList.add('service-content-row');row.append(el('img',{src:cover,alt:'',class:'content-service-preview',loading:'lazy',decoding:'async',onerror:event=>{event.currentTarget.remove();row.classList.remove('service-content-row');}}));}
     text.append(el('p',{class:'content-facts'},[item.game,labels[item.platform],item.gameMode,(item.maps||[]).join(' / ')].filter(Boolean).join(' · ')),el('p',{class:'content-body'},item.description),el('strong',{class:'service-price'},`${money(item.priceCents)} / ${item.durationMinutes} 分钟`));
     if(item.variants?.length)text.append(el('span',{class:'badge neutral'},`${item.variants.length} 个规格`));
    }else if(section==='players')text.append(el('p',{},item.role),el('p',{class:'content-body'},item.bio));
@@ -95,5 +105,5 @@ export function contentManager({request,isConnected,getData,onChange}){
   }catch(e){$('#editor-error').textContent=e instanceof SyntaxError?'规格 JSON 格式有误。':e.message;}finally{submit.disabled=false;}
  };
  $('#create-content').onclick=()=>open();$('#close-editor').onclick=()=>$('#editor').close();
- return {show,render,editMember:item=>open(item,'players')};
+ return {show,render,editMember:item=>open(item,'players'),showServicesFor:game=>{serviceGame=game||'';show('services');},clearServiceFilter:()=>{serviceGame='';}};
 }

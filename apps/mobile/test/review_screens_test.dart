@@ -1,3 +1,4 @@
+import 'capture_2x.dart';
 import 'catalog_media_cache.dart';
 
 import 'dart:convert';
@@ -11,16 +12,10 @@ import 'package:openni_club/repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await (FontLoader(
-      'NotoSansSC',
-    )..addFont(rootBundle.load('assets/fonts/NotoSansSC.ttf'))).load();
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-  });
+  setUpAll(loadCaptureFonts);
   for (final screen in ['home', 'service', 'player', 'order']) {
     testWidgets('v2 review: $screen', (tester) async {
+      enableCaptureShadows();
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       tester.view.physicalSize = const Size(390, 844);
@@ -48,7 +43,11 @@ void main() {
       await tester.pumpWidget(
         RepaintBoundary(
           key: key,
-          child: OpenNIApp(repository: repo, initialScreen: screen),
+          child: OpenNIApp(
+            repository: repo,
+            initialScreen: screen,
+            previewDevice: true,
+          ),
         ),
       );
       await tester.pumpAndSettle();
@@ -62,7 +61,7 @@ void main() {
         reason: '$screen must have no overflow',
       );
       await expectLater(
-        find.byKey(key),
+        await captureAt2x(key),
         matchesGoldenFile('../screenshots/$screen.png'),
       );
       await tester.pumpWidget(const SizedBox.shrink());

@@ -18,7 +18,10 @@ void main() {
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
-      final repo = ClubRepository(persist: false);
+      final repo = ClubRepository(
+        persist: false,
+        clock: () => DateTime.utc(2026, 11, 16, 5),
+      );
       await repo.load();
       await tester.pumpWidget(
         OpenNIApp(repository: repo, initialScreen: 'booking'),
@@ -82,10 +85,10 @@ void main() {
       OpenNIApp(repository: repo, initialScreen: 'services'),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '不存在');
+    await tester.enterText(find.byType(EditableText), '不存在');
     await tester.pumpAndSettle();
     expect(find.text('没有匹配的服务'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), '复盘');
+    await tester.enterText(find.byType(EditableText), '复盘');
     await tester.pumpAndSettle();
     expect(find.text('三角洲 · 对局复盘'), findsOneWidget);
     expect(find.text('三角洲 · PC 小时陪'), findsNothing);

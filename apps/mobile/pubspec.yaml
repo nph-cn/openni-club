@@ -13,6 +13,7 @@ dependencies:
   go_router: ^18.1.4
   shared_preferences: ^2.5.4
   cupertino_ui: any
+  cupertino_icons: ^1.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -29,3 +30,4 @@ flutter:
     - assets/brand.json
     - assets/catalog.json
     - assets/brand/
+    - assets/games/

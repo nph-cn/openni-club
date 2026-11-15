@@ -1,146 +1,170 @@
 [
   {
     "id": "admin-overview",
-    "file": "admin-overview.png",
+    "file": "admin-overview.jpg",
     "title": "今日待办",
     "role": "operator",
     "flow": "fulfillment",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-dispatch",
-    "file": "admin-dispatch.png",
+    "file": "admin-dispatch.jpg",
     "title": "派单工作台",
     "role": "operator",
     "flow": "fulfillment",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-orders",
-    "file": "admin-orders.png",
+    "file": "admin-orders.jpg",
     "title": "全部订单",
     "role": "operator",
     "flow": "fulfillment",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-order",
-    "file": "admin-order.png",
+    "file": "admin-order.jpg",
     "title": "订单履约详情",
     "role": "operator",
     "flow": "fulfillment",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-players",
-    "file": "admin-players.png",
+    "file": "admin-players.jpg",
     "title": "成员与排班",
     "role": "operator",
     "flow": "member",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-settlements",
-    "file": "admin-settlements.png",
+    "file": "admin-settlements.jpg",
     "title": "收入与结算",
     "role": "operator",
     "flow": "member",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-disputes",
-    "file": "admin-disputes.png",
+    "file": "admin-disputes.jpg",
     "title": "售后处理",
     "role": "operator",
     "flow": "fulfillment",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1280,
+    "height": 720,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-services",
-    "file": "admin-services.png",
+    "file": "admin-services.jpg",
     "title": "服务目录",
     "role": "operator",
     "flow": "discover",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-announcements",
-    "file": "admin-announcements.png",
+    "file": "admin-announcements.jpg",
     "title": "俱乐部公告",
     "role": "operator",
     "flow": "account",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-club",
-    "file": "admin-club.png",
+    "file": "admin-club.jpg",
     "title": "品牌与发布",
     "role": "operator",
     "flow": "account",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-connection",
-    "file": "admin-connection.png",
+    "file": "admin-connection.jpg",
     "title": "连接与集成",
     "role": "operator",
     "flow": "account",
     "source": "apps/admin/operations.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / read-only API-derived demo snapshot",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
   },
   {
     "id": "admin-banners",
-    "file": "admin-banners.png",
+    "file": "admin-banners.jpg",
     "title": "首页横幅",
     "role": "operator",
     "flow": "account",
     "source": "apps/admin/content.js",
-    "width": 3480,
-    "height": 1806,
-    "capture": "CUA / Safari / API-derived preview after live local save verification",
-    "viewport": "1740×903 CSS pixels at 2× scale"
+    "width": 1280,
+    "height": 720,
+    "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
+  },
+  {
+    "id": "admin-roster",
+    "file": "admin-roster.jpg",
+    "title": "打手管理",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "分级、认证与成员状态"
+  },
+  {
+    "id": "admin-games",
+    "file": "admin-games.jpg",
+    "title": "游戏类目",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "8 个游戏类目的启停与联动"
+  },
+  {
+    "id": "admin-features",
+    "file": "admin-features.jpg",
+    "title": "能力开通",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "俱乐部可开通模块与示例状态"
   }
 ]

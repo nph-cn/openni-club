@@ -16,7 +16,8 @@ const text=value=>String(value).replace(/<[^>]*>/g,'').replace(/!\[([^\]]*)\]\([
 const url=file=>file==='index.md'?'/guide/':`/guide/${file.replace(/\.md$/,'.html')}`;
 const slug=value=>text(value).toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu,'').trim().replace(/\s+/g,'-')||'section';
 
-export async function buildDocs({root=process.cwd(),outDir='dist/guide'}={}){
+export async function buildDocs({root=process.cwd(),outDir='dist/guide',sourceBase=`${repo}/blob/main/`}={}){
+ const sources=String(sourceBase).replace(/\/?$/,'/');
  const destination=resolve(root,outDir);await mkdir(destination,{recursive:true});
  const files=(await readdir(join(root,'docs'))).filter(file=>file.endsWith('.md')).sort();
  const contents=new Map(await Promise.all(files.map(async file=>[file,await readFile(join(root,'docs',file),'utf8')])));
@@ -36,7 +37,7 @@ export async function buildDocs({root=process.cwd(),outDir='dist/guide'}={}){
    if(token.type!=='link'||!token.href||/^(?:[a-z]+:|#|\/)/i.test(token.href))return;
    const target=new URL(token.href,'https://repo.invalid/docs/');
    const local=target.pathname.slice('/docs/'.length);
-   token.href=target.pathname.startsWith('/docs/')&&contents.has(local)?url(local)+target.search+target.hash:`${repo}/blob/main${target.pathname}${target.search}${target.hash}`;
+   token.href=target.pathname.startsWith('/docs/')&&contents.has(local)?url(local)+target.search+target.hash:`${sources}${target.pathname.slice(1)}${target.search}${target.hash}`;
   }});
   const pageNumber=ordered.findIndex(([entry])=>entry===file),previous=ordered[pageNumber-1],next=ordered[pageNumber+1];
   const group=sections.find(section=>section.pages.some(([entry])=>entry===file))?.title||'参考';
@@ -48,7 +49,7 @@ export async function buildDocs({root=process.cwd(),outDir='dist/guide'}={}){
 <header class="docs-header"><a class="docs-brand" href="/">OpenNI</a><a class="docs-label" href="/guide/" aria-current="page">文档</a><button class="search-trigger" type="button" aria-haspopup="dialog"><span>搜索文档</span><kbd>⌘ K</kbd></button><nav aria-label="文档站点导航"><a href="/">界面图库</a><a href="/studio/">品牌配置</a><a href="${repo}" target="_blank" rel="noreferrer">GitHub ↗</a></nav></header>
 <div class="mobile-bar"><button id="open-doc-menu" type="button" aria-haspopup="dialog">菜单</button><details class="mobile-toc"><summary>本页目录</summary><nav aria-label="本页目录（移动端）">${toc||'<span>此页没有章节</span>'}</nav></details></div>
 <div class="docs-layout"><aside class="docs-sidebar"><nav aria-label="文档章节">${navigation}</nav><a class="sidebar-version" href="/guide/00-status.html">v0.2 <span>功能与版本状态</span></a></aside>
-<main class="docs-main"><div class="docs-breadcrumb"><span>${group}</span><span aria-hidden="true">/</span><span>${escape(shortTitle)}</span></div><article id="guide-content">${content}</article><div class="doc-source"><a href="${repo}/blob/main/docs/${file}" target="_blank" rel="noreferrer">在 GitHub 查看此页 ↗</a></div><nav class="page-navigation" aria-label="前后章节">${previous?nextLink(previous,'previous'):'<span></span>'}${next?nextLink(next,'next'):'<span></span>'}</nav><footer class="docs-footer"><span>OpenNI</span><a href="${repo}/blob/main/LICENSE">MIT License</a></footer></main>
+<main class="docs-main"><div class="docs-breadcrumb"><span>${group}</span><span aria-hidden="true">/</span><span>${escape(shortTitle)}</span></div><article id="guide-content">${content}</article><div class="doc-source"><a href="${escape(sources+'docs/'+encodeURIComponent(file))}" target="_blank" rel="noreferrer">在 GitHub 查看此页 ↗</a></div><nav class="page-navigation" aria-label="前后章节">${previous?nextLink(previous,'previous'):'<span></span>'}${next?nextLink(next,'next'):'<span></span>'}</nav><footer class="docs-footer"><span>OpenNI</span><a href="${repo}/blob/main/LICENSE">MIT License</a></footer></main>
 <aside class="docs-toc"><nav aria-label="本页目录"><h2>本页目录</h2>${toc||'<span class="toc-empty">此页没有章节</span>'}</nav></aside></div>
 <dialog id="doc-menu" aria-labelledby="doc-menu-title"><div class="menu-title"><span id="doc-menu-title">文档目录</span><button type="button" data-close-dialog="doc-menu" aria-label="关闭目录">关闭</button></div><nav aria-label="文档章节（移动端）">${navigation}</nav></dialog>
 <dialog id="doc-search" aria-labelledby="search-label"><div class="search-form"><label class="sr-only" id="search-label" for="doc-search-input">搜索文档</label><input id="doc-search-input" type="search" autocomplete="off" placeholder="搜索文档、配置项或命令" aria-controls="doc-search-results"><button type="button" data-close-dialog="doc-search" aria-label="关闭搜索">Esc</button></div><div class="search-status" id="search-status" role="status">正在加载搜索索引…</div><div id="doc-search-results"></div><div class="search-footer"><span>↑ ↓ 选择</span><span>Enter 打开</span></div></dialog>

@@ -13,3 +13,9 @@ Keep sample-data disclosure in settings/about and once at checkout. Do not put m
 iOS/web use localized glass for navigation, transaction bars and sheets, with content visible beneath. Android uses solid Material surfaces. Accessibility preferences disable transparency. Flutter glass is not represented as Apple's native Liquid Glass.
 
 Review the actual 390×844 home/service/player/order captures before the full 22-page gallery. Preserve all booking, variant, authentication, payment and fulfillment tests.
+
+## 2026-11-16 视觉与交互更新
+
+冷白实体内容与玻璃导航分层：导航高光边缘、柔和阴影和整格选中胶囊；详情标题居中，主页面标题加强层级。按钮、输入、状态卡和菜单统一曲率，输入与价格保持实体对比。进行中订单前置，服务卡扩大真实游戏图，订单列表补相应游戏缩略图。横幅计数可点击或键盘切换；搜索有清除与空结果恢复；订单使用平台分段控件。所有页面沿用同一共享组件，Android 和辅助设置保留实体回退。
+
+35 张截图从实际 Widget 树按 2×输出，物理780×1688，不插值放大旧图。原业务合同、目录图来源与生产校验不变；未声称 Flutter 玻璃是系统 Liquid Glass。

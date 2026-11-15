@@ -6,6 +6,16 @@ Flutter App、微信小程序和运营后台。
 
 **当前为 v0.2 预览版本。** 单配置品牌生成、客户下单、运营派单、成员接单与交付、争议、分成账本已实现；图库包含 Flutter、小程序、运营后台，以及登录、验证码、骨架加载、错误和空状态的实际运行截图。微信和腾讯云短信登录、支付及退款适配已有自动化测试，真实短信送达、商户交易、真机与商店审核尚未完成。生产短信和支付默认关闭。
 
+## 最近验收 · 2026-11-16
+
+- App 预览增加 iPhone 时间、灵动岛和手势条，Cupertino 导航图标、搜索框、分组设置与玻璃弹层统一；设备外观仅用于预览，真机继续使用系统状态栏。玻璃材质由 Flutter 绘制，不是系统原生 Apple Liquid Glass。
+- 官网按 Mobbin 等公开产品站与编辑式版式重排：大字 hero、强网格、大尺寸完整截图、流程归档、搜索/筛选/详情与下载；App 图库扩展为 **107 张** 780×1688 运行截图（含分级、游戏类目、俱乐部能力、骨架加载与长页后续内容段），加 24 张小程序图与 15 张运营后台图，全站共 **146 张**真实运行截图。小程序截图尚未同步最新 UI。
+- `/delta/` 重做为「三角洲行动 · 战地档案」Three.js 3D 二创：先按 lixiaolin94/skills 的 web-shader-extractor 方法与后续 KPR 深度取证（相机模型、270vh 章节、mask 擦场、逐字排版）锁定渲染语言，再用 Three.js r160 重建分层相机场景（预加载/声音门、逐字标题、章节菜单、自定义光标、HOLD 交互、3D 拾取、官方 4K 素材与循环视频、自研 post-processing），六章滚动叙事（入局、行动方式、干员档案、地形情报、小队集结、部署）、模式与地图切换、可控制影像、App 成员与预约入口。干员档案章使用 6 张官方公开透明角色立绘，滚动驱动横向画廊。固定 HUD 只展示真实章节/滚动/视口/本地时间/渲染状态；支持键盘、减少动态与无 WebGL 静态降级。素材逐项记录出处且不属于 MIT 授权。
+- 找服务与找陪练支持独立搜索和筛选；关注入口可点击；预约保留服务、规格和陪练，支持当天未过期的时段；接口订单再次预约保留原规格。当前代码的本机测试与浏览器验收结果详见下方记录。上一提交的 Android debug、iOS 未签名构建已成功，不代表这次代码已完成真机验收。
+- 本轮新增成员订单状态分组、冻结规格展示、交付/评价结果、通知日期与未读状态；小满与 North 的示例头像已补全。新增回归发现并修复弹层退场时输入控制器过早释放的问题。最终测试及浏览器证据见下方验收记录。
+
+详见[功能与上线状态](docs/00-status.md)、[功能回归记录](docs/qa/2026-11-16-api-integration-review.md)、[官网与 App 验收记录](docs/qa/2026-11-16-gallery-delta-review.md)与[三角洲专题二创验收](docs/qa/2026-11-16-delta-recreation-review.md)。
+
 ## 先做成自己的俱乐部
 
 1. 在品牌向导填写名称、上传 Logo，下载配置包；或从 [最简配置](config/club.example.json) 开始。
@@ -76,7 +86,7 @@ scripts/doctor.mjs   不输出密钥的环境检查
 
 ## 开发与许可
 
-运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart` 和 `flutter build web`。生成页面截图使用 `flutter test test/screenshots_test.dart --update-goldens`。CI 只做检查，不会自动发布应用或使用你的生产密钥。
+运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test` 和 `flutter build web --base-href /demo/ --no-web-resources-cdn`。更新完整截图使用 `flutter test test/review_screens_test.dart test/screenshots_test.dart test/auth_screens_test.dart test/journey_screens_test.dart --update-goldens`，逐张检查新图后再提交。CI 只做检查，不会自动发布应用或使用你的生产密钥。
 
 品牌生成与发布状态测试：`node --test scripts/test/*.test.mjs`。仓库展示使用 `config/demo.club.json` 的虚构北岸品牌；`club.example.json` 保留为最简客户模板。自己的公开配置与秘密配置必须分开保存。
 

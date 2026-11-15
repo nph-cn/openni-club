@@ -1,5 +1,5 @@
 <import src="../../templates/common.wxml"/>
-<view class="page auth-page" style="{{themeStyle}}">
+<view class="page login-page auth-page" style="{{themeStyle}}">
   <template is="state" data="{{loading,error,authRequired,skeletonRows,skeletonKind}}"/>
   <block wx:if="{{!loading&&!error}}">
     <view class="auth-brand"><image src="/assets/brand/logo.png" mode="aspectFit"/><text>{{brandName}}</text></view>
