@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
@@ -9,29 +11,115 @@ import 'orders.dart';
 import 'booking.dart';
 import 'member.dart';
 import 'accessibility.dart';
+import 'auth.dart';
+import 'loading.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await GlassPreferences.initialize();
-  final repo = ClubRepository();
-  await repo.load();
-  await repo.loadDemoPreview();
-  final screen = Uri.base.queryParameters['screen'] ?? 'home';
-  if (repo.isLocal &&
-      !repo.isProduction &&
-      [
-        'member',
-        'member_orders',
-        'member_order',
-        'availability',
-        'earnings',
-        'member_notifications',
-        'delivery',
-      ].contains(screen)) {
-    await repo.loadMemberData();
+  runApp(
+    ClubBootstrap(
+      repository: ClubRepository(),
+      initialScreen: Uri.base.queryParameters['screen'] ?? 'home',
+    ),
+  );
+}
+
+class ClubBootstrap extends StatefulWidget {
+  const ClubBootstrap({
+    super.key,
+    required this.repository,
+    this.initialScreen = 'home',
+    this.loader,
+  });
+  final ClubRepository repository;
+  final String initialScreen;
+  final Future<void> Function()? loader;
+  @override
+  State<ClubBootstrap> createState() => _ClubBootstrapState();
+}
+
+class _ClubBootstrapState extends State<ClubBootstrap> {
+  late Future<void> future = start();
+  Future<void> start() async {
+    if (widget.loader != null) {
+      await widget.loader!();
+      return;
+    }
+    await GlassPreferences.initialize();
+    final repo = widget.repository;
+    await repo.load();
+    if (repo.error != null) throw Exception(repo.error);
+    await repo.loadDemoPreview();
+    if (repo.isLocal &&
+        !repo.isProduction &&
+        [
+          'member',
+          'member_orders',
+          'member_order',
+          'availability',
+          'earnings',
+          'member_notifications',
+          'delivery',
+        ].contains(widget.initialScreen)) {
+      await repo.loadMemberData();
+    }
+    if (kIsWeb && !repo.isProduction) applyBrandPreview(repo, Uri.base);
   }
-  if (kIsWeb && !repo.isProduction) applyBrandPreview(repo, Uri.base);
-  runApp(OpenNIApp(repository: repo, initialScreen: screen));
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<void>(
+    future: future,
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done &&
+          !snapshot.hasError) {
+        return OpenNIApp(
+          repository: widget.repository,
+          initialScreen: widget.initialScreen,
+        );
+      }
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: clubTheme(widget.repository),
+        home: ClubPage(
+          repo: widget.repository,
+          appBar: false,
+          child: snapshot.hasError
+              ? ConnectionFailure(
+                  onRetry: () => setState(() => future = start()),
+                )
+              : const ClubSkeleton(kind: SkeletonKind.home),
+        ),
+      );
+    },
+  );
+}
+
+class ConnectionFailure extends StatelessWidget {
+  const ConnectionFailure({super.key, required this.onRetry});
+  final VoidCallback onRetry;
+  @override
+  Widget build(BuildContext context) => PageList(
+    padding: const EdgeInsets.fromLTRB(24, 100, 24, 24),
+    children: [
+      const Align(
+        alignment: Alignment.centerLeft,
+        child: Icon(Icons.cloud_off_rounded, size: 52, color: muted),
+      ),
+      const SizedBox(height: 28),
+      const Text(
+        '暂时无法连接',
+        style: TextStyle(fontSize: 29, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 12),
+      const Text('请检查网络连接后重试', style: TextStyle(fontSize: 16, color: muted)),
+      const SizedBox(height: 32),
+      FilledButton.icon(
+        onPressed: onRetry,
+        icon: const Icon(Icons.refresh_rounded),
+        label: const Text('重新加载'),
+      ),
+    ],
+  );
 }
 
 /// Browser Studio overrides only presentation. Never touches API, auth or mode.
@@ -75,7 +163,13 @@ class _OpenNIAppState extends State<OpenNIApp> {
   late final GoRouter router;
   Widget live(Widget Function() builder) => ListenableBuilder(
     listenable: repo,
-    builder: (_, _) => repo.error != null
+    builder: (_, _) => repo.loading
+        ? ClubPage(
+            repo: repo,
+            appBar: false,
+            child: const ClubSkeleton(kind: SkeletonKind.home),
+          )
+        : repo.error != null
         ? ClubPage(
             repo: repo,
             title: '连接俱乐部',
@@ -99,6 +193,19 @@ class _OpenNIAppState extends State<OpenNIApp> {
     final initial =
         {
           'home': '/',
+          'welcome': '/welcome',
+          'login': '/login',
+          'phone': '/login/phone',
+          'code': '/login/code',
+          'code_error': '/login/code?state=error',
+          'code_verifying': '/login/code?state=verifying',
+          'home_loading': '/states/loading',
+          'home_error': '/states/error',
+          'orders_empty': '/states/orders-empty',
+          'orders_guest': '/states/orders-guest',
+          'privacy': '/legal/privacy',
+          'terms': '/legal/terms',
+          'home_android': '/',
           'services': '/services',
           'service': '/services/$serviceId',
           'service_120':
@@ -128,6 +235,92 @@ class _OpenNIAppState extends State<OpenNIApp> {
     router = GoRouter(
       initialLocation: initial,
       routes: [
+        GoRoute(
+          path: '/welcome',
+          builder: (_, s) => AuthPage(
+            repo,
+            kind: 'welcome',
+            next: safeReturnPath(s.uri.queryParameters['next']),
+          ),
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (_, s) => AuthPage(
+            repo,
+            next: safeReturnPath(s.uri.queryParameters['next']),
+          ),
+        ),
+        GoRoute(
+          path: '/login/phone',
+          builder: (_, s) => AuthPage(
+            repo,
+            kind: 'phone',
+            next: safeReturnPath(s.uri.queryParameters['next']),
+          ),
+        ),
+        GoRoute(
+          path: '/login/code',
+          builder: (_, s) => AuthPage(
+            repo,
+            kind: 'code',
+            previewError:
+                !repo.isProduction &&
+                repo.isLocal &&
+                s.uri.queryParameters['state'] == 'error',
+            previewSubmitting:
+                !repo.isProduction &&
+                repo.isLocal &&
+                s.uri.queryParameters['state'] == 'verifying',
+            verifyCode:
+                !repo.isProduction &&
+                    repo.isLocal &&
+                    s.uri.queryParameters['state'] == 'verifying'
+                ? (_, _) => Completer<void>().future
+                : null,
+            next: safeReturnPath(s.uri.queryParameters['next']),
+          ),
+        ),
+        if (!repo.isProduction && repo.isLocal) ...[
+          GoRoute(
+            path: '/states/orders-guest',
+            builder: (context, _) => OrdersSignInPage(
+              repo,
+              onSignIn: () => context.push('/login?next=%2Forders'),
+            ),
+          ),
+          GoRoute(
+            path: '/states/orders-empty',
+            builder: (_, _) {
+              final empty = ClubRepository(persist: false)
+                ..brand = repo.brand
+                ..club = repo.club
+                ..services = repo.services
+                ..players = repo.players;
+              return OrdersPage(empty);
+            },
+          ),
+          GoRoute(
+            path: '/states/loading',
+            builder: (_, _) => ClubPage(
+              repo: repo,
+              appBar: false,
+              child: const ClubSkeleton(kind: SkeletonKind.home),
+            ),
+          ),
+          GoRoute(
+            path: '/states/error',
+            builder: (_, _) => ClubPage(
+              repo: repo,
+              appBar: false,
+              child: ConnectionFailure(
+                onRetry: () async {
+                  await repo.load();
+                  if (mounted && repo.error == null) router.go('/');
+                },
+              ),
+            ),
+          ),
+        ],
         GoRoute(path: '/', builder: (_, _) => live(() => HomePage(repo))),
         GoRoute(
           path: '/services',
@@ -182,6 +375,10 @@ class _OpenNIAppState extends State<OpenNIApp> {
           path: '/orders/:id/support',
           builder: (_, s) =>
               live(() => SupportPage(repo, s.pathParameters['id']!)),
+        ),
+        GoRoute(
+          path: '/legal/:kind',
+          builder: (_, s) => PolicyPage(repo, kind: s.pathParameters['kind']!),
         ),
         GoRoute(
           path: '/profile',
@@ -249,7 +446,9 @@ class _OpenNIAppState extends State<OpenNIApp> {
     builder: (_, _) => MaterialApp.router(
       title: repo.clubName,
       debugShowCheckedModeBanner: false,
-      theme: clubTheme(repo),
+      theme: widget.initialScreen == 'home_android' && !repo.isProduction
+          ? clubTheme(repo).copyWith(platform: TargetPlatform.android)
+          : clubTheme(repo),
       routerConfig: router,
     ),
   );
@@ -266,14 +465,29 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   ClubRepository get repo => widget.repo;
   bool get settings => widget.settings;
-  bool busy = false;
+  bool busy = false, accountLoading = false;
+  String? accountFailure;
   @override
   void initState() {
     super.initState();
     if (!repo.isLocal && repo.token != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) run(repo.loadAccount);
+        if (mounted) readAccount();
       });
+    }
+  }
+
+  Future<void> readAccount() async {
+    setState(() {
+      accountLoading = true;
+      accountFailure = null;
+    });
+    try {
+      await repo.loadAccount();
+    } catch (e) {
+      if (mounted) setState(() => accountFailure = '$e');
+    } finally {
+      if (mounted) setState(() => accountLoading = false);
     }
   }
 
@@ -289,65 +503,9 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> login() async {
-    var accepted = false;
-    final ok = await showClubSheet<bool>(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, set) => SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Text(
-                  '登录俱乐部',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 18),
-                CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  value: accepted,
-                  onChanged: (v) => set(() => accepted = v ?? false),
-                  title: const Text(
-                    '同意隐私政策与服务条款，使用微信登录。',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-                Wrap(
-                  children: [
-                    TextButton(
-                      onPressed: () => textSheet(
-                        ctx,
-                        '隐私政策',
-                        '${repo.club['privacyText'] ?? ''}',
-                      ),
-                      child: const Text('隐私政策'),
-                    ),
-                    TextButton(
-                      onPressed: () => textSheet(
-                        ctx,
-                        '服务条款',
-                        '${repo.club['termsText'] ?? ''}',
-                      ),
-                      child: const Text('服务条款'),
-                    ),
-                  ],
-                ),
-                FilledButton(
-                  onPressed: accepted ? () => Navigator.pop(ctx, true) : null,
-                  child: const Text('微信登录'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+    final ok = await context.push<bool>('/login?next=%2Fprofile');
     if (ok == true && mounted) {
       await run(() async {
-        await repo.signIn();
         await repo.loadAccount();
         await repo.refreshOrders();
       });
@@ -403,242 +561,235 @@ class _AccountPageState extends State<AccountPage> {
     repo: repo,
     title: settings ? '设置' : '我的',
     tab: settings ? null : 3,
-    child: PageList(
-      children: [
-        if (!settings) ...[
-          const SizedBox(height: 16),
-          Row(
+    child: accountLoading && !settings
+        ? const ClubSkeleton(kind: SkeletonKind.profile)
+        : PageList(
             children: [
-              BrandMark(repo, size: 58),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              if (accountFailure != null)
+                EmptyState(
+                  '资料加载失败',
+                  accountFailure!,
+                  action: TextButton(
+                    onPressed: readAccount,
+                    child: const Text('重新加载'),
+                  ),
+                ),
+              if (!settings) ...[
+                const SizedBox(height: 16),
+                Row(
                   children: [
-                    Text(
-                      repo.memberName,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      repo.role == 'member'
-                          ? '俱乐部成员'
-                          : repo.isProduction && repo.token == null
-                          ? '未登录'
-                          : '俱乐部客户',
-                      style: const TextStyle(color: muted, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Surface(
-            color: sage,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        '${repo.orders.length}',
-                        style: const TextStyle(
-                          fontSize: 27,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Text(
-                        '我的预约',
-                        style: TextStyle(fontSize: 14, color: muted),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        '${repo.following.length}',
-                        style: const TextStyle(
-                          fontSize: 27,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Text(
-                        '本机关注',
-                        style: TextStyle(fontSize: 14, color: muted),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-        ],
-        if (busy) const LinearProgressIndicator(),
-        if (repo.isProduction && repo.token == null) ...[
-          FilledButton(
-            onPressed: busy || repo.authenticationUnavailable != null
-                ? null
-                : login,
-            child: const Text('微信登录'),
-          ),
-          if (repo.authenticationUnavailable != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              child: Text(
-                repo.authenticationUnavailable!,
-                style: const TextStyle(fontSize: 16, color: muted),
-              ),
-            ),
-        ],
-        if (settings && (repo.isLocal || repo.token != null)) ...[
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.edit_outlined),
-            title: const Text('修改昵称'),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: busy
-                ? null
-                : () => edit('修改昵称', repo.memberName, repo.rename),
-          ),
-          if (!repo.isLocal && repo.role != 'member')
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.badge_outlined),
-              title: const Text('接受成员邀请'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: busy
-                  ? null
-                  : () => edit('输入俱乐部邀请码', '', repo.acceptInvitation),
-            ),
-        ],
-        if (!settings)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.receipt_long_outlined),
-            title: const Text('我的预约'),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: () => context.go('/orders'),
-          ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.shield_outlined),
-          title: const Text('隐私政策'),
-          trailing: const Icon(Icons.chevron_right_rounded),
-          onTap: () => textSheet(
-            context,
-            '隐私政策',
-            '${repo.club['privacyText'] ?? '演示资料保存在本机。请勿填写敏感信息。'}',
-          ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.description_outlined),
-          title: const Text('服务与退款说明'),
-          trailing: const Icon(Icons.chevron_right_rounded),
-          onTap: () => textSheet(
-            context,
-            '服务与退款说明',
-            '${repo.club['termsText'] ?? '演示不收款。'}',
-          ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.headset_mic_outlined),
-          title: const Text('联系俱乐部'),
-          trailing: const Icon(Icons.chevron_right_rounded),
-          onTap: () => textSheet(
-            context,
-            '联系俱乐部',
-            '${repo.club['supportContact'] ?? '请通过运营方公示渠道联系。'}',
-          ),
-        ),
-        if (!settings)
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.settings_outlined),
-            title: const Text('设置与关于'),
-            trailing: const Icon(Icons.chevron_right_rounded),
-            onTap: () => context.push('/settings'),
-          ),
-        if (settings && !repo.isProduction) ...[
-          const Divider(),
-          const Text(
-            '关于当前预览',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            '俱乐部、成员、订单与金额为示例资料，不提供真实服务或收款。人物为原创虚构形象；游戏图片来自发行商，版权归原权利人。',
-            style: TextStyle(fontSize: 14, color: muted, height: 1.65),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton(
-            onPressed: busy
-                ? null
-                : () => run(() async {
-                    await repo.switchDemoRole(
-                      repo.role == 'member' ? 'customer' : 'member',
-                      playerId: repo.players.firstOrNull?['id'],
-                    );
-                    if (context.mounted) {
-                      context.go(repo.role == 'member' ? '/member' : '/');
-                    }
-                  }),
-            child: Text(repo.role == 'member' ? '切换到客户体验' : '切换到成员体验'),
-          ),
-        ],
-        if (settings) ...[
-          const Divider(),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.person_remove_outlined),
-            title: Text(repo.isLocal ? '清除本地数据' : '注销账号'),
-            onTap: !repo.isLocal && repo.token == null
-                ? null
-                : () async {
-                    final ok = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('确认清除账号资料？'),
-                        content: const Text('此操作无法恢复。未完成订单与退款需要先处理。'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: const Text('保留资料'),
+                    BrandMark(repo, size: 58),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            repo.token == null ? '未登录' : repo.memberName,
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: const Text('确认清除'),
+                          Text(
+                            repo.role == 'member'
+                                ? '俱乐部成员'
+                                : repo.token == null
+                                ? '未登录'
+                                : '俱乐部客户',
+                            style: const TextStyle(color: muted, fontSize: 14),
                           ),
                         ],
                       ),
-                    );
-                    if (ok == true) {
-                      try {
-                        await repo.deleteAccount();
-                        if (context.mounted) toast(context, '资料已清除。');
-                      } catch (e) {
-                        if (context.mounted) toast(context, e);
-                      }
-                    }
-                  },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Surface(
+                  color: sage,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              '${repo.orders.length}',
+                              style: const TextStyle(
+                                fontSize: 27,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Text(
+                              '我的预约',
+                              style: TextStyle(fontSize: 14, color: muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              '${repo.following.length}',
+                              style: const TextStyle(
+                                fontSize: 27,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const Text(
+                              '本机关注',
+                              style: TextStyle(fontSize: 14, color: muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+              if (busy) const LinearProgressIndicator(),
+              if (repo.token == null && !settings) ...[
+                FilledButton(
+                  onPressed: busy ? null : login,
+                  child: const Text('登录 / 注册'),
+                ),
+              ],
+              if (settings && (repo.isLocal || repo.token != null)) ...[
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.edit_outlined),
+                  title: const Text('修改昵称'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: busy
+                      ? null
+                      : () => edit('修改昵称', repo.memberName, repo.rename),
+                ),
+                if (!repo.isLocal && repo.role != 'member')
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.badge_outlined),
+                    title: const Text('接受成员邀请'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: busy
+                        ? null
+                        : () => edit('输入俱乐部邀请码', '', repo.acceptInvitation),
+                  ),
+              ],
+              if (!settings)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.receipt_long_outlined),
+                  title: const Text('我的预约'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.go('/orders'),
+                ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.shield_outlined),
+                title: const Text('隐私政策'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.push('/legal/privacy'),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.description_outlined),
+                title: const Text('服务与退款说明'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.push('/legal/terms'),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.headset_mic_outlined),
+                title: const Text('联系俱乐部'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => textSheet(
+                  context,
+                  '联系俱乐部',
+                  '${repo.club['supportContact'] ?? '请通过运营方公示渠道联系。'}',
+                ),
+              ),
+              if (!settings)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.settings_outlined),
+                  title: const Text('设置与关于'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => context.push('/settings'),
+                ),
+              if (settings && !repo.isProduction) ...[
+                const Divider(),
+                const Text(
+                  '关于当前预览',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  '俱乐部、成员、订单与金额为示例资料，不提供真实服务或收款。人物为原创虚构形象；游戏图片来自发行商，版权归原权利人。',
+                  style: TextStyle(fontSize: 14, color: muted, height: 1.65),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: busy
+                      ? null
+                      : () => run(() async {
+                          await repo.switchDemoRole(
+                            repo.role == 'member' ? 'customer' : 'member',
+                            playerId: repo.players.firstOrNull?['id'],
+                          );
+                          if (context.mounted) {
+                            context.go(repo.role == 'member' ? '/member' : '/');
+                          }
+                        }),
+                  child: Text(repo.role == 'member' ? '切换到客户体验' : '切换到成员体验'),
+                ),
+              ],
+              if (settings) ...[
+                const Divider(),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.person_remove_outlined),
+                  title: Text(repo.isLocal ? '清除本地数据' : '注销账号'),
+                  onTap: !repo.isLocal && repo.token == null
+                      ? null
+                      : () async {
+                          final ok = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('确认清除账号资料？'),
+                              content: const Text('此操作无法恢复。未完成订单与退款需要先处理。'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx, false),
+                                  child: const Text('保留资料'),
+                                ),
+                                FilledButton(
+                                  onPressed: () => Navigator.pop(ctx, true),
+                                  child: const Text('确认清除'),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (ok == true) {
+                            try {
+                              await repo.deleteAccount();
+                              if (context.mounted) toast(context, '资料已清除。');
+                            } catch (e) {
+                              if (context.mounted) toast(context, e);
+                            }
+                          }
+                        },
+                ),
+                TextButton(
+                  onPressed: () => showLicensePage(
+                    context: context,
+                    applicationName: repo.clubName,
+                  ),
+                  child: const Text('OpenNI · 开源许可'),
+                ),
+              ],
+            ],
           ),
-          TextButton(
-            onPressed: () => showLicensePage(
-              context: context,
-              applicationName: repo.clubName,
-            ),
-            child: const Text('OpenNI · 开源许可'),
-          ),
-        ],
-      ],
-    ),
   );
 }
 
@@ -649,43 +800,45 @@ class AnnouncementsPage extends StatelessWidget {
   Widget build(BuildContext context) => ClubPage(
     repo: repo,
     title: '俱乐部动态',
-    child: PageList(
-      children: repo.announcements
-          .map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 18),
-              child: Surface(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      when(a['publishedAt']),
-                      style: const TextStyle(color: muted, fontSize: 13),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      '${a['title']}',
-                      style: const TextStyle(
-                        fontSize: 21,
-                        fontWeight: FontWeight.w600,
+    child: repo.announcements.isEmpty
+        ? const EmptyState('暂无公告', '俱乐部发布的通知会显示在这里')
+        : PageList(
+            children: repo.announcements
+                .map(
+                  (a) => Padding(
+                    padding: const EdgeInsets.only(bottom: 18),
+                    child: Surface(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            when(a['publishedAt']),
+                            style: const TextStyle(color: muted, fontSize: 13),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            '${a['title']}',
+                            style: const TextStyle(
+                              fontSize: 21,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            '${a['body']}',
+                            style: const TextStyle(
+                              color: muted,
+                              fontSize: 16,
+                              height: 1.7,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${a['body']}',
-                      style: const TextStyle(
-                        color: muted,
-                        fontSize: 16,
-                        height: 1.7,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          )
-          .toList(),
-    ),
+                  ),
+                )
+                .toList(),
+          ),
   );
 }
 
@@ -708,7 +861,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> load() async {
     if (widget.repo.isLocal) return;
     if (widget.repo.isProduction && widget.repo.token == null) return;
-    setState(() => loading = true);
+    setState(() {
+      loading = true;
+      error = null;
+    });
     try {
       await widget.repo.signIn();
       final data = await widget.repo.request('GET', '/notifications');
@@ -726,57 +882,63 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget build(BuildContext context) => ClubPage(
     repo: widget.repo,
     title: '通知',
-    child: PageList(
-      children: [
-        if (loading) const LinearProgressIndicator(),
-        if (error != null)
-          EmptyState(
-            '暂时无法获取通知',
-            error!,
-            action: TextButton(onPressed: load, child: const Text('重试')),
+    child: loading && widget.repo.notifications.isEmpty
+        ? const ClubSkeleton(kind: SkeletonKind.notifications)
+        : PageList(
+            children: [
+              if (loading) const LinearProgressIndicator(),
+              if (error != null)
+                EmptyState(
+                  '暂时无法获取通知',
+                  error!,
+                  action: TextButton(
+                    onPressed: loading ? null : load,
+                    child: const Text('重试'),
+                  ),
+                ),
+              if (widget.repo.isProduction && widget.repo.token == null)
+                EmptyState(
+                  '登录后查看通知',
+                  '订单安排和服务进度会显示在这里。',
+                  action: FilledButton(
+                    onPressed: () =>
+                        context.push('/login?next=%2Fnotifications'),
+                    child: const Text('前往登录'),
+                  ),
+                ),
+              if (!loading &&
+                  error == null &&
+                  widget.repo.notifications.isEmpty &&
+                  (!widget.repo.isProduction || widget.repo.token != null))
+                const EmptyState('暂时没有新通知', '预约安排和服务进度更新，会出现在这里。'),
+              ...widget.repo.notifications.map(
+                (n) => ListTile(
+                  title: Text('${n['title']}'),
+                  subtitle: Text('${n['body'] ?? n['message'] ?? ''}'),
+                  onTap: () async {
+                    try {
+                      if (!widget.repo.isLocal) {
+                        await widget.repo.request(
+                          'PATCH',
+                          '/notifications/${n['id']}/read',
+                          {},
+                        );
+                      }
+                      if (context.mounted && n['orderId'] != null) {
+                        context.push(
+                          widget.repo.role == 'member'
+                              ? '/member/orders/${n['orderId']}'
+                              : '/orders/${n['orderId']}',
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) toast(context, e);
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
-        if (widget.repo.isProduction && widget.repo.token == null)
-          EmptyState(
-            '登录后查看通知',
-            '订单安排和服务进度会显示在这里。',
-            action: FilledButton(
-              onPressed: () => context.go('/profile'),
-              child: const Text('前往登录'),
-            ),
-          ),
-        if (!loading &&
-            error == null &&
-            widget.repo.notifications.isEmpty &&
-            (!widget.repo.isProduction || widget.repo.token != null))
-          const EmptyState('暂时没有新通知', '预约安排和服务进度更新，会出现在这里。'),
-        ...widget.repo.notifications.map(
-          (n) => ListTile(
-            title: Text('${n['title']}'),
-            subtitle: Text('${n['body'] ?? n['message'] ?? ''}'),
-            onTap: () async {
-              try {
-                if (!widget.repo.isLocal) {
-                  await widget.repo.request(
-                    'PATCH',
-                    '/notifications/${n['id']}/read',
-                    {},
-                  );
-                }
-                if (context.mounted && n['orderId'] != null) {
-                  context.push(
-                    widget.repo.role == 'member'
-                        ? '/member/orders/${n['orderId']}'
-                        : '/orders/${n['orderId']}',
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) toast(context, e);
-              }
-            },
-          ),
-        ),
-      ],
-    ),
   );
 }
 
@@ -868,4 +1030,32 @@ class _SupportPageState extends State<SupportPage> {
       ],
     ),
   );
+}
+
+class PolicyPage extends StatelessWidget {
+  const PolicyPage(this.repo, {super.key, required this.kind});
+  final ClubRepository repo;
+  final String kind;
+  @override
+  Widget build(BuildContext context) {
+    final privacy = kind == 'privacy';
+    return ClubPage(
+      repo: repo,
+      title: privacy ? '隐私政策' : '服务协议',
+      child: PageList(
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            repo.clubName,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 24),
+          SelectableText(
+            '${repo.club[privacy ? 'privacyText' : 'termsText'] ?? '暂未配置，请联系俱乐部'}',
+            style: const TextStyle(fontSize: 16, height: 1.8, color: ink),
+          ),
+        ],
+      ),
+    );
+  }
 }

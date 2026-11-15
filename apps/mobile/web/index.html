@@ -43,8 +43,26 @@
 
   <title>OpenNI Club · 北岸电竞</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    html,body{margin:0;background:#f5f6f8;color:#171b21;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    #openni-boot{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;background:#f5f6f8}
+    #openni-boot img{width:52px;height:52px;border-radius:15px}#openni-boot p{margin:0;font-size:16px;color:#5e6673}
+    #openni-boot .track{width:88px;height:4px;border-radius:4px;background:#dfe3e9;animation:boot-pulse 1.4s ease-in-out infinite alternate}
+    #openni-boot button{background:none;border:0;font:inherit;font-size:14px;color:#5e6673;min-height:44px;padding:0 18px;cursor:pointer}
+    @keyframes boot-pulse{to{opacity:.45}}@media(prefers-reduced-motion:reduce){#openni-boot .track{animation:none}}
+  </style>
 </head>
 <body>
+  <section id="openni-boot" role="status" aria-live="polite">
+    <img src="assets/assets/brand/logo.png" alt="" onerror="this.hidden=true">
+    <p id="openni-boot-title">正在打开俱乐部</p>
+    <div class="track" aria-hidden="true"></div>
+    <button type="button" onclick="location.reload()">重新加载</button>
+  </section>
+  <script>
+    window.addEventListener('flutter-first-frame',()=>document.getElementById('openni-boot')?.remove(),{once:true});
+    fetch('assets/assets/brand.json').then(r=>r.ok?r.json():null).then(brand=>{const title=document.getElementById('openni-boot-title');if(title&&brand?.name)title.textContent='正在打开'+brand.name}).catch(()=>{});
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
@@ -53,6 +71,6 @@
     For more details:
     * https://docs.flutter.dev/platform-integration/web/initialization
   -->
-  <script src="flutter_bootstrap.js" async></script>
+  <script src="flutter_bootstrap.js" async onerror="document.getElementById('openni-boot-title').textContent='加载失败，请重新加载'"></script>
 </body>
 </html>

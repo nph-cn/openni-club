@@ -52,7 +52,7 @@ export function releaseCommands(loaded, { root, platform, env = {}, outputDir, u
   const command = env.FLUTTER_BIN || 'flutter';
   const build = platform === 'android' ? loaded.mode === 'production' ? ['build', 'appbundle', '--release'] : ['build', 'apk', '--debug'] : platform === 'ios' ? loaded.mode === 'production' ? ['build', 'ipa', '--release'] : ['build', 'ios', '--debug', '--no-codesign'] : ['build', 'web', '--release', '--no-web-resources-cdn'];
   return [{ name: 'dependencies', command, args: ['pub', 'get'], cwd: mobile }, { name: 'analysis', command, args: ['analyze'], cwd: mobile },
-    { name: 'flows', command, args: ['test', 'test/flows_test.dart', 'test/production_test.dart', 'test/v2_test.dart', 'test/catalog_test.dart'], cwd: mobile },
+    { name: 'flows', command, args: ['test', 'test/flows_test.dart', 'test/production_test.dart', 'test/v2_test.dart', 'test/catalog_test.dart', 'test/auth_repository_test.dart', 'test/auth_ui_test.dart', 'test/loading_accessibility_test.dart'], cwd: mobile },
     { name: 'build', command, args: [...build, ...(platform === 'web' ? [`--base-href=${baseHref}`] : []), `--build-name=${d.version}`, `--build-number=${d.buildNumber}`, ...define], cwd: mobile }];
 }
 const childEnvironment = () => Object.fromEntries(['PATH', 'HOME', 'TMPDIR', 'JAVA_HOME', 'ANDROID_HOME', 'ANDROID_SDK_ROOT', 'FLUTTER_ROOT', 'LANG', 'LC_ALL', 'PUB_CACHE', 'GRADLE_USER_HOME', 'HTTPS_PROXY', 'HTTP_PROXY', 'NO_PROXY'].filter(key => process.env[key]).map(key => [key, process.env[key]]));

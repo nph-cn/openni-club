@@ -1,5 +1,22 @@
 <template name="state">
-  <view wx:if="{{loading}}" class="state" role="status"><view class="state-mark">···</view><text>正在加载俱乐部内容</text></view>
-  <view wx:elif="{{error}}" class="state error"><text class="state-title">暂时没能连接上</text><text class="muted">{{error}}</text><button class="button secondary" bindtap="retry">重新加载</button></view>
+  <view wx:if="{{loading&&skeletonKind==='home'}}" class="skeleton-home" role="status" aria-label="正在加载">
+    <view class="home-toolbar"><view class="skeleton skeleton-home-heading"/><view class="skeleton skeleton-home-account"/></view>
+    <view class="skeleton skeleton-home-hero"/>
+    <view class="game-nav"><view wx:for="{{[1,2,3]}}" wx:key="*this" class="skeleton-game"><view class="skeleton skeleton-game-icon"/><view class="skeleton skeleton-game-label"/></view></view>
+    <view class="section-head skeleton-home-section"><view class="skeleton skeleton-section-label"/><view class="skeleton skeleton-section-link"/></view>
+    <view class="home-service-list"><view wx:for="{{[1,2]}}" wx:key="*this" class="skeleton-row"><view class="skeleton skeleton-thumb"/><view class="grow"><view class="skeleton skeleton-line"/><view class="skeleton skeleton-line short"/></view><view class="skeleton skeleton-price"/></view></view>
+    <view class="section-head skeleton-home-section"><view class="skeleton skeleton-section-label"/><view class="skeleton skeleton-section-link"/></view>
+    <view class="member-grid"><view class="skeleton member-portrait"/><view class="skeleton member-portrait"/></view>
+  </view>
+  <view wx:elif="{{loading}}" class="skeleton-page" role="status" aria-label="正在加载">
+    <view wx:if="{{skeletonKind==='profile'}}" class="skeleton-profile"><view class="skeleton skeleton-avatar"/><view class="grow"><view class="skeleton skeleton-line"/><view class="skeleton skeleton-line short"/></view></view>
+    <view wx:else class="skeleton skeleton-heading"/>
+    <block wx:if="{{skeletonKind==='home'||skeletonKind==='detail'}}"><view class="skeleton skeleton-hero"/><view wx:if="{{skeletonKind==='home'}}" class="skeleton-icons"><view class="skeleton"/><view class="skeleton"/><view class="skeleton"/></view></block>
+    <block wx:elif="{{skeletonKind==='form'}}"><view wx:for="{{skeletonRows}}" wx:key="*this" class="skeleton-field-wrap"><view class="skeleton skeleton-label"/><view class="skeleton skeleton-field"/></view><view class="skeleton skeleton-action"/></block>
+    <block wx:else><view class="skeleton-filter"><view class="skeleton"/><view class="skeleton"/><view class="skeleton"/></view></block>
+    <block wx:if="{{skeletonKind!=='form'}}"><view wx:for="{{skeletonRows}}" wx:key="*this" class="skeleton-row"><view wx:if="{{skeletonKind==='home'||skeletonKind==='list'}}" class="skeleton skeleton-thumb"/><view class="grow"><view class="skeleton skeleton-line"/><view class="skeleton skeleton-line short"/></view></view></block>
+  </view>
+  <view wx:elif="{{authRequired}}" class="state auth-state"><view class="state-symbol account-symbol"/><text class="state-title">登录后查看</text><button class="button" bindtap="login">登录账号</button></view>
+  <view wx:elif="{{error}}" class="state error"><view class="state-symbol offline-symbol"/><text class="state-title">暂时无法加载</text><text class="muted state-message">{{error}}</text><button class="button secondary" bindtap="retry">重试</button></view>
 </template>
-<template name="demo"><view wx:if="{{demo}}" class="demo-note">演示俱乐部 · 人物与价格均为虚构 · 预约不扣款</view></template>
+<template name="demo"><view wx:if="{{demo}}" class="demo-note">演示俱乐部 · 预约不扣款</view></template>

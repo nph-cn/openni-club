@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'repository.dart';
 import 'discover.dart' show ServiceArt;
 import 'ui.dart';
+import 'auth.dart';
+import 'loading.dart';
 
 class BookingPage extends StatefulWidget {
   const BookingPage(
@@ -34,7 +36,7 @@ class _BookingPageState extends State<BookingPage> {
   String? variantId;
   Json? selectedSlot;
   List<Json>? slots;
-  String? failure;
+  String? failure, slotFailure;
   bool busy = false, checking = false, reviewing = false, accepted = false;
   int fetchId = 0;
   ClubRepository get repo => widget.repo;
@@ -88,6 +90,7 @@ class _BookingPageState extends State<BookingPage> {
     final revision = ++fetchId;
     setState(() {
       checking = true;
+      slotFailure = null;
       slots = null;
       selectedSlot = null;
       failure = null;
@@ -101,7 +104,7 @@ class _BookingPageState extends State<BookingPage> {
       if (mounted && revision == fetchId) setState(() => slots = result);
     } catch (e) {
       if (mounted && revision == fetchId) {
-        setState(() => failure = '$e'.replaceFirst('Exception: ', ''));
+        setState(() => slotFailure = '$e'.replaceFirst('Exception: ', ''));
       }
     } finally {
       if (mounted && revision == fetchId) setState(() => checking = false);
@@ -131,6 +134,7 @@ class _BookingPageState extends State<BookingPage> {
                 style: TextStyle(fontSize: 14, color: muted),
               ),
               const SizedBox(height: 18),
+              if (eligible.isEmpty) const EmptyState('暂无可选陪练', '请选择其他服务'),
               ...eligible.map(
                 (p) => ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -183,6 +187,10 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   Future<void> submit() async {
+    if (repo.isProduction && repo.token == null) {
+      await requireClubLogin(context, repo);
+      return;
+    }
     if (!accepted) {
       setState(() => failure = '请先阅读并同意预约说明');
       return;
@@ -268,7 +276,7 @@ class _BookingPageState extends State<BookingPage> {
               child: FilledButton(
                 onPressed:
                     busy ||
-                        repo.authenticationUnavailable != null ||
+                        repo.operatingUnavailable != null ||
                         (s['teamSize'] as num? ?? 1) > 1
                     ? null
                     : reviewing
@@ -468,7 +476,22 @@ class _BookingPageState extends State<BookingPage> {
                     style: TextStyle(color: muted, fontSize: 15),
                   )
                 else if (checking)
-                  const LinearProgressIndicator()
+                  const ClubSkeleton(kind: SkeletonKind.slots)
+                else if (slotFailure != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          slotFailure!,
+                          style: const TextStyle(fontSize: 14, color: muted),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: loadSlots,
+                        child: const Text('重新加载'),
+                      ),
+                    ],
+                  )
                 else if (slots?.isEmpty ?? false)
                   const Text(
                     '这一天暂无可约时段，试试其他日期或队友。',
@@ -609,9 +632,9 @@ class _BookingPageState extends State<BookingPage> {
                     ),
                   ),
                 ),
-              if (repo.authenticationUnavailable != null)
+              if (repo.operatingUnavailable != null)
                 Text(
-                  repo.authenticationUnavailable!,
+                  repo.operatingUnavailable!,
                   style: const TextStyle(color: muted, fontSize: 14),
                 ),
             ],

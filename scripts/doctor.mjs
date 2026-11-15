@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import {readSmsConfig} from '../services/api/src/sms-auth.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -49,10 +50,16 @@ export function inspectConfiguration(env, nodeVersion = process.versions.node) {
     add(valid ? 'pass' : 'error', 'cors', 'CORS 仅允许完整 origin；不能用 *、路径或凭证；正式模式需要 HTTPS。');
   }
   add(env.DATA_DIR ? 'pass' : 'warning', 'data', '为 DATA_DIR 使用固定持久化目录，并建立一致性备份；本检查不验证备份可恢复。');
+  let sms;
+  try {
+    sms=readSmsConfig(env,mode);
+    add(sms.provider==='disabled'?'warning':'pass','sms',sms.provider==='disabled'?'短信登录关闭；可在品牌配置的短信设置中选择腾讯云。':sms.provider==='test'?'仅本地验证码，不发送短信；正式环境禁止此模式。':'腾讯云短信配置形状完整；尚未验证账号权限、模板审核或手机实际收取。');
+    if(sms.provider==='tencent')add('warning','sms-identity-key','SMS_HASH_SECRET 必须与数据库一起长期保管；修改会使已有手机号身份无法匹配，当前无密钥轮换迁移工具。');
+  }catch{add('error','sms','短信配置无效：检查 SMS_PROVIDER、运行模式、至少43位base64url的 SMS_HASH_SECRET、完整腾讯云参数和精确代理IP。具体字段见手机号登录文档；不显示配置内容。');}
   if (mode === 'production') {
     const miniAuth = Boolean(env.WECHAT_APP_ID && env.WECHAT_APP_SECRET);
     const nativeAuth = Boolean(env.WECHAT_NATIVE_APP_ID && env.WECHAT_NATIVE_APP_SECRET);
-    add(miniAuth || nativeAuth ? 'pass' : 'error', 'production-auth', '正式登录至少配置一套完整微信 AppID / AppSecret；小程序与原生 App 使用各自凭证。');
+    add(miniAuth || nativeAuth || sms?.provider==='tencent' ? 'pass' : 'error', 'production-auth', '正式登录需完整微信凭证或完整腾讯云短信配置；微信付款仍须相应渠道身份与显式账号关联。');
     for (const native of [false, true]) {
       const flag = native ? 'WECHAT_NATIVE_PAY_ENABLED' : 'WECHAT_PAY_ENABLED';
       const prefix = native ? 'WECHAT_NATIVE' : 'WECHAT';
@@ -94,7 +101,13 @@ function selfTest() {
   assert.equal(inspectConfiguration(production).filter(x => x.status === 'error').length, 0);
   assert.ok(inspectConfiguration({ ...production, WECHAT_PAY_ENABLED: 'true' }).some(x => x.name === 'mini-pay-credentials' && x.status === 'error'));
   assert.equal(JSON.stringify(inspectConfiguration(production)).includes(secret), false);
-  console.log('doctor self-test: 12 checks passed');
+  const sms={...valid,API_MODE:'production',CORS_ORIGINS:'https://example.com',SMS_PROVIDER:'tencent',SMS_HASH_SECRET:'b'.repeat(43),TENCENT_SMS_SECRET_ID:'fixture-id',TENCENT_SMS_SECRET_KEY:secret,TENCENT_SMS_SDK_APP_ID:'1400000000',TENCENT_SMS_SIGN_NAME:'测试签名',TENCENT_SMS_TEMPLATE_ID:'123456',TENCENT_SMS_REGION:'ap-guangzhou'};
+  assert.equal(inspectConfiguration(sms).filter(x=>x.status==='error').length,0);
+  assert.equal(inspectConfiguration(sms).find(x=>x.name==='production-auth').status,'pass');
+  assert.equal(JSON.stringify(inspectConfiguration(sms)).includes(secret),false);
+  for(const patch of [{SMS_PROVIDER:'test'},{SMS_HASH_SECRET:''},{TENCENT_SMS_TEMPLATE_ID:''},{SMS_TRUSTED_PROXY_IPS:'*'}])assert.ok(inspectConfiguration({...sms,...patch}).some(x=>x.name==='sms'&&x.status==='error'));
+  assert.equal(inspectConfiguration({...valid,SMS_PROVIDER:'test'}).filter(x=>x.status==='error').length,0);
+  console.log('doctor self-test: configuration, SMS-only auth and secret redaction passed');
 }
 
 function main() {
@@ -120,6 +133,7 @@ function main() {
   for (const message of parsed.errors) checks.push({ status: 'error', name: 'env-format', message });
   const env = { ...parsed.values };
   const keys = ['API_MODE', 'PORT', 'ADMIN_TOKEN', 'DATA_DIR', 'CORS_ORIGINS',
+    'SMS_PROVIDER','SMS_HASH_SECRET','SMS_TRUSTED_PROXY_IPS','TENCENT_SMS_SECRET_ID','TENCENT_SMS_SECRET_KEY','TENCENT_SMS_SDK_APP_ID','TENCENT_SMS_SIGN_NAME','TENCENT_SMS_TEMPLATE_ID','TENCENT_SMS_REGION','TENCENT_SMS_TEMPLATE_HAS_MINUTES',
     'WECHAT_APP_ID', 'WECHAT_APP_SECRET', 'WECHAT_NATIVE_APP_ID', 'WECHAT_NATIVE_APP_SECRET',
     'WECHAT_PAY_ENABLED', 'WECHAT_NATIVE_PAY_ENABLED', 'WECHAT_PAY_MCH_ID', 'WECHAT_PAY_MERCHANT_SERIAL',
     'WECHAT_PAY_PRIVATE_KEY_PATH', 'WECHAT_PAY_API_V3_KEY', 'WECHAT_PAY_PLATFORM_KEY_ID', 'WECHAT_PAY_PLATFORM_KEY_PATH',

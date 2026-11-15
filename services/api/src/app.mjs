@@ -8,6 +8,8 @@ import * as wechatIntegrations from '../../integrations/src/wechat.mjs';
 import {createOperations} from './operations.mjs';
 import {createOperationsRoutes} from './operations-routes.mjs';
 import {readBranding,brandFields} from './branding.mjs';
+import {readSmsConfig,createSmsAuth} from './sms-auth.mjs';
+import {createWechatAuth} from './wechat-auth.mjs';
 import {validateServiceSpec,validateVariants,quoteService} from './service-spec.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -49,7 +51,7 @@ export function readConfig(env = process.env) {
     try{const key=createPrivateKey(payment.merchantPrivateKey),platform=createPublicKey(payment.platformKeys[env.WECHAT_PAY_PLATFORM_KEY_ID]);if(key.asymmetricKeyType!=='rsa'||key.asymmetricKeyDetails.modulusLength<2048||platform.asymmetricKeyType!=='rsa'||platform.asymmetricKeyDetails.modulusLength<2048)throw Error();}catch{throw Error('WeChat merchant and platform keys must be valid RSA PEM keys of at least 2048 bits');}
     return payment;
   }
-  return {mode,port,adminToken,origins,wechat,wechatNative,wechatPay:paymentConfig(),wechatAppPay:paymentConfig(true),host:env.HOST || '127.0.0.1',dataDir:env.DATA_DIR || './data',...readBranding(env)};
+  return {mode,port,adminToken,origins,sms:readSmsConfig(env,mode),wechat,wechatNative,wechatPay:paymentConfig(),wechatAppPay:paymentConfig(true),host:env.HOST || '127.0.0.1',dataDir:env.DATA_DIR || './data',...readBranding(env)};
 }
 
 export function createApp(config) {
@@ -89,10 +91,12 @@ export function createApp(config) {
   addColumn('orders','refund_status','TEXT');
   db.exec('DROP INDEX IF EXISTS user_wechat; CREATE UNIQUE INDEX IF NOT EXISTS user_wechat_app ON users(wechat_appid,wechat_openid) WHERE wechat_openid IS NOT NULL; CREATE UNIQUE INDEX IF NOT EXISTS order_transaction ON orders(transaction_id) WHERE transaction_id IS NOT NULL; CREATE INDEX IF NOT EXISTS merchant_order ON orders(replace(id,\'-\',\'\'));');
   if(config.wechat?.appid)db.prepare('UPDATE users SET wechat_appid=? WHERE wechat_openid IS NOT NULL AND wechat_appid IS NULL').run(config.wechat.appid);
-  db.exec("UPDATE orders SET payment_appid=(SELECT wechat_appid FROM users WHERE id=orders.user_id),payment_channel='JSAPI' WHERE demo=0 AND payment_appid IS NULL");
+  if(!db.prepare("SELECT value FROM metadata WHERE key='payment_identity_migrated'").get()){
+    db.exec("BEGIN IMMEDIATE; UPDATE orders SET payment_appid=(SELECT wechat_appid FROM users WHERE id=orders.user_id),payment_channel='JSAPI' WHERE demo=0 AND payment_appid IS NULL; INSERT INTO metadata VALUES('payment_identity_migrated','true'); COMMIT;");
+  }
   const integrations={...wechatIntegrations,...config.integrations};
   let ops;
-  const authReady=()=>Boolean((config.wechat?.appid&&config.wechat?.appSecret)||(config.wechatNative?.appid&&config.wechatNative?.appSecret));
+  const authReady=()=>Boolean(config.sms?.provider==='tencent'||(config.wechat?.appid&&config.wechat?.appSecret)||(config.wechatNative?.appid&&config.wechatNative?.appSecret));
   const paymentsReady=()=>Boolean(config.wechatPay||config.wechatAppPay);
   const limits=new Map();
   let requests=0;
@@ -110,10 +114,10 @@ export function createApp(config) {
       if(!same(bearer,config.adminToken)) throw fail(401,'UNAUTHORIZED','管理员凭证无效。');
       return 'admin';
     }
-    if(config.mode!=='demo' && !authReady()) throw fail(503,'AUTH_PROVIDER_NOT_CONFIGURED','微信身份验证尚未配置；生产环境不能使用演示登录。');
+    if(config.mode!=='demo' && !authReady()) throw fail(503,'AUTH_PROVIDER_NOT_CONFIGURED','身份验证尚未配置；生产环境不能使用演示登录。');
     const session=db.prepare('SELECT user_id,source FROM sessions WHERE token_hash=? AND expires_at>?').get(hash(bearer),Date.now());
     if(!session) throw fail(401,'UNAUTHORIZED','登录已失效，请重新登录。');
-    if(!(config.mode==='demo'?['demo']:['wechat','wechat-app']).includes(session.source))throw fail(401,'SESSION_MODE_MISMATCH','当前会话与运行环境不匹配，请重新登录。');
+    if(!(config.mode==='demo'?['demo']:['wechat','wechat-app','sms']).includes(session.source))throw fail(401,'SESSION_MODE_MISMATCH','当前会话与运行环境不匹配，请重新登录。');
     req.authSource=session.source;
     return session.user_id;
   }
@@ -168,8 +172,8 @@ export function createApp(config) {
     return payment;
   }
   function recordPayment(row,notification) {
-    const user=db.prepare('SELECT wechat_openid FROM users WHERE id=?').get(row.user_id);
-    try{integrations.validateWechatPayOrder(notification,{id:row.id.replaceAll('-',''),totalCents:row.price_cents,openid:user.wechat_openid||undefined});}catch{throw fail(400,'PAYMENT_MISMATCH','支付通知与订单不匹配。');}
+    const identity=wechatAuth.identity(row.user_id,row.payment_appid);
+    try{integrations.validateWechatPayOrder(notification,{id:row.id.replaceAll('-',''),totalCents:row.price_cents,openid:identity?.openid||undefined});}catch{throw fail(400,'PAYMENT_MISMATCH','支付通知与订单不匹配。');}
     if(['paid','refund_pending','refunded'].includes(row.payment_status)){
       if(row.transaction_id!==notification.transactionId)throw fail(409,'TRANSACTION_CONFLICT','支付流水冲突。');
       return row;
@@ -231,6 +235,8 @@ export function createApp(config) {
     return ops.transaction(()=>{row=findOrder(row.id,'admin');if(!['unpaid','pending'].includes(row.payment_status))throw fail(409,'PAYMENT_CHANGED','支付状态已变化，请刷新。');ops.cancelled(row,actor,message);db.prepare("UPDATE orders SET payment_status='unpaid' WHERE id=?").run(row.id);return findOrder(row.id,'admin');});
   }
   ops=createOperations({db,config,fail,clubData,catalog,entry});
+  const smsAuth=createSmsAuth({db,config,clubReady,issueSession,now:config.now||Date.now,sendCode:config.integrations?.sendTencentLoginCode});
+  const wechatAuth=createWechatAuth({db,config,integrations,authenticate,issueSession,rateLimit,assertClubReady,fail,str});
   const operationsRoutes=createOperationsRoutes({ops,config,authenticate,body,send,orderView,fail,requestRefund,cancelOrder,catalog});
   const server=http.createServer(async(req,res)=>{
     res.setHeader('X-Content-Type-Options','nosniff');
@@ -266,17 +272,10 @@ export function createApp(config) {
         if(data.role)ops.demoRole(id,data.role,data.playerId);
         return send(res,201,{...issueSession(id,name,'demo'),role:ops.me(id).role,playerId:ops.me(id).playerId});
       }
-      if(['/auth/wechat','/auth/wechat-app'].includes(route)&&req.method==='POST') {
-        if(config.mode!=='production')throw fail(403,'PRODUCTION_ONLY','演示环境请使用演示登录。');
-        const native=route==='/auth/wechat-app',provider=native?config.wechatNative:config.wechat;
-        if(!provider?.appid||!provider?.appSecret)throw fail(503,'AUTH_PROVIDER_NOT_CONFIGURED','微信登录尚未配置。');
-        assertClubReady();
-        rateLimit(req,'auth');const data=await body(req),code=str(data.code,'微信登录代码',256);
-        let identity;try{identity=await (native?integrations.exchangeWechatAppCode:integrations.exchangeWechatCode)({...provider,code});}catch{throw fail(401,'WECHAT_LOGIN_FAILED','微信登录失败，请重新尝试。');}
-        let user=db.prepare('SELECT id,name FROM users WHERE wechat_appid=? AND wechat_openid=?').get(provider.appid,identity.openid);
-        if(!user){user={id:randomUUID(),name:'微信用户'};db.prepare('INSERT INTO users(id,name,wechat_appid,wechat_openid) VALUES(?,?,?,?)').run(user.id,user.name,provider.appid,identity.openid);}
-        return send(res,200,issueSession(user.id,user.name,native?'wechat-app':'wechat'));
-      }
+      if(route==='/auth/capabilities'&&req.method==='GET')return send(res,200,{mode:config.mode,demo:{enabled:config.mode==='demo'},wechatMini:{enabled:config.mode==='production'&&Boolean(config.wechat?.appid&&config.wechat?.appSecret)&&clubReady()},wechatApp:{enabled:config.mode==='production'&&Boolean(config.wechatNative?.appid&&config.wechatNative?.appSecret)&&clubReady()},sms:smsAuth.capability()});
+      if(route==='/auth/sms/challenges'&&req.method==='POST')return send(res,201,await smsAuth.challenge(req,await body(req)));
+      if(route==='/auth/sms/verify'&&req.method==='POST')return send(res,200,smsAuth.verify(req,await body(req)));
+      if(['/auth/wechat','/auth/wechat-app','/auth/wechat/link','/auth/wechat-app/link'].includes(route)&&req.method==='POST')return send(res,200,await wechatAuth.login(req,await body(req),{native:route.includes('wechat-app'),link:route.endsWith('/link')}));
       if(['/payments/wechat/notify','/payments/wechat-app/notify'].includes(route)&&req.method==='POST') {
         const paymentConfig=route==='/payments/wechat-app/notify'?config.wechatAppPay:config.wechatPay;
         if(!paymentConfig)throw fail(503,'PAYMENTS_NOT_CONFIGURED','支付未配置。');
@@ -307,6 +306,7 @@ export function createApp(config) {
         if(rows.some(row=>!['completed','cancelled'].includes(row.status)||['pending','refund_pending'].includes(row.payment_status)))throw fail(409,'UNSETTLED_ORDERS','仍有未结束的预约或待确认款项，请先完成、取消预约或联系客服处理退款后再注销。');
         db.exec('BEGIN IMMEDIATE');try{
           db.prepare('DELETE FROM sessions WHERE user_id=?').run(userId);
+          smsAuth.forget(userId);db.prepare('DELETE FROM wechat_identities WHERE user_id=?').run(userId);
           db.prepare("UPDATE users SET name='已注销用户',wechat_openid=NULL,wechat_appid=NULL,role='customer',player_id=NULL WHERE id=?").run(userId);
           db.prepare("UPDATE orders SET contact='',note='' WHERE user_id=?").run(userId);
           db.prepare('INSERT INTO audit VALUES(?,?,?,?,?,?)').run(randomUUID(),'account:'+userId,userId,'active','anonymized',new Date().toISOString());
@@ -334,29 +334,32 @@ export function createApp(config) {
         const service=quoteService(source,variantId,fail);
         if(playerId&&!catalog('players').some(x=>x.id===playerId&&x.games.includes(service.game)))throw fail(400,'INVALID_PLAYER','该成员不提供所选游戏的服务。');
         if(when<Date.now()+60000||when>Date.now()+30*86400000)throw fail(400,'INVALID_SCHEDULE','预约时间须在 1 分钟后至 30 天内。');
-        const identity=db.prepare('SELECT wechat_appid FROM users WHERE id=?').get(user);
-        const row={id:randomUUID(),user_id:user,service_id:serviceId,service_title:service.title,player_id:playerId,scheduled_at:canonical.scheduledAt,contact,note,price_cents:service.priceCents,status:'pending',created_at:ops.iso(),payment_status:'unpaid',demo:config.mode==='demo'?1:0,payment_appid:identity.wechat_appid,payment_channel:req.authSource==='wechat-app'?'APP':'JSAPI'};
+        const appid=req.authSource==='wechat-app'?config.wechatNative?.appid:req.authSource==='wechat'?config.wechat?.appid:null;
+        const identity=appid?wechatAuth.identity(user,appid):null;
+        const row={id:randomUUID(),user_id:user,service_id:serviceId,service_title:service.title,player_id:playerId,scheduled_at:canonical.scheduledAt,contact,note,price_cents:service.priceCents,status:'pending',created_at:ops.iso(),payment_status:'unpaid',demo:config.mode==='demo'?1:0,payment_appid:identity?.appid||null,payment_channel:identity?(req.authSource==='wechat-app'?'APP':'JSAPI'):null};
         ops.transaction(()=>{db.prepare('INSERT INTO orders(id,user_id,service_id,service_title,player_id,scheduled_at,contact,note,price_cents,status,created_at,idempotency_key,request_hash,payment_status,demo,payment_appid,payment_channel) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(row.id,user,serviceId,service.title,playerId,row.scheduled_at,contact,note,service.priceCents,'pending',row.created_at,idempotencyKey,requestHash,'unpaid',row.demo,row.payment_appid,row.payment_channel);ops.created(row,service);});
         return send(res,201,orderView(findOrder(row.id,user)));
       }
       const pay=/^\/orders\/([^/]+)\/pay$/.exec(route);
       if(pay&&req.method==='POST') {
         const userId=authenticate(req);rateLimit(req,'pay',userId);const row=findOrder(pay[1],userId);
+        if(req.authSource==='sms')throw fail(409,'WECHAT_LINK_REQUIRED','请先明确关联微信，再继续支付当前订单。');
         const native=req.authSource==='wechat-app',paymentConfig=native?config.wechatAppPay:config.wechatPay;
         if(row.demo||!paymentConfig)throw fail(503,'PAYMENTS_NOT_CONFIGURED','当前环境不能发起真实支付。');
         assertClubReady();
         if(row.status==='cancelled'||row.status==='completed'||!['unpaid','pending'].includes(row.payment_status))throw fail(409,'ORDER_NOT_PAYABLE','当前订单不能再次付款。');
-        const user=db.prepare('SELECT wechat_openid,wechat_appid FROM users WHERE id=?').get(userId);
-        if(user.wechat_appid!==paymentConfig.appid)throw fail(409,'PAYMENT_APP_MISMATCH','登录应用与支付配置不一致，请重新登录。');
-        db.prepare("UPDATE orders SET payment_status='pending' WHERE id=?").run(row.id);
-        let result;try{result=await (native?integrations.createAppOrder:integrations.createJsapiOrder)({config:paymentConfig,order:{id:row.id.replaceAll('-',''),description:row.service_title,totalCents:row.price_cents,openid:user.wechat_openid}});}catch{throw fail(502,'PAYMENT_PROVIDER_ERROR','暂时无法发起支付。请稍后重试；支付状态须由商户核实。');}
+        const identity=wechatAuth.identity(userId,paymentConfig.appid);
+        if(!identity)throw fail(409,'WECHAT_LINK_REQUIRED','请先关联当前支付应用的微信身份。');
+        if(row.payment_appid&&row.payment_appid!==paymentConfig.appid)throw fail(409,'PAYMENT_APP_MISMATCH','登录应用与支付配置不一致，请重新登录。');
+        db.prepare("UPDATE orders SET payment_status='pending',payment_appid=?,payment_channel=? WHERE id=?").run(paymentConfig.appid,native?'APP':'JSAPI',row.id);
+        let result;try{result=await (native?integrations.createAppOrder:integrations.createJsapiOrder)({config:paymentConfig,order:{id:row.id.replaceAll('-',''),description:row.service_title,totalCents:row.price_cents,openid:identity.openid}});}catch{throw fail(502,'PAYMENT_PROVIDER_ERROR','暂时无法发起支付。请稍后重试；支付状态须由商户核实。');}
         return send(res,200,{paymentParams:result.paymentParams,paymentStatus:'pending'});
       }
       const own=/^\/orders\/([^/]+)(\/cancel)?$/.exec(route);
       if(own){const user=authenticate(req),row=findOrder(own[1],user);if(req.method==='GET'&&!own[2])return send(res,200,orderView(row));if(req.method==='PATCH'&&own[2])return send(res,200,orderView(await cancelOrder(row,ops.actor(user,'customer'))));}
       if(route.startsWith('/admin/')) {
         authenticate(req,true);
-        if(route==='/admin/config/status'&&req.method==='GET')return send(res,200,{mode:config.mode,database:true,admin:true,realAuth:authReady(),payments:paymentsReady(),wechatMiniAuth:Boolean(config.wechat?.appid&&config.wechat?.appSecret),wechatNativeAuth:Boolean(config.wechatNative?.appid&&config.wechatNative?.appSecret),wechatMiniPay:Boolean(config.wechatPay),wechatNativePay:Boolean(config.wechatAppPay),catalogReady:clubReady(),sms:false,storage:false,demo:config.mode==='demo'});
+        if(route==='/admin/config/status'&&req.method==='GET')return send(res,200,{mode:config.mode,database:true,admin:true,realAuth:authReady(),payments:paymentsReady(),wechatMiniAuth:Boolean(config.wechat?.appid&&config.wechat?.appSecret),wechatNativeAuth:Boolean(config.wechatNative?.appid&&config.wechatNative?.appSecret),wechatMiniPay:Boolean(config.wechatPay),wechatNativePay:Boolean(config.wechatAppPay),catalogReady:clubReady(),sms:smsAuth.capability().enabled,smsProvider:smsAuth.capability().provider,storage:false,demo:config.mode==='demo'});
         if(route==='/admin/club'){
           if(req.method==='GET')return send(res,200,clubData());
           if(req.method==='PATCH'){
@@ -404,7 +407,7 @@ export function createApp(config) {
         if(m&&req.method==='PATCH'){const data=await body(req),row=findOrder(m[1],'admin');if(data.status!=='cancelled')throw fail(409,'USE_FULFILLMENT_FLOW','请使用派单、成员接单及客户确认流程，不可直接标记完成。');return send(res,200,orderView(await cancelOrder(row,ops.owner)));}
       }
       throw fail(404,'NOT_FOUND','接口不存在或请求方法不支持。');
-    }catch(err){if(!res.writableEnded)send(res,err.status||500,{error:{code:err.code||'INTERNAL',message:err.status?err.message:'服务器暂时不可用，请稍后重试。'}});if(!err.status)console.error('API request failed:',err.name);}
+    }catch(err){if(err.details?.retryAfterSeconds)res.setHeader('Retry-After',String(err.details.retryAfterSeconds));if(!res.writableEnded)send(res,err.status||500,{error:{code:err.code||'INTERNAL',message:err.status?err.message:'服务器暂时不可用，请稍后重试。',...(err.status?err.details:{})}});if(!err.status)console.error('API request failed:',err.name);}
   });
   server.requestTimeout=15000;server.headersTimeout=10000;
   server.on('close',()=>db.close());

@@ -3,5 +3,5 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=24" },
-  "scripts": { "test": "node --test test/*.test.mjs", "check": "node --check src/wechat.mjs" }
+  "scripts": { "test": "node --test test/*.test.mjs", "check": "node --check src/wechat.mjs && node --check src/tencent-sms.mjs" }
 }

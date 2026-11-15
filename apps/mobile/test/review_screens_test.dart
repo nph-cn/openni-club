@@ -52,9 +52,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 350));
-      });
+      await tester.runAsync(
+        () => primeLocalMedia(tester.element(find.byType(Scaffold).first)),
+      );
       await tester.pumpAndSettle();
       expect(
         tester.takeException(),

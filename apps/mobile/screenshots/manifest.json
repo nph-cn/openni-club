@@ -8,7 +8,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "services",
@@ -19,7 +20,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "service",
@@ -30,7 +32,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "pc-60",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "service_120",
@@ -41,7 +44,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "pc-120",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "players",
@@ -52,7 +56,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "player",
@@ -63,7 +68,8 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "profile",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "booking",
@@ -74,7 +80,8 @@
     "source": "apps/mobile/lib/booking.dart",
     "state": "selection",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "checkout",
@@ -85,7 +92,8 @@
     "source": "apps/mobile/lib/booking.dart",
     "state": "review",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "orders",
@@ -96,7 +104,8 @@
     "source": "apps/mobile/lib/orders.dart",
     "state": "in_progress",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "order",
@@ -107,7 +116,8 @@
     "source": "apps/mobile/lib/orders.dart",
     "state": "in_progress",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "support",
@@ -118,7 +128,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "form",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "profile",
@@ -129,7 +140,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "profile",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "announcements",
@@ -140,7 +152,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "published",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "settings",
@@ -151,7 +164,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "settings",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "notifications",
@@ -162,7 +176,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "empty",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "empty"
   },
   {
     "id": "member",
@@ -173,7 +188,8 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "member_orders",
@@ -184,7 +200,8 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "member_order",
@@ -195,7 +212,8 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "awaiting_acceptance",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "delivery",
@@ -206,7 +224,8 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "member_notifications",
@@ -217,7 +236,8 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "read-only",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "availability",
@@ -228,7 +248,8 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
     "width": 390,
-    "height": 844
+    "height": 844,
+    "stateGroup": "ready"
   },
   {
     "id": "earnings",
@@ -239,6 +260,166 @@
     "source": "apps/mobile/lib/member.dart",
     "state": "ledger",
     "width": 390,
+    "height": 844,
+    "stateGroup": "ready"
+  },
+  {
+    "id": "welcome",
+    "title": "欢迎",
+    "role": "customer",
+    "flow": "auth",
+    "description": "欢迎入口与游客浏览，不强制每次启动出现。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
     "height": 844
+  },
+  {
+    "id": "login",
+    "title": "登录方式",
+    "role": "customer",
+    "flow": "auth",
+    "description": "按实际可用能力选择手机号或微信。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "phone",
+    "title": "手机号登录",
+    "role": "customer",
+    "flow": "auth",
+    "description": "手机号输入、协议入口与获取验证码。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "code",
+    "title": "验证码",
+    "role": "customer",
+    "flow": "auth",
+    "description": "验证码粘贴、自动填充和倒计时；本地验证码明确未发送短信。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "verification",
+    "stateGroup": "verification",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "code_error",
+    "title": "验证码错误",
+    "role": "customer",
+    "flow": "auth",
+    "description": "实际无效验证码产生的错误与剩余尝试次数。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "error",
+    "stateGroup": "error",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "code_verifying",
+    "title": "验证中",
+    "role": "customer",
+    "flow": "auth",
+    "description": "同一验证控件等待异步验证完成时的状态。",
+    "source": "apps/mobile/lib/auth.dart",
+    "state": "verification",
+    "stateGroup": "loading",
+    "width": 390,
+    "height": 844,
+    "demo": "/demo/?screen=code"
+  },
+  {
+    "id": "home_loading",
+    "title": "首页加载",
+    "role": "customer",
+    "flow": "discover",
+    "description": "启动等待读取时的骨架，减少动态效果时保持静态。",
+    "source": "apps/mobile/lib/loading.dart",
+    "state": "loading",
+    "stateGroup": "loading",
+    "width": 390,
+    "height": 844,
+    "demo": "/demo/?screen=home"
+  },
+  {
+    "id": "home_error",
+    "title": "连接失败",
+    "role": "customer",
+    "flow": "discover",
+    "description": "连接失败组件及重新加载入口。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "error",
+    "stateGroup": "error",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "orders_empty",
+    "title": "没有订单",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "空订单集合下的实际列表与发现服务入口。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "empty",
+    "stateGroup": "empty",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "orders_guest",
+    "title": "订单登录入口",
+    "role": "customer",
+    "flow": "auth",
+    "description": "与正式未登录订单共用组件，登录后回到订单页。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "privacy",
+    "title": "隐私政策",
+    "role": "customer",
+    "flow": "account",
+    "description": "俱乐部配置的隐私文本；示例不能作为正式运营政策。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "terms",
+    "title": "服务协议",
+    "role": "customer",
+    "flow": "account",
+    "description": "与登录授权共用的服务协议页面。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": "home_android",
+    "title": "Android 首页",
+    "role": "customer",
+    "flow": "discover",
+    "description": "相同业务代码的 Android 实体导航与内容布局。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "ready",
+    "stateGroup": "ready",
+    "width": 390,
+    "height": 844,
+    "platform": "android"
   }
 ]

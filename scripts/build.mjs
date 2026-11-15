@@ -2,6 +2,7 @@ import {cp,mkdir,readdir,readFile,writeFile,access,rm} from 'node:fs/promises';
 import {join,basename} from 'node:path';
 import sharp from 'sharp';
 import {buildDocs} from './lib/docs-site.mjs';
+import {stateGroup} from '../apps/showcase/gallery-model.js';
 const root=process.cwd();await rm('dist',{recursive:true,force:true});await mkdir('dist',{recursive:true});await cp('apps/showcase','dist',{recursive:true});
 await cp('apps/admin','dist/admin',{recursive:true,filter:source=>!source.includes('/screenshots')});
 await cp('apps/studio','dist/studio',{recursive:true});
@@ -12,7 +13,7 @@ await mkdir('dist/screens',{recursive:true});const files=await readdir('apps/mob
 const required=['home','services','service','players','player','booking','orders','order','profile','announcements','settings'];for(const id of required)await access(`dist/screens/${id}.png`);
 const baseCatalog=JSON.parse(await readFile('apps/showcase/catalog.json','utf8'));
 const adminTitles={orders:['全部订单','fulfillment'],overview:['今日待办','fulfillment'],dispatch:['派单工作台','fulfillment'],order:['订单详情','fulfillment'],disputes:['售后处理','fulfillment'],settlements:['收入与结算','member'],club:['品牌与发布','account'],brand:['品牌与发布','account'],services:['服务目录','discover'],players:['成员与排班','member'],members:['成员与排班','member'],announcements:['俱乐部公告','account'],connection:['连接与集成','account']};
-const gallery=[];
+const gallery=[],seenIds=new Set(),seenFiles=new Set();
 for(const [platform,dir] of [['flutter','apps/mobile/screenshots'],['mini','apps/miniprogram/screenshots'],['admin','apps/admin/screenshots']]){
  let images=[];try{images=(await readdir(dir)).filter(f=>/\.(png|jpe?g)$/.test(f));}catch{continue;}
  let manifest;try{manifest=JSON.parse(await readFile(join(dir,'manifest.json'),'utf8'));}catch{manifest=null;}
@@ -21,13 +22,16 @@ for(const [platform,dir] of [['flutter','apps/mobile/screenshots'],['mini','apps
  for(const item of items){
   const file=item.file|| (item.image?basename(item.image):images.find(f=>f.replace(/\.(png|jpe?g)$/,'')===item.id));
   if(!file||basename(file)!==file||!images.includes(file))throw Error(`Missing screenshot for ${platform}/${item.id}`);
+  if(seenIds.has(item.id)||seenFiles.has(file))throw Error(`Duplicate screenshot id or file: ${platform}/${item.id}`);
+  seenIds.add(item.id);seenFiles.add(file);
   const shortId=item.id.replace(/^(mini-|admin-)/,''),original=baseCatalog.find(s=>s.id===shortId)||{};
   const meta=adminTitles[shortId];if(platform==='admin'&&!manifest&&!meta)continue;
   const info=await sharp(join(dir,file)).metadata();
   const title=item.title||meta?.[0]||original.title||shortId;
   const flow=item.flow||meta?.[1]||original.flow||'account';
   await cp(join(dir,file),join('dist/screens',file));
-  gallery.push({...original,...item,id:item.id,platform,title,flow,role:item.role||(platform==='admin'?'operator':original.role||'customer'),description:item.description||original.description||title,image:`/screens/${file}`,width:info.width,height:info.height,source:item.source||(platform==='admin'?'apps/admin/operations.js':platform==='mini'?`apps/miniprogram/pages/${shortId}/${shortId}.wxml`:'apps/mobile/lib/screens.dart')});
+  const screen={...original,...item,id:item.id,platform,title,flow,role:item.role||(platform==='admin'?'operator':original.role||'customer'),description:item.description||original.description||title,image:`/screens/${file}`,width:info.width,height:info.height,source:item.source||(platform==='admin'?'apps/admin/operations.js':platform==='mini'?`apps/miniprogram/pages/${shortId}/${shortId}.wxml`:'apps/mobile/lib/screens.dart')};
+  await access(screen.source);screen.stateGroup=stateGroup(screen);gallery.push(screen);
  }
 }
 await writeFile('dist/screens.json',JSON.stringify(gallery));

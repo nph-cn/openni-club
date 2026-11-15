@@ -19,6 +19,8 @@ description: 带领电竞俱乐部部署和配置 OpenNI Club，核验 Flutter�
 
 零基础用户从 `docs/index.md` 和 `docs/01-quickstart.md` 开始；面向经营者的阅读入口是 [OpenNI 文档](https://openni.im/guide/)。换首页横幅、游戏图标或服务封面时，读 `third_party/GAME_MEDIA.md`：首次安装用 `initialCatalog`，已有数据库用管理后台「首页横幅」「服务目录」，不要重置数据库来换图。代码的 MIT 协议不包含发行商游戏图片的使用授权。
 
+手机号登录读取 `docs/11-phone-auth.md` 与 `CONTRACT-AUTH.md`。短信默认关闭，测试 provider 不发送短信；真实发送需经营者的腾讯云配置。已有数据库必须沿用 `SMS_HASH_SECRET`，更换该值会改变手机号身份映射。手机号会话使用微信付款前，需要用户明确关联对应微信应用身份，不自动合并账号。
+
 ## 不可混淆的状态
 
 - 没有 `API_BASE_URL` 的 Flutter 是内置演示；连接 API 后是服务端演示。不得把任何一种称作真实支付或正式身份。

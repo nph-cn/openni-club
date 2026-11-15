@@ -28,3 +28,11 @@ Website direction retained; ornamental marketing copy removed. Use literal label
 App design is being replaced with image-led real game content: official game covers/icons, configurable club banners, image-supported service cards and member profiles. Abstract contour artwork is not an acceptable substitute for game imagery. Game artwork provenance and third-party rights stay separate from the MIT code license. Keep sample-data disclosure in application information and transaction decisions rather than every navigation bar. Never claim a real paid order or identity that did not occur.
 
 Documentation is a Read surface: grouped left navigation, searchable content, article table of contents, copyable commands, numbered actions and previous/next links. It is not a marketing landing page.
+
+## Full-flow refinement
+
+The next pass includes authentication and transient states as product surfaces: welcome, login method, phone input, one-time code, verification failure, submission, empty and unavailable content. Public browsing stays available; protected actions return to their original intent after authentication. The server owns OTP expiry and resend cooldown. Test codes are explicitly marked as local tests; unconfigured production providers never display successful delivery.
+
+Motion uses a short transition for navigation and a restrained response to controls. Loading uses layout-shaped placeholders only while asynchronous work is pending. Reduced motion renders static skeletons. Floating navigation and actions carry the glass treatment with soft offset shadows; text and prices remain on clear surfaces.
+
+The gallery groups every manifest entry by its actual flow, including new states, and supports state filters, direct page links, full-screen fitting and optional zoom. No curated ID list may silently hide a new page from flow browsing. Mobbin authentication searches on 2026-11-15 again returned internal errors; no new Mobbin image was available for review.

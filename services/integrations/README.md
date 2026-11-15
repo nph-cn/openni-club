@@ -1,6 +1,8 @@
-# Server-only WeChat adapters
+# Server-only provider adapters
 
 Independent Node.js implementation with no runtime dependencies. This module is never imported by clients. The project API owns sessions, authorization, persistent orders and transaction idempotency.
+
+`src/tencent-sms.mjs` exports `sendTencentLoginCode({config,phone,code,challengeId,now,fetchImpl})`. It signs the official SendSms 2021-01-11 request with TC3, checks the single destination/context acceptance, and never retries ambiguous sends. It returns acceptance rather than handset-delivery proof. The API owns OTP creation, keyed hashes, persistent limits, expiry and single-use consumption. Config and test-mode walkthrough: [手机号登录](../../docs/11-phone-auth.md). All adapter tests mock HTTP; no actual SMS was sent.
 
 | Export | Input | Result |
 | --- | --- | --- |

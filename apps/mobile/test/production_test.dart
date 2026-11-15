@@ -202,33 +202,35 @@ void main() {
     },
   );
 
-  testWidgets('unavailable SDK clearly disables production booking', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(390, 1100);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
-    final sdk = FakeWechat()..unavailableReason = '请在 iOS 或 Android App 内使用。';
-    final repo = ClubRepository(
-      baseUrl: 'https://club.example/api/v1',
-      appMode: 'production',
-      persist: false,
-      wechat: sdk,
-    );
-    await tester.runAsync(() => catalogService(repo));
-    await tester.pumpWidget(
-      OpenNIApp(repository: repo, initialScreen: 'booking'),
-    );
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('核对预约'));
-    final button = tester.widget<FilledButton>(
-      find.widgetWithText(FilledButton, '核对预约'),
-    );
-    expect(button.onPressed, isNull);
-    expect(find.text('请在 iOS 或 Android App 内使用。'), findsOneWidget);
-    expect(sdk.logins, 0);
-  });
+  testWidgets(
+    'missing operating policies disables production booking before authentication',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 1100);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final sdk = FakeWechat()..unavailableReason = '请在 iOS 或 Android App 内使用。';
+      final repo = ClubRepository(
+        baseUrl: 'https://club.example/api/v1',
+        appMode: 'production',
+        persist: false,
+        wechat: sdk,
+      );
+      await tester.runAsync(() => catalogService(repo));
+      await tester.pumpWidget(
+        OpenNIApp(repository: repo, initialScreen: 'booking'),
+      );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('核对预约'));
+      final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, '核对预约'),
+      );
+      expect(button.onPressed, isNull);
+      expect(repo.operatingUnavailable, contains('隐私'));
+      expect(find.text(repo.operatingUnavailable!), findsOneWidget);
+      expect(sdk.logins, 0);
+    },
+  );
 
   testWidgets('account deletion requires explicit second confirmation', (
     tester,

@@ -28,7 +28,13 @@ void main() {
     )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   });
   for (final screen in screenNames.where(
-    (s) => !['home', 'service', 'player', 'order'].contains(s),
+    (s) => ![
+      'home',
+      'service',
+      'player',
+      'order',
+      ...stateScreenNames,
+    ].contains(s),
   )) {
     testWidgets('working iOS gallery: $screen', (tester) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
@@ -56,9 +62,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await tester.runAsync(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 250));
-      });
+      await tester.runAsync(
+        () => primeLocalMedia(tester.element(find.byType(Scaffold).first)),
+      );
       await tester.pumpAndSettle();
       expect(
         tester.takeException(),

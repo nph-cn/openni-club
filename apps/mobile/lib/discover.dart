@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'repository.dart';
 import 'ui.dart';
+import 'loading.dart';
 
 String priceUnit(Json s) => s['billingUnit'] == 'hour'
     ? (s['durationMinutes'] == 60 ? '小时' : '套餐')
@@ -162,28 +163,34 @@ class _HomePageState extends State<HomePage> {
               '/services?game=${Uri.encodeComponent(selectedGame ?? '全部')}',
             ),
           ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final entry in services.take(2).indexed) ...[
-                if (entry.$1 > 0) const SizedBox(width: 12),
-                Expanded(
-                  child: ServiceFeature(
-                    repo: repo,
-                    service: entry.$2,
-                    poster: true,
+          if (services.isEmpty)
+            const Text('暂无服务', style: TextStyle(color: muted))
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final entry in services.take(2).indexed) ...[
+                  if (entry.$1 > 0) const SizedBox(width: 12),
+                  Expanded(
+                    child: ServiceFeature(
+                      repo: repo,
+                      service: entry.$2,
+                      poster: true,
+                    ),
                   ),
-                ),
+                ],
               ],
-            ],
-          ),
+            ),
           const SizedBox(height: 12),
           SectionTitle(
             '陪练推荐',
             action: '全部',
             onTap: () => context.push('/players'),
           ),
-          ...players.take(3).map((p) => RosterRow(repo: repo, player: p)),
+          if (players.isEmpty)
+            const Text('暂无陪练', style: TextStyle(color: muted))
+          else
+            ...players.take(3).map((p) => RosterRow(repo: repo, player: p)),
           const SizedBox(height: 12),
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -478,11 +485,12 @@ class ServiceArt extends StatelessWidget {
         ? 'bannerUrl'
         : 'coverUrl';
     final url = '${service[field] ?? service['coverUrl'] ?? ''}';
+    final game = '${service['game'] ?? ''}'.trim();
     final fallback = ColoredBox(
       color: sage,
       child: Center(
         child: Text(
-          '${service['game'] ?? '游戏服务'}',
+          game.isEmpty ? '游戏服务' : game,
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: icon ? 11 : 16, color: muted),
         ),
@@ -496,6 +504,16 @@ class ServiceArt extends StatelessWidget {
               fit: BoxFit.cover,
               alignment: Alignment.center,
               webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+              frameBuilder: (_, child, frame, wasSynchronouslyLoaded) =>
+                  frame != null || wasSynchronouslyLoaded
+                  ? child
+                  : SkeletonPulse(
+                      child: SkeletonBlock(
+                        width: double.infinity,
+                        height: double.infinity,
+                        radius: radius,
+                      ),
+                    ),
               errorBuilder: (_, _, _) => fallback,
             )
           : fallback,
@@ -849,7 +867,10 @@ class _ServicePageState extends State<ServicePage> {
             ),
           ],
           SectionTitle('可选陪练'),
-          ...players.take(2).map((p) => MemberRow(repo: repo, player: p)),
+          if (players.isEmpty)
+            const Text('暂无陪练', style: TextStyle(color: muted))
+          else
+            ...players.take(2).map((p) => MemberRow(repo: repo, player: p)),
           if (rules.isNotEmpty || requirements.isNotEmpty) ...[
             const Divider(),
             const Text(
@@ -933,9 +954,11 @@ class PlayersPage extends StatelessWidget {
     repo: repo,
     title: '俱乐部陪练',
     child: PageList(
-      children: repo.players
-          .map((p) => RosterRow(repo: repo, player: p))
-          .toList(),
+      children: [
+        if (repo.players.isEmpty)
+          const Text('暂无陪练', style: TextStyle(color: muted)),
+        ...repo.players.map((p) => RosterRow(repo: repo, player: p)),
+      ],
     ),
   );
 }
@@ -958,6 +981,10 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   Future<void> loadSlots() async {
+    setState(() {
+      failure = null;
+      slots = null;
+    });
     try {
       final today = widget.repo.now.toUtc().add(const Duration(hours: 8));
       final value = await widget.repo.getAvailability(
@@ -1131,6 +1158,8 @@ class _PlayerPageState extends State<PlayerPage> {
           ),
           const SizedBox(height: 10),
           SectionTitle('服务'),
+          if (services.isEmpty)
+            const Text('暂无服务', style: TextStyle(color: muted)),
           ...services.map(
             (s) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -1142,7 +1171,7 @@ class _PlayerPageState extends State<PlayerPage> {
           if (failure != null)
             TextButton(onPressed: loadSlots, child: const Text('排班加载失败，重试'))
           else if (slots == null)
-            const LinearProgressIndicator()
+            const ClubSkeleton(kind: SkeletonKind.slots)
           else if (available!.isEmpty)
             const Text('暂无时段', style: TextStyle(fontSize: 16, color: muted))
           else

@@ -27,6 +27,19 @@ Json selectedService(Json service, String? variantId) {
         };
 }
 
+class ClubApiException implements Exception {
+  const ClubApiException(
+    this.code,
+    this.message, {
+    this.retryAfterSeconds,
+    this.attemptsRemaining,
+  });
+  final String code, message;
+  final int? retryAfterSeconds, attemptsRemaining;
+  @override
+  String toString() => message;
+}
+
 class ClubRepository extends ChangeNotifier {
   ClubRepository({
     this._baseUrl = const String.fromEnvironment('API_BASE_URL'),
@@ -53,12 +66,11 @@ class ClubRepository extends ChangeNotifier {
   DateTime get now => _clock();
   bool get isLocal => baseUrl.isEmpty;
   bool get isProduction => appMode == 'production';
-  String? get authenticationUnavailable {
+  String? get operatingUnavailable {
     if (!isProduction) return null;
     if (isLocal || Uri.tryParse(baseUrl)?.scheme != 'https') {
       return '正式模式需要配置 HTTPS 俱乐部 API。';
     }
-    if (wechat.unavailableReason != null) return wechat.unavailableReason;
     if (['privacyText', 'termsText', 'supportContact'].any(
       (key) => club[key] is! String || (club[key] as String).trim().isEmpty,
     )) {
@@ -67,7 +79,28 @@ class ClubRepository extends ChangeNotifier {
     return null;
   }
 
-  bool loaded = false;
+  String? get authenticationUnavailable {
+    if (operatingUnavailable != null) return operatingUnavailable;
+    if (isProduction &&
+        token == null &&
+        authCapabilities?['sms']?['enabled'] != true) {
+      return wechat.unavailableReason;
+    }
+    return null;
+  }
+
+  String? get wechatUnavailable =>
+      wechat.unavailableReason ??
+      (authCapabilities != null &&
+              authCapabilities?['wechatApp']?['enabled'] != true
+          ? '俱乐部尚未开通微信登录'
+          : null);
+
+  bool loaded = false, loading = false;
+  Json? authCapabilities;
+  final Map<String, Json> _localChallenges = {};
+  DateTime? _lastLocalChallenge;
+  int _challengeSequence = 0;
   String? error;
   String? token;
   Json club = {};
@@ -119,15 +152,31 @@ class ClubRepository extends ChangeNotifier {
     }
     final data = jsonDecode(response.body);
     if (response.statusCode >= 400) {
-      if (response.statusCode == 401) token = null;
+      if (response.statusCode == 401 && !path.startsWith('/auth/')) {
+        token = null;
+      }
       final error = data is Map ? data['error'] : null;
-      throw Exception(error is Map ? error['message'] ?? '请求失败，请稍后重试' : '请求失败');
+      throw ClubApiException(
+        error is Map
+            ? '${error['code'] ?? 'REQUEST_FAILED'}'
+            : 'REQUEST_FAILED',
+        error is Map ? '${error['message'] ?? '请求失败，请稍后重试'}' : '请求失败',
+        retryAfterSeconds: error is Map
+            ? error['retryAfterSeconds'] as int?
+            : null,
+        attemptsRemaining: error is Map
+            ? error['attemptsRemaining'] as int?
+            : null,
+      );
     }
     return data;
   }
 
   Future<void> load() async {
+    if (loading) return;
+    loading = true;
     error = null;
+    notifyListeners();
     try {
       try {
         brand = Json.from(
@@ -214,7 +263,162 @@ class ClubRepository extends ChangeNotifier {
       error = e.toString().replaceFirst('Exception: ', '');
     }
     loaded = true;
+    loading = false;
     notifyListeners();
+  }
+
+  Future<Json> loadAuthCapabilities({bool force = false}) async {
+    if (authCapabilities != null && !force) return authCapabilities!;
+    if (isLocal && !isProduction) {
+      authCapabilities = {
+        'mode': 'demo',
+        'wechatApp': {'enabled': false},
+        'sms': {
+          'enabled': true,
+          'provider': 'test',
+          'testMode': true,
+          'codeLength': 6,
+          'expiresInSeconds': 300,
+          'retryAfterSeconds': 60,
+        },
+      };
+    } else {
+      authCapabilities = Json.from(await request('GET', '/auth/capabilities'));
+    }
+    notifyListeners();
+    return authCapabilities!;
+  }
+
+  Future<Json> requestSmsChallenge(String phone) async {
+    phone = phone.trim().replaceFirst(RegExp(r'^\+86'), '');
+    if (!RegExp(r'^1[3-9][0-9]{9}$').hasMatch(phone)) {
+      throw const ClubApiException('PHONE_INVALID', '请输入正确的手机号');
+    }
+    if (isLocal && !isProduction) {
+      final elapsed = _lastLocalChallenge == null
+          ? 60
+          : now.difference(_lastLocalChallenge!).inSeconds;
+      if (elapsed < 60) {
+        throw ClubApiException(
+          'SMS_COOLDOWN',
+          '请稍后重新获取',
+          retryAfterSeconds: 60 - elapsed,
+        );
+      }
+      for (final challenge in _localChallenges.values) {
+        if (challenge['phone'] == phone && challenge['used'] != true) {
+          challenge['superseded'] = true;
+        }
+      }
+      _lastLocalChallenge = now;
+      final id = 'local-${++_challengeSequence}';
+      _localChallenges[id] = {
+        'phone': phone,
+        'code': '123456',
+        'expiresAt': now.add(const Duration(minutes: 5)),
+        'attempts': 0,
+      };
+      return {
+        'challengeId': id,
+        'phoneMasked': '${phone.substring(0, 3)}****${phone.substring(7)}',
+        'expiresInSeconds': 300,
+        'retryAfterSeconds': 60,
+        'delivery': 'test',
+        'testCode': '123456',
+      };
+    }
+    return Json.from(
+      await request('POST', '/auth/sms/challenges', {'phone': phone}),
+    );
+  }
+
+  Future<void> verifySms(String challengeId, String code) async {
+    if (isLocal && !isProduction) {
+      final challenge = _localChallenges[challengeId];
+      if (challenge == null) {
+        throw const ClubApiException('OTP_INVALID', '验证码无效，请重新获取');
+      }
+      if (challenge['used'] == true) {
+        throw const ClubApiException('OTP_USED', '验证码已使用，请重新获取');
+      }
+      if (challenge['superseded'] == true) {
+        throw const ClubApiException('OTP_SUPERSEDED', '请使用最新验证码');
+      }
+      if (!now.isBefore(challenge['expiresAt'] as DateTime)) {
+        throw const ClubApiException('OTP_EXPIRED', '验证码已过期，请重新获取');
+      }
+      if ((challenge['attempts'] as int) >= 5) {
+        throw const ClubApiException(
+          'OTP_ATTEMPTS_EXCEEDED',
+          '尝试次数过多，请重新获取',
+          retryAfterSeconds: 60,
+        );
+      }
+      if (challenge['code'] != code) {
+        challenge['attempts'] = (challenge['attempts'] as int) + 1;
+        throw ClubApiException(
+          'OTP_INVALID',
+          '验证码不正确',
+          attemptsRemaining: 5 - (challenge['attempts'] as int),
+        );
+      }
+      challenge['used'] = true;
+      token = 'local-preview-session';
+      memberName = '手机用户';
+      role = 'customer';
+      memberPlayerId = null;
+      notifyListeners();
+      return;
+    }
+    _applySession(
+      Json.from(
+        await request('POST', '/auth/sms/verify', {
+          'challengeId': challengeId,
+          'code': code,
+        }),
+      ),
+    );
+    await loadAccount();
+  }
+
+  void _applySession(Json result) {
+    final value = result['token'];
+    if (value is! String || value.isEmpty) {
+      throw const ClubApiException('AUTH_FAILED', '登录未完成，请重试');
+    }
+    token = value;
+    if (result['user'] is Map) memberName = '${result['user']['name']}';
+    role = '${result['role'] ?? 'customer'}';
+    memberPlayerId = result['playerId'];
+    notifyListeners();
+  }
+
+  Future<void> signInWithWechat() async {
+    if (wechatUnavailable case final String reason) throw Exception(reason);
+    if (isLocal) throw Exception('微信登录需要连接俱乐部');
+    _applySession(
+      Json.from(
+        await request('POST', '/auth/wechat-app', {
+          'code': await wechat.authenticate(),
+        }),
+      ),
+    );
+    await loadAccount();
+  }
+
+  Future<void> linkWechatForPayment() async {
+    if (token == null || isLocal) throw Exception('请先登录');
+    if (wechat.unavailableReason case final String reason) {
+      throw Exception(reason);
+    }
+    _applySession(
+      Json.from(
+        await request('POST', '/auth/wechat-app/link', {
+          'code': await wechat.authenticate(),
+        }),
+      ),
+    );
+    await loadAccount();
   }
 
   Future<void> signIn() async {

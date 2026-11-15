@@ -11,7 +11,8 @@ OpenNI 是一套 MIT 开源的电竞俱乐部应用，包含 Flutter App、微�
 3. [生成应用配置](10-single-config-workflow.md)：用同一份配置生成 App、小程序、图标和应用标识。
 4. [域名与服务器](03-deployment.md)：部署 API、设置 HTTPS，并让客户端连接自己的服务器。
 5. [微信登录与支付](09-wechat-adapters.md)：接入自己的账号与商户，在设备上完成联调。
-6. [上线检查](07-release-checklist.md)：核对签名、真机、支付与资料，再提交平台审核。
+6. [手机号与验证码](11-phone-auth.md)：按需接入腾讯云短信，验证登录与账号关联。
+7. [上线检查](07-release-checklist.md)：核对签名、真机、支付与资料，再提交平台审核。
 
 只想先查看界面，可以打开 [App](https://openni.im/demo/)、[运营后台](https://openni.im/admin/) 或 [品牌配置](https://openni.im/studio/)。这些公开页面使用示例数据，不处理真实付款。
 
@@ -23,6 +24,7 @@ OpenNI 是一套 MIT 开源的电竞俱乐部应用，包含 Flutter App、微�
 | 更换品牌 | 俱乐部名称、自己的 Logo |
 | 服务器部署 | 域名、支持 Node.js 24 和持久化磁盘的服务器 |
 | 微信登录与支付 | 对应平台的 AppID、服务端密钥；收款还需自己的微信商户配置 |
+| 手机号登录 | 腾讯云短信应用、已审核签名和验证码模板、服务端密钥 |
 | Android 发布 | 固定包名、上传签名、目标商店账号 |
 | iOS 发布 | macOS、Xcode、Apple 开发者账号和签名 |
 | 小程序发布 | 微信小程序账号、开发者工具、合法服务器域名 |

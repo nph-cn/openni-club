@@ -7,9 +7,9 @@ import 'package:material_ui/material_ui.dart';
 import 'repository.dart';
 import 'accessibility.dart';
 
-const canvas = Color(0xFFF4F5F7),
+const canvas = Color(0xFFF5F6F8),
     ink = Color(0xFF171B21),
-    muted = Color(0xFF636B78),
+    muted = Color(0xFF5E6673),
     rule = Color(0xFFDDE1E7),
     sage = Color(0xFFE9EDF2),
     sand = Color(0xFFEEF0F4),
@@ -59,6 +59,7 @@ void toast(BuildContext context, Object text) => ScaffoldMessenger.of(context)
 
 ThemeData clubTheme(ClubRepository repo) => ThemeData(
   useMaterial3: true,
+  platform: kIsWeb ? TargetPlatform.iOS : defaultTargetPlatform,
   fontFamily: 'NotoSansSC',
   scaffoldBackgroundColor: canvas,
   colorScheme: ColorScheme.fromSeed(
@@ -68,6 +69,32 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
     surface: Colors.white,
   ),
   textTheme: const TextTheme(
+    headlineLarge: TextStyle(
+      fontSize: 30,
+      height: 1.25,
+      fontWeight: FontWeight.w600,
+      color: ink,
+    ),
+    headlineMedium: TextStyle(
+      fontSize: 26,
+      height: 1.3,
+      fontWeight: FontWeight.w600,
+      color: ink,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 18,
+      height: 1.4,
+      fontWeight: FontWeight.w600,
+      color: ink,
+    ),
+    titleSmall: TextStyle(
+      fontSize: 16,
+      height: 1.4,
+      fontWeight: FontWeight.w600,
+      color: ink,
+    ),
+    bodySmall: TextStyle(fontSize: 14, height: 1.45, color: muted),
+    labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     bodyMedium: TextStyle(fontSize: 16, height: 1.5, color: ink),
     bodyLarge: TextStyle(fontSize: 16, height: 1.5, color: ink),
     titleLarge: TextStyle(
@@ -121,6 +148,11 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
     style: OutlinedButton.styleFrom(
       minimumSize: const Size(48, 48),
       side: const BorderSide(color: rule),
+      textStyle: const TextStyle(
+        fontFamily: 'NotoSansSC',
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   ),
@@ -140,7 +172,7 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
 );
 
 bool appleChrome(BuildContext context) =>
-    kIsWeb || Theme.of(context).platform == TargetPlatform.iOS;
+    Theme.of(context).platform == TargetPlatform.iOS;
 
 class GlassSurface extends StatelessWidget {
   const GlassSurface({
@@ -165,7 +197,7 @@ class GlassSurface extends StatelessWidget {
           !appleChrome(context);
       final surface = DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: opaque ? 1 : .70),
+          color: Colors.white.withValues(alpha: opaque ? 1 : .74),
           borderRadius: BorderRadius.circular(radius),
           border: border
               ? Border.all(color: Colors.white.withValues(alpha: .9), width: .5)
@@ -230,7 +262,10 @@ class ClubPage extends StatelessWidget {
             selectedIndex: tab!,
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
-            height: 60,
+            height: 62,
+            animationDuration: media.disableAnimations || media.reduceMotion
+                ? Duration.zero
+                : const Duration(milliseconds: 220),
             indicatorColor: brandColor(repo).withValues(alpha: .07),
             labelTextStyle: WidgetStateProperty.resolveWith(
               (states) => TextStyle(
@@ -355,9 +390,9 @@ class ClubPage extends StatelessWidget {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: ink.withValues(alpha: .045),
-                              blurRadius: 18,
-                              offset: const Offset(0, 3),
+                              color: ink.withValues(alpha: .075),
+                              blurRadius: 24,
+                              offset: const Offset(0, 5),
                             ),
                           ],
                         )

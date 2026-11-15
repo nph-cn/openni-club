@@ -1,10 +1,10 @@
 # OpenNI Club
 
-让电竞俱乐部拥有自己的产品、品牌和数据。
+Flutter App、微信小程序和运营后台。
 
 一套 MIT 开源的独立俱乐部软件：Flutter iOS / Android、原生微信小程序、订单与履约 API、运营工作台、品牌向导，以及按完整流程浏览真实界面的截图网站。每家俱乐部拥有自己的品牌、服务和数据库。演示俱乐部「北岸电竞」、人物与价格均为虚构；本项目不隶属游戏发行商。
 
-**当前为 v0.2 预览版本。** 单配置品牌生成、客户下单、运营派单、成员接单与交付、争议、分成账本已实现；包含 22 张 Flutter、15 张原生小程序和 11 张运营后台真实界面截图。微信登录、支付和退款协议适配已有模拟供应商及密码学校验测试，真实商户交易、原生真机和商店审核尚未完成。支付默认关闭，手工结算记录不等于平台自动转账。
+**当前为 v0.2 预览版本。** 单配置品牌生成、客户下单、运营派单、成员接单与交付、争议、分成账本已实现；图库包含 Flutter、小程序、运营后台，以及登录、验证码、骨架加载、错误和空状态的实际运行截图。微信和腾讯云短信登录、支付及退款适配已有自动化测试，真实短信送达、商户交易、真机与商店审核尚未完成。生产短信和支付默认关闭。
 
 ## 先做成自己的俱乐部
 
@@ -76,7 +76,7 @@ scripts/doctor.mjs   不输出密钥的环境检查
 
 ## 开发与许可
 
-运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test test/flows_test.dart` 和 `flutter build web`。生成页面截图使用 `flutter test test/screenshots_test.dart --update-goldens`。CI 只做检查，不会自动发布应用或使用你的生产密钥。
+运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart` 和 `flutter build web`。生成页面截图使用 `flutter test test/screenshots_test.dart --update-goldens`。CI 只做检查，不会自动发布应用或使用你的生产密钥。
 
 品牌生成与发布状态测试：`node --test scripts/test/*.test.mjs`。仓库展示使用 `config/demo.club.json` 的虚构北岸品牌；`club.example.json` 保留为最简客户模板。自己的公开配置与秘密配置必须分开保存。
 

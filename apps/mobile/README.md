@@ -19,7 +19,7 @@ flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8787/api/v1
 - 客户：可配置游戏横幅、游戏图标入口、游戏/服务筛选、陪练档案、关注、服务规格、可约时段、预约核对、订单事件、微信付款、取消、交付确认、评价、售后和通知。
 - 成员：邀请码绑定、待接单、拒单、开始服务、提交文字/HTTPS凭证、可接时段、收入账本、运营登记的结算凭据。
 - 价格与时长由服务器按 `serviceId + variantId` 决定。120分钟72元表示套餐总价。客户端不发送价格、佣金或身份权限。当前只支持一位成员履约；多人规格明确禁用并由服务器拒绝。
-- 个人中心：微信登录授权、昵称、实际运营政策与客服、二次确认注销。未结订单和退款由服务器阻止注销。
+- 账号：欢迎页、游客浏览、手机号验证码或微信登录、协议授权、昵称、运营政策与客服、二次确认注销。未结订单和退款由服务器阻止注销。
 
 ## 原生微信
 
@@ -39,20 +39,28 @@ flutter run -d YOUR_DEVICE_ID \
 
 ## 视觉与截图
 
-iOS 与 Web 使用 Flutter `BackdropFilter` 形成玻璃导航/底栏/Sheet；内容保持清楚的实体排版。这不是系统原生 Liquid Glass。Android 使用实体导航。iOS Reduce Transparency 通过平台通道读取，高对比与减少动画也会关闭模糊。
+iOS 与 Web 使用 Flutter `BackdropFilter` 形成玻璃导航/底栏/Sheet；内容保持清楚的实体排版。这不是系统原生 Liquid Glass。Android 使用实体导航。iOS Reduce Transparency 通过平台通道读取，高对比与减少动画也会关闭模糊。骨架和登录步骤过渡同时检查 iOS Reduce Motion 与 Android Disable Animations。加载不设置人为等待；Web 引擎启动前显示轻量加载入口，首帧后移除。
 
 ```sh
 flutter analyze
-flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart
+flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart
 dart run tool/cache_catalog_media.dart
-flutter test test/screenshots_test.dart test/review_screens_test.dart
+flutter test test/screenshots_test.dart test/review_screens_test.dart test/auth_screens_test.dart
 flutter build web --no-web-resources-cdn --base-href /demo/
 ```
 
-22张390×844实际Widget截图和角色/流程索引在 `screenshots/`。字体与原创人物来自本地素材；游戏封面、图标和横幅来自配置记录的官方 HTTPS 地址。截图前用上述命令缓存同一原图至被 Git 忽略的 `.dart_tool/catalog-media`，运行时仍读取目录 URL。第三方图片版权归原权利人，不随代码授予 MIT 权利；新俱乐部应配置有权使用的素材。人物与 fixture 来源见 `assets/demo/PROVENANCE.md`。仅在有意修改设计且逐张检查后，使用 `--update-goldens` 更新。跨 Flutter engine 的像素差异不能当作业务失败，也不能自动覆盖基线。
+35张390×844实际Widget截图和角色/流程索引在 `screenshots/`。字体与原创人物来自本地素材；游戏封面、图标和横幅来自配置记录的官方 HTTPS 地址。截图前用上述命令缓存同一原图至被 Git 忽略的 `.dart_tool/catalog-media`，运行时仍读取目录 URL。第三方图片版权归原权利人，不随代码授予 MIT 权利；新俱乐部应配置有权使用的素材。人物与 fixture 来源见 `assets/demo/PROVENANCE.md`。仅在有意修改设计且逐张检查后，使用 `--update-goldens` 更新。跨 Flutter engine 的像素差异不能当作业务失败，也不能自动覆盖基线。
 
 `?screen=` 支持 `screenshots/manifest.json` 的全部 id，包括 `home`、`service_120`、`checkout`、`support`、`member`、`delivery`、`availability`、`earnings`。实际路由使用 GoRouter，支持原生返回和深链。
 
 Studio 的 `previewName`、`previewColor`、同源 `blob:` Logo 只覆盖演示展示，不能改变 API、生产身份或权限。生产模式忽略所有预览覆盖。
 
 Noto Sans SC 使用 OFL，第三方库保留各自许可证。外部竞品截图仅用于设计研究，不打包分发。
+
+## 手机号登录与状态覆盖
+
+接口与错误合同见 [CONTRACT-AUTH.md](../../CONTRACT-AUTH.md)。登录按 `/auth/capabilities` 显示可用方式，手机号通过 `/auth/sms/challenges` 与 `/auth/sms/verify` 验证。本地预览使用内存验证码并明确标记“本地验证码，未发送短信”；连接 API 时只接受服务端返回，生产未配置短信不发送。
+
+登录返回原预约或订单页面，保留表单，但不会自动提交预约或付款。手机号账户付款需要微信身份时，用户确认后才调用 SDK 授权并关联当前账户；冲突身份不自动合并。真实短信送达和商户验证仍需经营者验收。
+
+初始读取、订单、可约时段、成员工作台、收入、个人中心和通知使用对应骨架；刷新保留已读内容。全部页面和关键状态对应关系见 [SCREEN_COVERAGE.md](SCREEN_COVERAGE.md)。

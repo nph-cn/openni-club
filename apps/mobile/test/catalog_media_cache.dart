@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 
 /// Uses original downloaded URL bytes, never a replacement image or mock art.
 /// Run `dart run tool/cache_catalog_media.dart` before golden capture.
@@ -48,3 +48,13 @@ Future<void> primeCatalogMedia() async {
     stream.removeListener(listener);
   }
 }
+
+/// Wait for the app's real bundled images, without screenshot-only fake delays.
+Future<void> primeLocalMedia(BuildContext context) => Future.wait([
+  for (final asset in [
+    'assets/brand/logo.png',
+    'assets/demo/player-yu.png',
+    'assets/demo/player-bei.png',
+  ])
+    precacheImage(AssetImage(asset), context),
+]);

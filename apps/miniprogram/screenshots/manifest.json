@@ -8,8 +8,9 @@
     "source": "apps/miniprogram/pages/home/home.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:28:54.282Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-services",
@@ -20,8 +21,9 @@
     "source": "apps/miniprogram/pages/services/services.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:40:12.888Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-service",
@@ -32,8 +34,9 @@
     "source": "apps/miniprogram/pages/service/service.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:40:26.653Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-players",
@@ -44,8 +47,9 @@
     "source": "apps/miniprogram/pages/players/players.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:42:44.828Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-player",
@@ -56,8 +60,9 @@
     "source": "apps/miniprogram/pages/player/player.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:42:57.308Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-booking",
@@ -68,8 +73,9 @@
     "source": "apps/miniprogram/pages/booking/booking.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:40:44.309Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-orders",
@@ -80,8 +86,9 @@
     "source": "apps/miniprogram/pages/orders/orders.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:42:05.560Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-order",
@@ -92,8 +99,9 @@
     "source": "apps/miniprogram/pages/order/order.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:41:38.648Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-profile",
@@ -104,8 +112,9 @@
     "source": "apps/miniprogram/pages/profile/profile.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:39:06.932Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-announcements",
@@ -116,8 +125,9 @@
     "source": "apps/miniprogram/pages/announcements/announcements.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:44:24.811Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-settings",
@@ -128,8 +138,9 @@
     "source": "apps/miniprogram/pages/settings/settings.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:45:17.048Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-member",
@@ -140,8 +151,9 @@
     "source": "apps/miniprogram/pages/member/member.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:45:39.849Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-availability",
@@ -152,8 +164,9 @@
     "source": "apps/miniprogram/pages/availability/availability.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:45:57.361Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-earnings",
@@ -164,8 +177,9 @@
     "source": "apps/miniprogram/pages/earnings/earnings.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:46:30.534Z",
+    "stateGroup": "ready"
   },
   {
     "id": "mini-notifications",
@@ -176,7 +190,125 @@
     "source": "apps/miniprogram/pages/notifications/notifications.wxml",
     "width": 780,
     "height": 1688,
-    "capture": "WeChat DevTools native simulator · live local demo API · official game media",
-    "capturedAt": "2026-11-15T08:55:53.873Z"
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent",
+    "capturedAt": "2026-11-15T09:44:50.907Z",
+    "stateGroup": "ready"
+  },
+  {
+    "id": "mini-login",
+    "file": "mini-login.png",
+    "title": "登录方式",
+    "role": "customer",
+    "flow": "auth",
+    "stateGroup": "ready",
+    "source": "apps/miniprogram/pages/login/login.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:48:48.387Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-phone",
+    "file": "mini-phone.png",
+    "title": "手机号登录",
+    "role": "customer",
+    "flow": "auth",
+    "stateGroup": "ready",
+    "source": "apps/miniprogram/pages/login/login.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:50:08.021Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-code",
+    "file": "mini-code.png",
+    "title": "输入验证码",
+    "role": "customer",
+    "flow": "auth",
+    "stateGroup": "verification",
+    "source": "apps/miniprogram/pages/login/login.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:53:14.250Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-code-error",
+    "file": "mini-code-error.png",
+    "title": "验证码错误",
+    "role": "customer",
+    "flow": "auth",
+    "stateGroup": "error",
+    "source": "apps/miniprogram/pages/login/login.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:53:36.642Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-code-verifying",
+    "file": "mini-code-verifying.png",
+    "title": "验证中",
+    "role": "customer",
+    "flow": "auth",
+    "stateGroup": "loading",
+    "source": "apps/miniprogram/pages/login/login.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:53:47.973Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent · delayed local proxy response"
+  },
+  {
+    "id": "mini-home-loading",
+    "file": "mini-home-loading.png",
+    "title": "首页加载",
+    "role": "customer",
+    "flow": "discover",
+    "stateGroup": "loading",
+    "source": "apps/miniprogram/pages/home/home.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:47:40.349Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent · delayed local proxy response"
+  },
+  {
+    "id": "mini-home-error",
+    "file": "mini-home-error.png",
+    "title": "首页连接失败",
+    "role": "customer",
+    "flow": "discover",
+    "stateGroup": "error",
+    "source": "apps/miniprogram/pages/home/home.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:24:57.255Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-orders-empty",
+    "file": "mini-orders-empty.png",
+    "title": "暂无订单",
+    "role": "customer",
+    "flow": "fulfillment",
+    "stateGroup": "empty",
+    "source": "apps/miniprogram/pages/orders/orders.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:39:37.469Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
+  },
+  {
+    "id": "mini-booking-submit",
+    "file": "mini-booking-submit.png",
+    "title": "预约信息确认",
+    "role": "customer",
+    "flow": "booking",
+    "stateGroup": "ready",
+    "source": "apps/miniprogram/pages/booking/booking.wxml",
+    "width": 780,
+    "height": 1688,
+    "capturedAt": "2026-11-15T09:41:23.745Z",
+    "capture": "WeChat DevTools native simulator · live local demo API · SMS test provider; no SMS sent"
   }
 ]

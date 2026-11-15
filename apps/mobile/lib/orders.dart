@@ -3,6 +3,8 @@ import 'package:material_ui/material_ui.dart';
 
 import 'repository.dart';
 import 'ui.dart';
+import 'auth.dart';
+import 'loading.dart';
 import 'discover.dart';
 
 class OrdersPage extends StatefulWidget {
@@ -24,10 +26,13 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Future<void> load() async {
     if (widget.repo.isProduction && widget.repo.token == null) {
-      context.go('/profile');
-      return;
+      if (!await requireClubLogin(context, widget.repo)) return;
+      if (!mounted) return;
     }
-    setState(() => loading = true);
+    setState(() {
+      loading = true;
+      failure = null;
+    });
     try {
       await widget.repo.refreshOrders();
     } catch (e) {
@@ -40,6 +45,17 @@ class _OrdersPageState extends State<OrdersPage> {
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
+    if (repo.isProduction && repo.token == null) {
+      return OrdersSignInPage(repo, onSignIn: load);
+    }
+    if (loading && repo.orders.isEmpty) {
+      return ClubPage(
+        repo: repo,
+        title: '我的订单',
+        tab: 2,
+        child: const ClubSkeleton(kind: SkeletonKind.catalog),
+      );
+    }
     final items = repo.orders
         .where(
           (o) =>
@@ -79,8 +95,15 @@ class _OrdersPageState extends State<OrdersPage> {
           const SizedBox(height: 22),
           if (loading) const LinearProgressIndicator(),
           if (failure != null)
-            Text(failure!, style: const TextStyle(color: Colors.red)),
-          if (items.isEmpty)
+            EmptyState(
+              '订单加载失败',
+              failure!,
+              action: TextButton(
+                onPressed: loading ? null : load,
+                child: const Text('重新加载'),
+              ),
+            ),
+          if (!loading && failure == null && items.isEmpty)
             EmptyState(
               '这里还没有预约',
               '选择服务并预约时段。',
@@ -157,7 +180,7 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
-  bool busy = false;
+  bool busy = false, reading = false;
   String? failure;
   Json? get order =>
       widget.repo.orders.where((o) => o['id'] == widget.id).firstOrNull;
@@ -168,6 +191,11 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   Future<void> refresh() async {
+    if (reading) return;
+    setState(() {
+      reading = true;
+      failure = null;
+    });
     try {
       if (order != null) {
         await widget.repo.refreshOrder(order!);
@@ -180,6 +208,8 @@ class _OrderPageState extends State<OrderPage> {
       }
     } catch (e) {
       if (mounted) setState(() => failure = '$e');
+    } finally {
+      if (mounted) setState(() => reading = false);
     }
   }
 
@@ -197,6 +227,13 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo, o = order;
+    if (reading && o == null) {
+      return ClubPage(
+        repo: repo,
+        title: '订单详情',
+        child: const ClubSkeleton(kind: SkeletonKind.order),
+      );
+    }
     if (o == null) {
       return ClubPage(
         repo: repo,
@@ -205,8 +242,8 @@ class _OrderPageState extends State<OrderPage> {
           '暂时没有这笔预约',
           failure ?? '请登录后查看，或返回预约列表。',
           action: FilledButton(
-            onPressed: () => context.go('/orders'),
-            child: const Text('查看预约'),
+            onPressed: failure != null ? refresh : () => context.go('/orders'),
+            child: Text(failure != null ? '重新加载' : '查看预约'),
           ),
         ),
       );
@@ -223,7 +260,7 @@ class _OrderPageState extends State<OrderPage> {
       actions: [
         IconButton(
           tooltip: '刷新进度',
-          onPressed: busy ? null : refresh,
+          onPressed: busy || reading ? null : refresh,
           icon: const Icon(Icons.refresh_rounded),
         ),
       ],
@@ -440,8 +477,37 @@ class _OrderPageState extends State<OrderPage> {
     final repo = widget.repo;
     switch (stage(o)) {
       case 'awaiting_payment':
+        if (repo.isProduction && repo.token == null) {
+          await requireClubLogin(context, repo);
+          return;
+        }
+        if (!mounted) return;
         await action(() async {
-          await repo.pay(o);
+          try {
+            await repo.pay(o);
+          } on ClubApiException catch (e) {
+            if (e.code != 'WECHAT_LINK_REQUIRED' || !mounted) rethrow;
+            final link = await showDialog<bool>(
+              context: context,
+              builder: (ctx) => AlertDialog(
+                title: const Text('关联微信支付'),
+                content: const Text('本账号尚未关联微信。关联后继续支付当前订单。'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: const Text('暂不关联'),
+                  ),
+                  FilledButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    child: const Text('关联微信并继续支付'),
+                  ),
+                ],
+              ),
+            );
+            if (link != true) return;
+            await repo.linkWechatForPayment();
+            await repo.pay(o);
+          }
           if (mounted) {
             toast(
               context,
@@ -698,3 +764,21 @@ String orderEventTitle(Json event) =>
       'disputed': '已申请售后',
     }[event['type']] ??
     '${event['message'] ?? event['type']}';
+
+/// Shared guest entry, also used by the local gallery without fabricating a session.
+class OrdersSignInPage extends StatelessWidget {
+  const OrdersSignInPage(this.repo, {required this.onSignIn, super.key});
+  final ClubRepository repo;
+  final VoidCallback onSignIn;
+  @override
+  Widget build(BuildContext context) => ClubPage(
+    repo: repo,
+    title: '我的订单',
+    tab: 2,
+    child: EmptyState(
+      '登录后查看订单',
+      '查看预约安排和服务进度',
+      action: FilledButton(onPressed: onSignIn, child: const Text('登录 / 注册')),
+    ),
+  );
+}

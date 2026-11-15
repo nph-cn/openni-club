@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'repository.dart';
 import 'ui.dart';
 import 'orders.dart';
+import 'loading.dart';
 
 class MemberPage extends StatefulWidget {
   const MemberPage(
@@ -22,7 +23,7 @@ class MemberPage extends StatefulWidget {
 }
 
 class _MemberPageState extends State<MemberPage> {
-  bool loading = false, busy = false;
+  bool loading = false, busy = false, loaded = false;
   bool deliveryOpened = false;
   String? error;
   ClubRepository get repo => widget.repo;
@@ -33,14 +34,18 @@ class _MemberPageState extends State<MemberPage> {
   }
 
   Future<void> load() async {
+    if (loading) return;
     if (repo.isProduction && repo.token == null) {
       setState(() => error = '请先在“我的”页面登录俱乐部账号。');
       return;
     }
-    setState(() => loading = true);
+    setState(() {
+      loading = true;
+      error = null;
+    });
     try {
       await repo.loadMemberData();
-      if (mounted) setState(() => error = null);
+      if (mounted) setState(() => loaded = true);
       if (mounted && widget.openDelivery && !deliveryOpened) {
         final o = repo.memberOrders
             .where(
@@ -82,7 +87,28 @@ class _MemberPageState extends State<MemberPage> {
       'order': '履约详情',
     }[widget.mode]!;
     final tab = {'home': 0, 'orders': 1, 'earnings': 2}[widget.mode];
-    if (error != null) {
+    final order = repo.memberOrders
+        .where((o) => o['id'] == widget.orderId)
+        .firstOrNull;
+    final hasContent = widget.mode == 'order'
+        ? order != null
+        : loaded || repo.memberOrders.isNotEmpty || repo.earnings.isNotEmpty;
+    if (loading && !hasContent) {
+      return ClubPage(
+        repo: repo,
+        title: heading,
+        tab: tab,
+        child: ClubSkeleton(
+          kind: switch (widget.mode) {
+            'orders' => SkeletonKind.catalog,
+            'earnings' => SkeletonKind.earnings,
+            'order' => SkeletonKind.order,
+            _ => SkeletonKind.member,
+          },
+        ),
+      );
+    }
+    if (error != null && !hasContent) {
       return ClubPage(
         repo: repo,
         title: heading,
@@ -94,17 +120,13 @@ class _MemberPageState extends State<MemberPage> {
         ),
       );
     }
-    if (loading && repo.memberOrders.isEmpty) {
-      return ClubPage(
-        repo: repo,
-        title: heading,
-        tab: tab,
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-    final order = repo.memberOrders
-        .where((o) => o['id'] == widget.orderId)
-        .firstOrNull;
+    final children = switch (widget.mode) {
+      'home' => dashboard(),
+      'orders' => queue(),
+      'earnings' => ledger(),
+      'order' => detail(order),
+      _ => <Widget>[],
+    };
     return ClubPage(
       repo: repo,
       title: heading,
@@ -118,13 +140,19 @@ class _MemberPageState extends State<MemberPage> {
       ],
       bottom: widget.mode == 'order' && order != null ? actions(order) : null,
       child: PageList(
-        children: switch (widget.mode) {
-          'home' => dashboard(),
-          'orders' => queue(),
-          'earnings' => ledger(),
-          'order' => detail(order),
-          _ => [],
-        },
+        children: [
+          if (loading) const LinearProgressIndicator(),
+          if (error != null)
+            Row(
+              children: [
+                Expanded(
+                  child: Text(error!, style: const TextStyle(color: muted)),
+                ),
+                TextButton(onPressed: load, child: const Text('重试')),
+              ],
+            ),
+          ...children,
+        ],
       ),
     );
   }
@@ -723,7 +751,7 @@ class AvailabilityPage extends StatefulWidget {
 
 class _AvailabilityPageState extends State<AvailabilityPage> {
   List<Json> slots = [];
-  bool loading = true, saving = false;
+  bool loading = false, saving = false;
   String? error;
   @override
   void initState() {
@@ -732,11 +760,18 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
   }
 
   Future<void> load() async {
-    try {
-      slots = await widget.repo.memberAvailability();
+    if (loading) return;
+    setState(() {
+      loading = true;
       error = null;
+    });
+    try {
+      final result = await widget.repo.memberAvailability();
+      if (mounted) setState(() => slots = result);
     } catch (e) {
-      error = '$e'.replaceFirst('Exception: ', '');
+      if (mounted) {
+        setState(() => error = '$e'.replaceFirst('Exception: ', ''));
+      }
     } finally {
       if (mounted) setState(() => loading = false);
     }
@@ -809,50 +844,52 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
             },
       child: Text(saving ? '正在保存…' : '保存可接时段'),
     ),
-    child: PageList(
-      children: [
-        const Text(
-          '可接时段',
-          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        const Text(
-          '北京时间',
-          style: TextStyle(fontSize: 15, color: muted, height: 1.8),
-        ),
-        const SizedBox(height: 20),
-        if (loading) const LinearProgressIndicator(),
-        if (error != null)
-          EmptyState(
-            '暂时无法加载排班',
-            error!,
-            action: TextButton(onPressed: load, child: const Text('重试')),
-          ),
-        if (!loading && error == null) ...[
-          if (slots.isEmpty) const EmptyState('还没有开放时段', '添加可接时段后，俱乐部才能向你派单。'),
-          ...slots.asMap().entries.map(
-            (e) => ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.schedule_rounded),
-              title: Text(when(e.value['startAt'])),
-              subtitle: Text('至 ${when(e.value['endAt'])}'),
-              trailing: IconButton(
-                tooltip: '移除此时段',
-                onPressed: widget.repo.isLocal
-                    ? null
-                    : () => setState(() => slots.removeAt(e.key)),
-                icon: const Icon(Icons.close_rounded, size: 20),
+    child: loading
+        ? const ClubSkeleton(kind: SkeletonKind.availability)
+        : PageList(
+            children: [
+              const Text(
+                '可接时段',
+                style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
               ),
-            ),
+              const SizedBox(height: 12),
+              const Text(
+                '北京时间',
+                style: TextStyle(fontSize: 15, color: muted, height: 1.8),
+              ),
+              const SizedBox(height: 20),
+              if (error != null)
+                EmptyState(
+                  '暂时无法加载排班',
+                  error!,
+                  action: TextButton(onPressed: load, child: const Text('重试')),
+                ),
+              if (error == null) ...[
+                if (slots.isEmpty)
+                  const EmptyState('还没有开放时段', '添加可接时段后，俱乐部才能向你派单。'),
+                ...slots.asMap().entries.map(
+                  (e) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.schedule_rounded),
+                    title: Text(when(e.value['startAt'])),
+                    subtitle: Text('至 ${when(e.value['endAt'])}'),
+                    trailing: IconButton(
+                      tooltip: '移除此时段',
+                      onPressed: widget.repo.isLocal
+                          ? null
+                          : () => setState(() => slots.removeAt(e.key)),
+                      icon: const Icon(Icons.close_rounded, size: 20),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: widget.repo.isLocal ? null : add,
+                  icon: const Icon(Icons.add_rounded),
+                  label: const Text('添加可接时段'),
+                ),
+              ],
+            ],
           ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: widget.repo.isLocal ? null : add,
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('添加可接时段'),
-          ),
-        ],
-      ],
-    ),
   );
 }

@@ -6,6 +6,8 @@
 
 ## 原生编译验证记录
 
+最新代码的双端构建状态与产物见 [原生构建记录](https://github.com/nph-cn/openni-club/actions/workflows/native.yml)。请按运行对应的提交 SHA 核对版本；下面保留首轮通过的基线记录。
+
 2026-11-15，[原生 CI 运行 43697206190](https://github.com/nph-cn/openni-club/actions/runs/43697206190) 已完整通过，验证提交为 [`d17e317`](https://github.com/nph-cn/openni-club/commit/d17e3175684004ab5ac975d562a7c66bc747c67f)。使用 Flutter 3.50.0 stable / Dart 3.14.0；两个独立 runner 均执行了配置生成、包名与配置指纹检查，再进行实际原生编译。
 
 | 平台 | Runner / 命令 | 结果与 CI 产物 |
@@ -28,7 +30,7 @@
 ```sh
 flutter pub get
 flutter analyze
-flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart
+flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart
 flutter build appbundle --release --dart-define=APP_MODE=production --dart-define=API_BASE_URL=https://api.example.com/api/v1
 ```
 

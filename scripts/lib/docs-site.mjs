@@ -6,7 +6,7 @@ const repo='https://github.com/nph-cn/openni-club';
 const sections=[
  {title:'开始使用',pages:[['index.md','项目介绍'],['01-quickstart.md','本地启动']]},
  {title:'品牌配置',pages:[['02-brand-and-config.md','品牌与资料'],['10-single-config-workflow.md','生成应用配置']]},
- {title:'第三方集成',pages:[['06-integrations.md','集成总览'],['09-wechat-adapters.md','微信登录与支付']]},
+ {title:'第三方集成',pages:[['06-integrations.md','集成总览'],['09-wechat-adapters.md','微信登录与支付'],['11-phone-auth.md','手机号与验证码']]},
  {title:'服务器部署',pages:[['03-deployment.md','域名与服务器']]},
  {title:'应用发布',pages:[['04-mobile-release.md','iOS 与 Android'],['05-wechat-release.md','微信小程序'],['07-release-checklist.md','上线检查']]},
  {title:'工具与参考',pages:[['08-use-the-skill.md','使用教学 Skill'],['00-status.md','功能与版本状态'],['sources.md','参考资料']]}

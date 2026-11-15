@@ -1,4 +1,19 @@
 // Public gallery route identifiers. Implementations are split by user task.
+const stateScreenNames = [
+  'welcome',
+  'login',
+  'phone',
+  'code',
+  'code_error',
+  'code_verifying',
+  'home_loading',
+  'home_error',
+  'orders_empty',
+  'orders_guest',
+  'privacy',
+  'terms',
+  'home_android',
+];
 const screenNames = [
   'home',
   'services',
@@ -22,4 +37,5 @@ const screenNames = [
   'member_notifications',
   'availability',
   'earnings',
+  ...stateScreenNames,
 ];

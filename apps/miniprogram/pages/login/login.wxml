@@ -1,0 +1,36 @@
+<import src="../../templates/common.wxml"/>
+<view class="page auth-page" style="{{themeStyle}}">
+  <template is="state" data="{{loading,error,authRequired,skeletonRows,skeletonKind}}"/>
+  <block wx:if="{{!loading&&!error}}">
+    <view class="auth-brand"><image src="/assets/brand/logo.png" mode="aspectFit"/><text>{{brandName}}</text></view>
+    <block wx:if="{{step==='choose'}}">
+      <view class="auth-title">登录账号</view>
+      <view class="auth-options">
+        <button wx:if="{{capabilities.wechatMini.enabled}}" class="button" bindtap="wechat" loading="{{busy}}" disabled="{{busy}}">微信登录</button>
+        <button wx:if="{{capabilities.sms.enabled}}" class="button {{capabilities.wechatMini.enabled?'secondary':''}}" bindtap="phoneEntry" disabled="{{busy}}">手机号登录</button>
+        <button wx:if="{{capabilities.demo.enabled}}" class="button secondary" bindtap="wechat" loading="{{busy}}" disabled="{{busy}}">使用临时体验账号</button>
+        <view wx:if="{{!capabilities.sms.enabled}}" class="auth-unavailable">短信登录未开通</view>
+        <view wx:if="{{!capabilities.wechatMini.enabled&&!capabilities.sms.enabled&&!capabilities.demo.enabled}}" class="notice">俱乐部暂未开通登录，请联系客服。</view>
+      </view>
+    </block>
+    <block wx:elif="{{step==='phone'}}">
+      <button class="auth-back" bindtap="back">返回登录方式</button>
+      <view class="auth-title">手机号登录</view>
+      <view class="auth-phone-field"><text class="country-code">+86</text><input type="text" maxlength="16" value="{{phone}}" bindinput="changePhone" placeholder="输入手机号" aria-label="中国大陆手机号" placeholder-class="input-placeholder"/></view>
+      <button class="button auth-submit" bindtap="sendCode" loading="{{busy}}" disabled="{{busy||remaining>0}}">{{remaining>0?remaining+' 秒后重试':capabilities.sms.testMode?'获取测试验证码':'获取验证码'}}</button>
+    </block>
+    <block wx:else>
+      <button class="auth-back" bindtap="back">更换手机号</button>
+      <view class="auth-title">输入验证码</view>
+      <view class="auth-destination">{{phoneMasked}}</view>
+      <input class="code-input {{formError?'invalid':''}}" type="number" maxlength="6" value="{{code}}" bindinput="changeCode" placeholder="6 位验证码" aria-label="6位验证码" placeholder-class="code-placeholder" disabled="{{busy||locked}}"/>
+      <view wx:if="{{delivery==='test'}}" class="test-code"><text>本地验证码，未发送短信</text><text class="test-code-number">{{testCode}}</text></view>
+      <view wx:if="{{expired&&!formError}}" class="form-error">验证码已过期，请重新获取。</view>
+      <button class="button auth-submit" bindtap="verify" loading="{{busy}}" disabled="{{busy||code.length!==6||locked||expired}}">{{busy?'验证中':'验证并登录'}}</button>
+      <button class="resend-button" bindtap="sendCode" disabled="{{busy||remaining>0}}">{{remaining>0?remaining+' 秒后重新获取':'重新获取验证码'}}</button>
+    </block>
+    <view wx:if="{{formError}}" class="form-error auth-error" role="alert">{{formError}}</view>
+    <view wx:if="{{step!=='code'}}" class="auth-consent"><checkbox-group bindchange="agree"><label><checkbox value="agree" checked="{{agreed}}" color="#272D35"/><text>我已阅读并同意</text></label></checkbox-group><button bindtap="policy" data-view="terms">服务协议</button><text>与</text><button bindtap="policy" data-view="privacy">隐私说明</button></view>
+    <view wx:if="{{capabilities.mode==='demo'&&step==='choose'}}" class="auth-demo-note">测试环境</view>
+  </block>
+</view>

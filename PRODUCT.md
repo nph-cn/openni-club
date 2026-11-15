@@ -20,7 +20,7 @@ The original generic booking prototype was rejected by the user. The v0.2 workin
 The generator produces public runtime configuration, native app icons/identity settings, mini-program project settings, first-start catalog and legal pages. It does not reset live users or orders. Real WeChat authentication and payment/refund protocol adapters exist and use mocked-provider cryptographic tests; no real merchant transaction or app-store approval has been verified. Demo Northshore/北岸 club, people and prices are fictional and labeled. No fabricated ratings or sales are allowed.
 
 ## Open decisions
-Actual club brand, merchant account, production hosting region and app-store developer accounts come from each adopter. SMS/IM/RTC are not currently integrated. Manual settlement records are bookkeeping evidence, not automated transfers or a wallet. Native signing, real devices, merchant settlement and platform review remain separate verification stages. No game-publisher affiliation is implied.
+Actual club brand, merchant account, production hosting region and app-store developer accounts come from each adopter. SMS login has a configurable Tencent adapter and an explicit local-test provider; IM/RTC are not currently integrated. Manual settlement records are bookkeeping evidence, not automated transfers or a wallet. Native signing, real devices, merchant settlement and platform review remain separate verification stages. No game-publisher affiliation is implied.
 
 ## Principles
 Each club owns its deployment and data. Demo works without paid services. Production mode fails closed when integrations are missing. Screenshots depict implemented product states. Application review remains a real prerequisite.

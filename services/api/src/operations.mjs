@@ -71,7 +71,7 @@ export function createOperations({db,config,fail,clubData,catalog,entry}) {
   }
   function invite(playerId){
     if(!entry('players',playerId))throw fail(404,'NOT_FOUND','成员不存在。');
-    if(db.prepare('SELECT id FROM users WHERE player_id=? AND wechat_openid IS NOT NULL').get(playerId))throw fail(409,'MEMBER_ALREADY_BOUND','该成员已有绑定账号。');
+    if(db.prepare("SELECT id FROM users WHERE player_id=? AND (wechat_openid IS NOT NULL OR EXISTS(SELECT 1 FROM phone_identities p WHERE p.user_id=users.id AND p.verification_source='tencent'))").get(playerId))throw fail(409,'MEMBER_ALREADY_BOUND','该成员已有绑定账号。');
     const code=randomBytes(24).toString('base64url'),expiresAt=now()+60*60000;
     db.prepare('DELETE FROM member_invitations WHERE player_id=? AND used_at IS NULL').run(playerId);
     db.prepare('INSERT INTO member_invitations VALUES(?,?,?,?,?)').run(createHash('sha256').update(code).digest('hex'),playerId,expiresAt,null,null);
@@ -82,7 +82,7 @@ export function createOperations({db,config,fail,clubData,catalog,entry}) {
     if(!invitation||invitation.used_at||invitation.expires_at<=now())throw fail(400,'INVITATION_INVALID','邀请码无效、已使用或已过期。');
     if(!entry('players',invitation.player_id))throw fail(409,'MEMBER_UNAVAILABLE','该成员已归档。');
     const account=user(userId);if(account.role==='member'&&account.player_id!==invitation.player_id)throw fail(409,'ALREADY_A_MEMBER','账号已绑定另一位成员。');
-    if(db.prepare('SELECT id FROM users WHERE player_id=? AND wechat_openid IS NOT NULL AND id!=?').get(invitation.player_id,userId))throw fail(409,'MEMBER_ALREADY_BOUND','该成员已有绑定账号。');
+    if(db.prepare("SELECT id FROM users WHERE player_id=? AND (wechat_openid IS NOT NULL OR EXISTS(SELECT 1 FROM phone_identities p WHERE p.user_id=users.id AND p.verification_source='tencent')) AND id!=?").get(invitation.player_id,userId))throw fail(409,'MEMBER_ALREADY_BOUND','该成员已有绑定账号。');
     db.prepare("UPDATE users SET role='member',player_id=? WHERE id=?").run(invitation.player_id,userId);
     db.prepare('UPDATE member_invitations SET used_at=?,used_by=? WHERE code_hash=? AND used_at IS NULL').run(iso(),userId,digest);
     notify(userId,'member','membership_bound','欢迎加入俱乐部','你的成员身份已绑定，可以设置可接时段。');return me(userId);

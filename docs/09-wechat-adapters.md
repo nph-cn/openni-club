@@ -41,6 +41,8 @@ API 的 `DATA_DIR` 必须在持久化磁盘上，`ADMIN_TOKEN` 使用强随机�
 
 让两个不同测试账号各自登录、建单，确认互相看不到订单。关闭再打开客户端，确认会话及错误处理合理；到期会话应要求重新登录。微信返回的 code 只能及时使用，不能把同一 code 复制到教程里长期复用。
 
+若用户通过手机号登录，必须明确选择关联微信后，携带当前会话和新的微信 code 请求 `/auth/wechat/link`（小程序）或 `/auth/wechat-app/link`（原生）。它保留原账号和订单；身份冲突时拒绝关联，不自动合并。保存返回的新会话后继续支付同一订单。见 [手机号登录教程](11-phone-auth.md)。
+
 收款默认关闭：`WECHAT_PAY_ENABLED=false` 和 `WECHAT_NATIVE_PAY_ENABLED=false`。分别设置为 `true` 才开启小程序或原生支付；还必须处于生产模式、补齐对应配置，并把真实俱乐部内容替换掉示例内容（`demoData=false`）。`POST /api/v1/orders/:id/pay` 根据已认证会话返回对应 SDK 的 `paymentParams`；金额来自数据库中的订单，不接受客户端任意报价。
 
 小程序调用 `wx.requestPayment`；原生由 Flutter 微信 SDK 调起。iOS Universal Link、Bundle ID、Android applicationId 和签名指纹需要与微信开放平台一致。具体 SDK 配置跟随 `apps/mobile` 的实际说明，不能仅填服务器密钥就跳过原生工程配置。

@@ -27,3 +27,9 @@
 | [工信部备案系统](https://beian.miit.gov.cn/) | 域名/APP 备案事项 | 需结合主体、服务器和平台当前规则核验 |
 
 教程没有保证 `.im` 满足中国大陆备案或微信小程序所有准入要求，也没有保证某种陪玩/游戏相关服务适用外部支付。需要结合实际服务、地区、主体和商店规则作判断。
+
+## 输入与无障碍动效
+
+- [Flutter 验证码自动填充](https://api.flutter.dev/flutter/services/AutofillHints/oneTimeCode-constant.html)：统一提示映射到 iOS、Android 和 Web。
+- [Flutter Reduce Motion](https://api.flutter.dev/flutter/widgets/MediaQueryData/reduceMotion.html)：iOS 减弱动态效果需由自定义动画显式读取。
+- [Flutter Disable Animations](https://api.flutter.dev/flutter/widgets/MediaQueryData/disableAnimations.html)：Android 移除动画与 iOS Reduce Motion 分开处理。
