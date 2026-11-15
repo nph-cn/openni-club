@@ -390,7 +390,7 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
   const heroVideo = addPlane(hero, t.ambientPoster, { width: 22, height: 13, position: [0, 0, -5.5], opacity: 0.2, exposure: 0.72, tint: [1.0, 0.97, 0.9] });
   const heroSmoke = addPlane(hero, t.smoke, { width: 20, height: 12, position: [0, -0.6, -3.4], opacity: 0.16, exposure: 1, tint: [0.9, 0.95, 0.86] });
   addPlane(hero, glowTex, { width: 7.5, height: 7.5, position: [1.5, -0.4, 0.4], opacity: 0.18, exposure: 1, tint: [0.9, 1.0, 0.8] });
-  const heroSupport = addPlane(hero, t.heroSupport, { width: 2.7, height: 4.0, position: [-2.7, -1.0, 0.05], opacity: 0.5, exposure: 0.78, tint: [0.94, 0.97, 0.9] });
+  const heroSupport = addPlane(hero, t.heroSupport, { width: 2.2, height: 3.3, position: [-3.15, -1.55, 0.05], opacity: 0.42, exposure: 0.72, tint: [0.92, 0.95, 0.88] });
   heroSupport.userData.revealLocked = true;
   const heroOperator = addPlane(hero, t.heroOperator, { width: 4.4, height: 3.4, position: [1.45, -0.7, 1.2], opacity: 1, exposure: 0.98, tint: [1.02, 0.99, 0.95] });
   heroOperator.userData.revealLocked = true;
@@ -515,7 +515,7 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
       if (key === 'hero') { camTarget.pos.set(0.1, 0.25, 11.4); camTarget.look.set(0, 0.05, -3.2); }
       if (key === 'modes') { camTarget.pos.set(0.2, 0.05, 10.2); camTarget.look.set(0, 0, -4.3); }
       if (key === 'terrain') { camTarget.pos.set(0.1, 3.6, 10.4); camTarget.look.set(0, -1.0, -2.2); }
-      if (key === 'squad') { const pan = lerp(-0.9, 0.9, p); camTarget.pos.set(pan, 0.42, 8.4); camTarget.look.set(pan, 0.02, -0.3); }
+      if (key === 'squad') { const pan = lerp(-0.55, 0.55, p); camTarget.pos.set(pan, 0.3, 9.1); camTarget.look.set(pan, 0.02, -0.2); }
       if (key === 'deploy') { camTarget.pos.set(0.3, 0.2, 10.4); camTarget.look.set(0, 0, -3.3); }
     }
     if (!state.reduced) {
@@ -534,12 +534,16 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     const portrait = camera.aspect < 0.82;
     state.portrait = portrait;
     if (portrait) {
+      squad.scale.set(0.82, 0.82, 1);
+      squad.position.y = 0.16;
       heroBg.scale.set(1.16, 1.16, 1);
       heroOperator.position.set(0.35, -1.25, 1.2);
       heroOperator.scale.set(0.72, 0.72, 1);
       heroSupport.position.set(-1.5, -1.7, 0.1);
       deployPhone.position.set(0.85, -0.1, 0.9);
     } else {
+      squad.scale.set(1, 1, 1);
+      squad.position.y = 0;
       heroBg.scale.set(1, 1, 1);
       heroOperator.position.set(1.45, -0.7, 1.2);
       heroOperator.scale.set(1, 1, 1);

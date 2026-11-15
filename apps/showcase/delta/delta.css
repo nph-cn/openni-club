@@ -376,7 +376,7 @@ dialog::backdrop{background:rgba(3,6,4,.88);backdrop-filter:blur(10px)}
   .map-tab-body{padding:4px 0 2px 2px}
   .map-tab-body strong{font-size:11px}
   .map-tabs button img{height:42px}
-  .squad-grid{grid-template-columns:1fr;grid-template-rows:auto 46svh auto}
+  .squad-grid{grid-template-columns:1fr;grid-template-rows:auto 52svh auto}
   .squad-top{grid-column:1;grid-row:1;grid-template-columns:1fr;padding:24px 20px 18px;gap:12px}
   .squad-top .eyebrow{grid-column:1}
   .squad-top h2{font-size:clamp(32px,8.6vw,42px)}
