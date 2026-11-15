@@ -3,14 +3,16 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart'
+    show CupertinoSlidingSegmentedControl;
 
 import 'repository.dart';
 import 'accessibility.dart';
 
-const canvas = Color(0xFFF5F6F8),
+const canvas = Color(0xFFF2F3F6),
     ink = Color(0xFF171B21),
     muted = Color(0xFF5E6673),
-    rule = Color(0xFFDDE1E7),
+    rule = Color(0xFFE2E5EB),
     sage = Color(0xFFE9EDF2),
     sand = Color(0xFFEEF0F4),
     forest = Color(0xFF272D35);
@@ -61,6 +63,7 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
   useMaterial3: true,
   platform: kIsWeb ? TargetPlatform.iOS : defaultTargetPlatform,
   fontFamily: 'NotoSansSC',
+  splashFactory: NoSplash.splashFactory,
   scaffoldBackgroundColor: canvas,
   colorScheme: ColorScheme.fromSeed(
     seedColor: brandColor(repo),
@@ -107,7 +110,7 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
     backgroundColor: canvas,
     surfaceTintColor: Colors.transparent,
     elevation: 0,
-    centerTitle: false,
+    centerTitle: true,
     titleTextStyle: TextStyle(
       fontFamily: 'NotoSansSC',
       fontSize: 17,
@@ -130,13 +133,41 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
       fontSize: 16,
       color: ink,
     ),
-    side: const BorderSide(color: rule),
+    side: const BorderSide(color: Colors.transparent),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   ),
-  dividerTheme: const DividerThemeData(color: rule, space: 28, thickness: 1),
+  dividerTheme: const DividerThemeData(color: rule, space: 28, thickness: .7),
+  listTileTheme: ListTileThemeData(
+    minTileHeight: 64,
+    tileColor: Colors.white,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    titleTextStyle: const TextStyle(
+      fontFamily: 'NotoSansSC',
+      fontSize: 16,
+      color: ink,
+    ),
+    subtitleTextStyle: const TextStyle(
+      fontFamily: 'NotoSansSC',
+      fontSize: 14,
+      color: muted,
+    ),
+  ),
+  snackBarTheme: SnackBarThemeData(
+    behavior: SnackBarBehavior.floating,
+    backgroundColor: ink,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+    contentTextStyle: const TextStyle(
+      fontFamily: 'NotoSansSC',
+      fontSize: 15,
+      color: Colors.white,
+    ),
+  ),
   filledButtonTheme: FilledButtonThemeData(
     style: FilledButton.styleFrom(
-      minimumSize: const Size(48, 48),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      minimumSize: const Size(48, 52),
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
       textStyle: const TextStyle(
         fontFamily: 'NotoSansSC',
         fontSize: 16,
@@ -146,28 +177,33 @@ ThemeData clubTheme(ClubRepository repo) => ThemeData(
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      minimumSize: const Size(48, 48),
+      minimumSize: const Size(48, 52),
+      backgroundColor: Colors.white.withValues(alpha: .65),
       side: const BorderSide(color: rule),
       textStyle: const TextStyle(
         fontFamily: 'NotoSansSC',
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(17),
       borderSide: const BorderSide(color: rule),
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(17),
       borderSide: const BorderSide(color: rule),
     ),
     contentPadding: const EdgeInsets.all(16),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(17),
+      borderSide: BorderSide(color: brandColor(repo), width: 1.5),
+    ),
   ),
 );
 
@@ -197,10 +233,25 @@ class GlassSurface extends StatelessWidget {
           !appleChrome(context);
       final surface = DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: opaque ? 1 : .74),
+          color: opaque ? Colors.white : null,
+          gradient: opaque
+              ? null
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xEFFFFFFF),
+                    Color(0xBDF8FAFF),
+                    Color(0xD9FFFFFF),
+                  ],
+                  stops: [0, .55, 1],
+                ),
           borderRadius: BorderRadius.circular(radius),
           border: border
-              ? Border.all(color: Colors.white.withValues(alpha: .9), width: .5)
+              ? Border.all(
+                  color: opaque ? rule : Colors.white.withValues(alpha: .96),
+                  width: 1,
+                )
               : null,
         ),
         child: Material(type: MaterialType.transparency, child: child),
@@ -210,12 +261,190 @@ class GlassSurface extends StatelessWidget {
         child: opaque
             ? surface
             : BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 26, sigmaY: 26),
+                filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
                 child: surface,
               ),
       );
     },
   );
+}
+
+/// 独立浮动导航：选中态覆盖完整触控区域，文字和价格不叠加模糊。
+class ClubTabBar extends StatelessWidget {
+  const ClubTabBar({super.key, required this.repo, required this.selected});
+  final ClubRepository repo;
+  final int selected;
+  @override
+  Widget build(BuildContext context) {
+    final member = repo.role == 'member';
+    final labels = member
+        ? ['工作台', '订单', '收入', '我的']
+        : ['首页', '找陪练', '订单', '我的'];
+    final icons = member
+        ? [
+            Icons.space_dashboard_outlined,
+            Icons.receipt_long_outlined,
+            Icons.account_balance_wallet_outlined,
+            Icons.person_outline_rounded,
+          ]
+        : [
+            Icons.home_outlined,
+            Icons.explore_outlined,
+            Icons.receipt_long_outlined,
+            Icons.person_outline_rounded,
+          ];
+    final selectedIcons = member
+        ? [
+            Icons.space_dashboard_rounded,
+            Icons.receipt_long_rounded,
+            Icons.account_balance_wallet_rounded,
+            Icons.person_rounded,
+          ]
+        : [
+            Icons.home_rounded,
+            Icons.explore_rounded,
+            Icons.receipt_long_rounded,
+            Icons.person_rounded,
+          ];
+    final paths = member
+        ? ['/member', '/member/orders', '/member/earnings', '/profile']
+        : ['/', '/services', '/orders', '/profile'];
+    final media = MediaQuery.of(context);
+    final duration = media.disableAnimations || media.reduceMotion
+        ? Duration.zero
+        : const Duration(milliseconds: 190);
+    return Padding(
+      padding: const EdgeInsets.all(5),
+      child: Row(
+        children: [
+          for (var i = 0; i < labels.length; i++)
+            Expanded(
+              child: Semantics(
+                selected: selected == i,
+                button: true,
+                label: labels[i],
+                child: Tooltip(
+                  message: labels[i],
+                  child: InkWell(
+                    onTap: () {
+                      if (selected != i) context.go(paths[i]);
+                    },
+                    borderRadius: BorderRadius.circular(27),
+                    child: AnimatedContainer(
+                      duration: duration,
+                      curve: Curves.easeOutCubic,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 9,
+                        horizontal: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(27),
+                        color: selected == i
+                            ? Colors.white.withValues(alpha: .94)
+                            : Colors.transparent,
+                        border: Border.all(
+                          color: selected == i
+                              ? Colors.white
+                              : Colors.transparent,
+                        ),
+                        boxShadow: selected == i
+                            ? [
+                                BoxShadow(
+                                  color: ink.withValues(alpha: .08),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: ExcludeSemantics(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              selected == i ? selectedIcons[i] : icons[i],
+                              size: 23,
+                              color: selected == i ? ink : muted,
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              labels[i],
+                              style: TextStyle(
+                                fontSize: 12,
+                                height: 1.2,
+                                fontWeight: selected == i
+                                    ? FontWeight.w600
+                                    : FontWeight.w500,
+                                color: selected == i ? ink : muted,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 分组切换沿用平台控件的键盘、焦点和辅助功能语义。
+class ClubSegmentedControl extends StatelessWidget {
+  const ClubSegmentedControl({
+    super.key,
+    required this.values,
+    required this.value,
+    required this.onChanged,
+  });
+  final List<String> values;
+  final String value;
+  final ValueChanged<String> onChanged;
+  @override
+  Widget build(BuildContext context) => appleChrome(context)
+      ? CupertinoSlidingSegmentedControl<String>(
+          groupValue: value,
+          backgroundColor: const Color(0xFFE6E9EE),
+          thumbColor: Colors.white,
+          padding: const EdgeInsets.all(4),
+          children: {
+            for (final option in values)
+              option: Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
+                child: Text(
+                  option,
+                  style: TextStyle(
+                    fontFamily: 'NotoSansSC',
+                    fontSize: 15,
+                    fontWeight: value == option
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                    color: value == option ? ink : muted,
+                  ),
+                ),
+              ),
+          },
+          onValueChanged: (next) {
+            if (next != null) onChanged(next);
+          },
+        )
+      : Wrap(
+          spacing: 8,
+          children: [
+            for (final option in values)
+              ChoiceChip(
+                label: Text(option),
+                selected: value == option,
+                onSelected: (_) => onChanged(option),
+              ),
+          ],
+        );
 }
 
 class _PageInsets extends InheritedWidget {
@@ -255,9 +484,17 @@ class ClubPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final apple = appleChrome(context), media = MediaQuery.of(context);
+    final chromeInset =
+        (media.size.width - media.padding.horizontal - 620).clamp(
+          0.0,
+          double.infinity,
+        ) /
+        2;
     final showBar = tab != null || bottom != null;
     final nav = tab == null
         ? null
+        : apple
+        ? ClubTabBar(repo: repo, selected: tab!)
         : NavigationBar(
             selectedIndex: tab!,
             backgroundColor: Colors.transparent,
@@ -324,6 +561,23 @@ class ClubPage extends StatelessWidget {
                     ),
                   ],
           );
+    final backButton = IconButton(
+      tooltip: '返回',
+      style: IconButton.styleFrom(
+        backgroundColor: Colors.white.withValues(alpha: .78),
+        padding: const EdgeInsets.all(12),
+      ),
+      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+      onPressed:
+          onBack ??
+          () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+    );
     return Scaffold(
       extendBody: apple && showBar,
       extendBodyBehindAppBar: apple && appBar,
@@ -332,7 +586,21 @@ class ClubPage extends StatelessWidget {
           : AppBar(
               backgroundColor: apple ? Colors.transparent : canvas,
               scrolledUnderElevation: 0,
-              title: Text(title ?? ''),
+              centerTitle: tab == null,
+              automaticallyImplyLeading: tab == null,
+              leadingWidth: tab == null ? 56 + chromeInset : null,
+              titleSpacing: tab != null ? 22 : null,
+              title: Padding(
+                padding: EdgeInsets.only(left: tab != null ? chromeInset : 0),
+                child: Text(
+                  title ?? '',
+                  style: TextStyle(
+                    fontSize: tab != null ? 26 : 17,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: -.4,
+                  ),
+                ),
+              ),
               flexibleSpace: apple
                   ? const GlassSurface(
                       radius: 0,
@@ -342,27 +610,20 @@ class ClubPage extends StatelessWidget {
                   : null,
               leading: tab != null
                   ? null
-                  : IconButton(
-                      tooltip: '返回',
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        size: 20,
-                      ),
-                      onPressed:
-                          onBack ??
-                          () {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.go('/');
-                            }
-                          },
-                    ),
-              actions: actions,
+                  : chromeInset > 0
+                  ? Padding(
+                      padding: EdgeInsets.only(left: chromeInset),
+                      child: backButton,
+                    )
+                  : backButton,
+              actions: [
+                ...?actions,
+                if (chromeInset > 0) SizedBox(width: chromeInset),
+              ],
             ),
       body: _PageInsets(
         top: apple && appBar ? kToolbarHeight + media.padding.top : 0,
-        bottom: apple && showBar ? 84 + media.padding.bottom : 0,
+        bottom: apple && showBar ? 102 + media.padding.bottom : 0,
         child: SafeArea(
           top: !appBar,
           bottom: !apple,
@@ -378,33 +639,42 @@ class ClubPage extends StatelessWidget {
           ? null
           : SafeArea(
               top: false,
-              child: Padding(
-                padding: apple
-                    ? const EdgeInsets.fromLTRB(16, 0, 16, 12)
-                    : EdgeInsets.zero,
-                child: Container(
-                  decoration: apple
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            bottom != null ? 20 : 24,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: ink.withValues(alpha: .075),
-                              blurRadius: 24,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: GlassSurface(
-                    radius: apple ? (bottom != null ? 20 : 24) : 0,
-                    child: bottom != null
-                        ? Padding(
-                            padding: const EdgeInsets.all(10),
-                            child: bottom!,
-                          )
-                        : nav!,
+              child: Center(
+                heightFactor: 1,
+                child: SizedBox(
+                  width: 620,
+                  child: Padding(
+                    padding: apple
+                        ? const EdgeInsets.fromLTRB(16, 0, 16, 12)
+                        : EdgeInsets.zero,
+                    child: Container(
+                      decoration: apple
+                          ? BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                bottom != null ? 26 : 34,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: ink.withValues(alpha: .12),
+                                  blurRadius: 30,
+                                  offset: const Offset(0, 9),
+                                ),
+                              ],
+                            )
+                          : null,
+                      child: GlassSurface(
+                        radius: apple ? (bottom != null ? 26 : 34) : 0,
+                        child: bottom != null
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                child: bottom!,
+                              )
+                            : nav!,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -428,6 +698,7 @@ class PageList extends StatelessWidget {
     final inset = _PageInsets.of(context);
     return ListView(
       controller: controller,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding:
           padding +
           EdgeInsets.only(top: inset?.top ?? 0, bottom: inset?.bottom ?? 0),
@@ -449,7 +720,7 @@ class SectionTitle extends StatelessWidget {
   final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(top: 12, bottom: 10),
+    padding: const EdgeInsets.only(top: 16, bottom: 12),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -460,7 +731,7 @@ class SectionTitle extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -.2,
                 ),
@@ -480,7 +751,7 @@ class SectionTitle extends StatelessWidget {
               children: [
                 Text(action!, style: const TextStyle(fontSize: 15)),
                 const SizedBox(width: 4),
-                const Icon(Icons.arrow_forward_rounded, size: 16),
+                const Icon(Icons.chevron_right_rounded, size: 19),
               ],
             ),
           ),
@@ -505,7 +776,7 @@ class Tag extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
     decoration: BoxDecoration(
       color: fill,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: BorderRadius.circular(9),
       border: fill == Colors.transparent ? Border.all(color: rule) : null,
     ),
     child: Row(
@@ -545,8 +816,20 @@ class Surface extends StatelessWidget {
     padding: padding,
     decoration: BoxDecoration(
       color: color,
-      borderRadius: BorderRadius.circular(16),
-      border: border ? Border.all(color: rule) : null,
+      borderRadius: BorderRadius.circular(23),
+      border: Border.all(
+        color: border ? rule : Colors.white.withValues(alpha: .8),
+        width: .7,
+      ),
+      boxShadow: color == Colors.white
+          ? [
+              BoxShadow(
+                color: ink.withValues(alpha: .025),
+                blurRadius: 16,
+                offset: const Offset(0, 5),
+              ),
+            ]
+          : null,
     ),
     child: child,
   );
@@ -664,8 +947,17 @@ class EmptyState extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 44, horizontal: 16),
     child: Column(
       children: [
-        const Icon(Icons.inbox_outlined, color: muted, size: 40),
-        const SizedBox(height: 16),
+        Container(
+          width: 76,
+          height: 76,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(25),
+            border: Border.all(color: rule, width: .6),
+          ),
+          child: const Icon(Icons.inbox_outlined, color: muted, size: 32),
+        ),
+        const SizedBox(height: 22),
         Text(
           title,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
@@ -674,7 +966,7 @@ class EmptyState extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: muted, fontSize: 13),
+          style: const TextStyle(color: muted, fontSize: 15, height: 1.55),
         ),
         if (action != null) ...[const SizedBox(height: 20), action!],
       ],

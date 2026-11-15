@@ -27,11 +27,12 @@ function screenImage(screen) {
 }
 function render({sync=true}={}) {
  const shown=matched(); syncControls();
+ renderSidebar();
  $('#result-count').textContent=`${shown.length} 个界面`; $('#favorites span').textContent=favorites.size;
  $('#gallery').replaceChildren(); $('#flow-gallery').replaceChildren(); $('#gallery').hidden=view!=='screens'; $('#flow-gallery').hidden=view!=='flows';
  $('#empty').hidden=shown.length>0; $('#empty h3').textContent='没有找到这个界面'; $('#empty p').textContent='试试其他筛选条件。'; $('#reset-empty').textContent='清除筛选';
  $('#gallery').classList.toggle('desktop',platform==='admin');
- $('#view-heading').replaceChildren(node('span',view==='flows'?'完整流程':favoriteOnly?'我的收藏':'界面图库','heading-text'),Object.assign(node('span',String(screens.length)),{id:'total-count'}));
+ $('#view-heading').replaceChildren(node('span',view==='flows'?'完整流程':favoriteOnly?'我的收藏':'界面图库','heading-text'),Object.assign(node('span',String(favoriteOnly?shown.length:screens.length)),{id:'total-count'}));
  const active=[role!=='all'?names.role[role]:null,flow!=='all'?names.flow[flow]:null,state!=='all'?names.state[state]:null,query?`“${query}”`:null,favoriteOnly?'已收藏':null].filter(Boolean);
  $('#active-filters').hidden=!active.length; $('#filter-summary').textContent=active.join(' / ');
  if(view==='flows') renderFlows(shown);
@@ -49,13 +50,15 @@ function render({sync=true}={}) {
 }
 function renderFlows(shown) {
  for(const group of groupFlows(shown)) {
-  const section=node('section',undefined,'flow-item'),head=node('header'); head.append(node('h3',group.name),node('span',`${group.screens.length} 个界面`));
+  const section=node('section',undefined,'flow-item'),head=node('header'); section.dataset.platform=platform; head.append(node('h3',group.name),node('span',`${group.screens.length} 个界面`));
   const row=node('div',undefined,'flow-screens'); row.setAttribute('role','group'); row.setAttribute('aria-label',group.name);
   for(const [index,screen] of group.screens.entries()) { const button=node('button',undefined,'flow-screen');button.setAttribute('aria-label',`查看${screen.title}截图与详情`);button.append(screenImage(screen),node('span',`${String(index+1).padStart(2,'0')}  ${screen.title}`));button.onclick=()=>show(screen);row.append(button); }
   section.append(head,row); $('#flow-gallery').append(section);
  }
 }
 function show(screen) {
+ const sequenceHadFocus=$('#detail-sequence').contains(document.activeElement);
+ const sequenceScroll=$('#detail-sequence').scrollLeft;
  currentId=screen.id; $('#detail-title').textContent=screen.title; $('#detail-platform').textContent=names.platform[screen.platform];
  const group=stateGroup(screen); $('#detail-state').hidden=group==='ready'; $('#detail-state').textContent=names.state[group]; $('#detail-flow').textContent=names.flow[screen.flow]||'产品界面';
  const source=screen.source; $('#detail-source').replaceChildren(Object.assign(node('a',source+' ↗'),{href:'https://github.com/nph-cn/openni-club/blob/main/'+source,target:'_blank',rel:'noreferrer'}));
@@ -65,7 +68,28 @@ function show(screen) {
  $('#detail-demo').textContent=screen.platform==='mini'?'查看小程序运行方式 ↗':screen.platform==='admin'?'打开后台 ↗':'打开 App ↗'; $('#detail-download').href=screen.image;
  dialog.classList.toggle('wide-detail',screen.platform==='admin'); dialog.classList.remove('zoomed'); $('#toggle-zoom').textContent='放大'; $('#toggle-zoom').setAttribute('aria-label','放大截图'); $('#toggle-zoom').setAttribute('aria-pressed','false'); $('#copy-link').textContent='复制链接';
  const list=matched(),index=list.findIndex(s=>s.id===screen.id); $('#detail-position').textContent=`${index+1} / ${list.length}`; $('#previous-screen').disabled=index<=0; $('#next-screen').disabled=index>=list.length-1;
+ const sequence=$('#detail-sequence');sequence.replaceChildren();
+ for(const related of list.filter(item=>item.flow===screen.flow)) {
+  const button=node('button');button.dataset.screen=related.id;button.setAttribute('aria-label',`查看${related.title}`);button.setAttribute('aria-current',String(related.id===screen.id));button.title=related.title;
+  const thumb=screenImage(related);thumb.alt='';button.append(thumb);button.onclick=()=>show(related);sequence.append(button);
+ }
  if(!dialog.open)dialog.showModal(); $('.detail-body').scrollTop=0; $('.detail-stage').scrollTop=0; writeLocation(screen.id);
+ sequence.scrollLeft=sequenceScroll;
+ if(sequenceHadFocus){const current=sequence.querySelector('[aria-current=true]');current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}
+}
+function renderSidebar(){
+ const sidebar=$('#flow-sidebar'),scroll=sidebar.scrollLeft,focusedFlow=sidebar.contains(document.activeElement)?document.activeElement.dataset.flow:null;sidebar.replaceChildren(node('h3','浏览流程'));
+ const subset=matchScreens(screens,{...filters(),flow:'all'},favorites);
+ for(const [key,title] of [['all','全部界面'],...Object.entries(names.flow)]){
+  const count=key==='all'?subset.length:subset.filter(item=>item.flow===key).length;
+  const button=node('button',title);button.type='button';button.dataset.flow=key;button.setAttribute('aria-pressed',String(flow===key));button.append(node('span',String(count)));
+  button.onclick=()=>{flow=key;render();};sidebar.append(button);
+ }
+ sidebar.append(node('div',undefined,'sidebar-divider'));
+ const demo=node('a','打开 App ↗');demo.href='/demo/';sidebar.append(demo);
+ const guide=node('a','版本与功能状态 ↗');guide.href='/guide/00-status.html';sidebar.append(guide);
+ sidebar.scrollLeft=scroll;
+ if(focusedFlow){const current=Array.from(sidebar.querySelectorAll('button')).find(button=>button.dataset.flow===focusedFlow);current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}
 }
 function next(offset) {const list=matched(),index=list.findIndex(s=>s.id===currentId);if(list[index+offset])show(list[index+offset]);}
 $('#close-detail').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{currentId='';writeLocation();});
@@ -99,17 +123,18 @@ syncControls(); await loadScreens();
 
 // Role changes show actual runtime captures; no invented dashboard or payment state.
 const stageRoles={
- customer:{image:'/screens/home.png',alt:'北岸电竞玩家首页真实运行截图',caption:'用户首页',browse:'查看用户端界面',demo:'/demo/'},
- member:{image:'/screens/member.png',alt:'北岸电竞成员工作台真实运行截图',caption:'成员工作台',browse:'查看成员端界面',demo:'/demo/?screen=member'},
- operator:{image:'/screens/admin-dispatch.png',alt:'北岸电竞运营派单工作台真实运行截图',caption:'派单工作台',browse:'查看后台界面',demo:'/admin/'}
+ customer:{screenId:'home',alt:'北岸电竞玩家首页真实运行截图',caption:'用户首页',browse:'查看用户端界面',demo:'/demo/'},
+ member:{screenId:'member',alt:'北岸电竞成员工作台真实运行截图',caption:'成员工作台',browse:'查看成员端界面',demo:'/demo/?screen=member'},
+ operator:{screenId:'admin-dispatch',alt:'北岸电竞运营派单工作台真实运行截图',caption:'派单工作台',browse:'查看后台界面',demo:'/admin/'}
 };
 let stageRequest=0;
 async function setStage(key){
  const config=stageRoles[key];if(!config)return;
- const request=++stageRequest,image=new Image();image.src=config.image;
+ const imageUrl=screens.find(screen=>screen.id===config.screenId)?.image;if(!imageUrl)return;
+ const request=++stageRequest,image=new Image();image.src=imageUrl;
  try{await image.decode();}catch{return;}
  if(request!==stageRequest)return;
- const target=$('#stage-image');target.src=config.image;target.alt=config.alt;
+ const target=$('#stage-image');target.src=imageUrl;target.alt=config.alt;
  $('#product-stage').dataset.role=key;$('#stage-caption').textContent=config.caption;
  $('#stage-launch').href=config.demo;$('#stage-launch').textContent=key==='operator'?'打开后台 ↗':'打开 App ↗';$('#stage-browse').dataset.exploreRole=key;
  $('#stage-browse').replaceChildren(node('span',config.browse),node('span','↘'));

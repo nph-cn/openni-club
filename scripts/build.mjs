@@ -1,10 +1,11 @@
 import {cp,mkdir,readdir,readFile,writeFile,access,rm} from 'node:fs/promises';
-import {join,basename} from 'node:path';
+import {join,basename,resolve,relative,sep} from 'node:path';
 import sharp from 'sharp';
 import {buildDocs} from './lib/docs-site.mjs';
 import {stateGroup} from '../apps/showcase/gallery-model.js';
 const root=process.cwd();await rm('dist',{recursive:true,force:true});await mkdir('dist',{recursive:true});await cp('apps/showcase','dist',{recursive:true});
-await cp('apps/admin','dist/admin',{recursive:true,filter:source=>!source.includes('/screenshots')});
+const adminRoot=resolve('apps/admin');
+await cp(adminRoot,'dist/admin',{recursive:true,filter:source=>relative(adminRoot,source).split(sep)[0]!=='screenshots'});
 await cp('apps/studio','dist/studio',{recursive:true});
 await mkdir('dist/vendor',{recursive:true});await cp('node_modules/fflate/esm/browser.js','dist/vendor/fflate.js');
 const {count:docCount}=await buildDocs({root:process.cwd(),outDir:'dist/guide'});
@@ -16,9 +17,9 @@ const adminTitles={orders:['全部订单','fulfillment'],overview:['今日待办
 const gallery=[],seenIds=new Set(),seenFiles=new Set();
 for(const [platform,dir] of [['flutter','apps/mobile/screenshots'],['mini','apps/miniprogram/screenshots'],['admin','apps/admin/screenshots']]){
  let images=[];try{images=(await readdir(dir)).filter(f=>/\.(png|jpe?g)$/.test(f));}catch{continue;}
- let manifest;try{manifest=JSON.parse(await readFile(join(dir,'manifest.json'),'utf8'));}catch{manifest=null;}
- if(manifest&&!Array.isArray(manifest))throw Error(`${dir}/manifest.json must be an array`);
- let items=manifest||images.map(file=>({id:file.replace(/\.(png|jpe?g)$/,''),file}));
+ let manifest;try{manifest=JSON.parse(await readFile(join(dir,'manifest.json'),'utf8'));}catch(error){if(error.code!=='ENOENT')throw new Error(`Cannot read screenshot manifest: ${dir}/manifest.json`,{cause:error});}
+ if(manifest!==undefined&&!Array.isArray(manifest))throw Error(`${dir}/manifest.json must be an array`);
+ let items=manifest??images.map(file=>({id:file.replace(/\.(png|jpe?g)$/,''),file}));
  for(const item of items){
   const file=item.file|| (item.image?basename(item.image):images.find(f=>f.replace(/\.(png|jpe?g)$/,'')===item.id));
   if(!file||basename(file)!==file||!images.includes(file))throw Error(`Missing screenshot for ${platform}/${item.id}`);

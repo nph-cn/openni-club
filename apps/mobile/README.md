@@ -39,17 +39,17 @@ flutter run -d YOUR_DEVICE_ID \
 
 ## 视觉与截图
 
-iOS 与 Web 使用 Flutter `BackdropFilter` 形成玻璃导航/底栏/Sheet；内容保持清楚的实体排版。这不是系统原生 Liquid Glass。Android 使用实体导航。iOS Reduce Transparency 通过平台通道读取，高对比与减少动画也会关闭模糊。骨架和登录步骤过渡同时检查 iOS Reduce Motion 与 Android Disable Animations。加载不设置人为等待；Web 引擎启动前显示轻量加载入口，首帧后移除。
+iOS 与 Web 使用 Flutter `BackdropFilter` 与细高光边缘形成玻璃导航/底栏/Sheet；浮动导航具有完整触区的选中胶囊，内容保持清楚的实体排版。订单筛选使用 Cupertino 分段控件，Android 保留 Material 交互。这不是系统原生 Liquid Glass。Android 使用实体导航。iOS Reduce Transparency 通过平台通道读取，高对比与减少动画也会关闭模糊。骨架和登录步骤过渡同时检查 iOS Reduce Motion 与 Android Disable Animations。加载不设置人为等待；Web 引擎启动前显示轻量加载入口，首帧后移除。
 
 ```sh
 flutter analyze
-flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart
+flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart test/navigation_interactions_test.dart
 dart run tool/cache_catalog_media.dart
 flutter test test/screenshots_test.dart test/review_screens_test.dart test/auth_screens_test.dart
 flutter build web --no-web-resources-cdn --base-href /demo/
 ```
 
-35张390×844实际Widget截图和角色/流程索引在 `screenshots/`。字体与原创人物来自本地素材；游戏封面、图标和横幅来自配置记录的官方 HTTPS 地址。截图前用上述命令缓存同一原图至被 Git 忽略的 `.dart_tool/catalog-media`，运行时仍读取目录 URL。第三方图片版权归原权利人，不随代码授予 MIT 权利；新俱乐部应配置有权使用的素材。人物与 fixture 来源见 `assets/demo/PROVENANCE.md`。仅在有意修改设计且逐张检查后，使用 `--update-goldens` 更新。跨 Flutter engine 的像素差异不能当作业务失败，也不能自动覆盖基线。
+35张780×1688实际Widget截图（390×844逻辑视口，2×栅格化）和角色/流程索引在 `screenshots/`。字体与原创人物来自本地素材；游戏封面、图标和横幅来自配置记录的官方 HTTPS 地址。截图前用上述命令缓存同一原图至被 Git 忽略的 `.dart_tool/catalog-media`，运行时仍读取目录 URL。第三方图片版权归原权利人，不随代码授予 MIT 权利；新俱乐部应配置有权使用的素材。人物与 fixture 来源见 `assets/demo/PROVENANCE.md`。仅在有意修改设计且逐张检查后，使用 `--update-goldens` 更新。跨 Flutter engine 的像素差异不能当作业务失败，也不能自动覆盖基线。
 
 `?screen=` 支持 `screenshots/manifest.json` 的全部 id，包括 `home`、`service_120`、`checkout`、`support`、`member`、`delivery`、`availability`、`earnings`。实际路由使用 GoRouter，支持原生返回和深链。
 
@@ -64,3 +64,5 @@ Noto Sans SC 使用 OFL，第三方库保留各自许可证。外部竞品截图
 登录返回原预约或订单页面，保留表单，但不会自动提交预约或付款。手机号账户付款需要微信身份时，用户确认后才调用 SDK 授权并关联当前账户；冲突身份不自动合并。真实短信送达和商户验证仍需经营者验收。
 
 初始读取、订单、可约时段、成员工作台、收入、个人中心和通知使用对应骨架；刷新保留已读内容。全部页面和关键状态对应关系见 [SCREEN_COVERAGE.md](SCREEN_COVERAGE.md)。
+
+本轮截图通过 `RepaintBoundary.toImage(pixelRatio: 2)` 从运行中的控件树生成，保持 390×844 逻辑布局；截图测试启用与应用一致的软阴影，结束时恢复测试设置。新增横幅计数按钮可点击或键盘切换，减少动态时直接切页；目录搜索可清除，空结果可重置筛选。全部写操作、真实付款与身份边界保持原有合同。

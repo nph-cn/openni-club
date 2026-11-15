@@ -78,19 +78,10 @@ class _OrdersPageState extends State<OrdersPage> {
       ],
       child: PageList(
         children: [
-          Row(
-            children: ['进行中', '已结束', '全部']
-                .map(
-                  (v) => Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(v),
-                      selected: filter == v,
-                      onSelected: (_) => setState(() => filter = v),
-                    ),
-                  ),
-                )
-                .toList(),
+          ClubSegmentedControl(
+            values: const ['进行中', '已结束', '全部'],
+            value: filter,
+            onChanged: (next) => setState(() => filter = next),
           ),
           const SizedBox(height: 22),
           if (loading) const LinearProgressIndicator(),
@@ -130,26 +121,51 @@ class _OrdersPageState extends State<OrdersPage> {
                         ],
                       ),
                       const SizedBox(height: 17),
-                      Text(
-                        '${o['serviceTitle']}',
-                        style: const TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        when(o['scheduledAt']),
-                        style: const TextStyle(color: muted, fontSize: 13),
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 72,
+                            height: 76,
+                            child: ServiceArt(
+                              repo.findService('${o['serviceId']}') ?? {},
+                              radius: 15,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${o['serviceTitle']}',
+                                  style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                                Text(
+                                  when(o['scheduledAt']),
+                                  style: const TextStyle(
+                                    color: muted,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                       const Divider(),
                       Row(
                         children: [
-                          Text(
-                            '${repo.findPlayer(o['assignedPlayerId'] ?? o['playerId'])?['name'] ?? '等待俱乐部安排队友'}',
-                            style: const TextStyle(fontSize: 13),
+                          Expanded(
+                            child: Text(
+                              '${repo.findPlayer(o['assignedPlayerId'] ?? o['playerId'])?['name'] ?? '等待俱乐部安排队友'}',
+                              style: const TextStyle(fontSize: 13),
+                            ),
                           ),
-                          const Spacer(),
+                          const SizedBox(width: 12),
                           Text(
                             '¥${money(o)}',
                             style: const TextStyle(

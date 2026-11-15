@@ -1,5 +1,5 @@
 <import src="../../templates/common.wxml"/>
-<view class="page" style="{{themeStyle}}"><template is="state" data="{{loading,error,authRequired,skeletonRows,skeletonKind}}"/>
+<view class="page settings-page" style="{{themeStyle}}"><template is="state" data="{{loading,error,authRequired,skeletonRows,skeletonKind}}"/>
 <block wx:if="{{!loading&&!error}}"><view class="title">账号与隐私</view>
 <view class="card"><view class="service-heading">{{club.name}}</view><view wx:if="{{club.supportContact}}" class="body-copy">客服：{{club.supportContact}}</view><view wx:if="{{club.legalEntity}}" class="small muted">{{club.legalEntity}}</view></view>
 <view class="card"><view class="menu-row" data-view="privacy" bindtap="toggleLegal"><text>隐私说明</text><text class="muted">查看 →</text></view><view class="menu-row" data-view="terms" bindtap="toggleLegal"><text>服务协议</text><text class="muted">查看 →</text></view><view class="menu-row"><text>版本</text><text class="muted">{{version}}</text></view></view>

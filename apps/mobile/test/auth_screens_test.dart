@@ -1,3 +1,5 @@
+import 'capture_2x.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,6 +22,7 @@ void main() {
   });
   for (final screen in stateScreenNames) {
     testWidgets('auth state: $screen', (tester) async {
+      enableCaptureShadows();
       debugDefaultTargetPlatformOverride = screen == 'home_android'
           ? TargetPlatform.android
           : TargetPlatform.iOS;
@@ -62,7 +65,7 @@ void main() {
       await tester.pump();
       expect(tester.takeException(), isNull, reason: screen);
       await expectLater(
-        find.byKey(key),
+        await captureAt2x(key),
         matchesGoldenFile('../screenshots/$screen.png'),
       );
       await tester.pumpWidget(const SizedBox.shrink());

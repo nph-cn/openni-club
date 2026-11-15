@@ -1,6 +1,6 @@
 # 页面与实际状态覆盖
 
-图库清单为 `screenshots/manifest.json`，截图来自实际 Flutter Widget。35 个标识均在 `lib/screens.dart`，由三个截图测试遍历；主流程测试独立运行，不依赖像素基线。所有截图为 390 × 844，`home_android` 使用 Android 平台主题，其余使用 iOS 主题。
+图库清单为 `screenshots/manifest.json`，截图来自实际 Flutter Widget。35 个标识均在 `lib/screens.dart`，由三个截图测试遍历；主流程测试独立运行，不依赖像素基线。所有截图为 780 × 1688（390 × 844 逻辑视口，2×实际渲染），`home_android` 使用 Android 平台主题，其余使用 iOS 主题。
 
 | 实际路由 / 组件 | 图库标识 | 状态来源 |
 | --- | --- | --- |

@@ -7,9 +7,12 @@
     "description": "游戏横幅、服务与陪练入口，进行中订单快捷查看。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "services",
@@ -19,9 +22,12 @@
     "description": "游戏筛选和关键词搜索。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "service",
@@ -31,9 +37,12 @@
     "description": "PC小时陪规格、地图、服务规则与固定预约栏。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "pc-60",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "service_120",
@@ -43,9 +52,12 @@
     "description": "同一服务的120分钟规格，合计72元；金额和时长均来自配置。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "pc-120",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "players",
@@ -55,9 +67,12 @@
     "description": "陪练资料、擅长游戏和服务价格。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "player",
@@ -67,9 +82,12 @@
     "description": "人物资料、服务与可约时段。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "profile",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "booking",
@@ -79,9 +97,12 @@
     "description": "选择规格、陪练、日期和可约时段。",
     "source": "apps/mobile/lib/booking.dart",
     "state": "selection",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "checkout",
@@ -91,9 +112,12 @@
     "description": "根据可约时段生成核对页面，服务费用和条款确认。",
     "source": "apps/mobile/lib/booking.dart",
     "state": "review",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "orders",
@@ -103,9 +127,12 @@
     "description": "订单筛选和真实预约状态。",
     "source": "apps/mobile/lib/orders.dart",
     "state": "in_progress",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "order",
@@ -115,9 +142,12 @@
     "description": "实际API创建、派单、接单和开始服务事件，未改写业务状态。",
     "source": "apps/mobile/lib/orders.dart",
     "state": "in_progress",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "support",
@@ -127,9 +157,12 @@
     "description": "选择售后原因并提交说明；实际写入需连接API。",
     "source": "apps/mobile/lib/main.dart",
     "state": "form",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "profile",
@@ -139,9 +172,12 @@
     "description": "订单、关注、政策和设置。",
     "source": "apps/mobile/lib/main.dart",
     "state": "profile",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "announcements",
@@ -151,9 +187,12 @@
     "description": "预约须知、改期售后与服务规则。",
     "source": "apps/mobile/lib/main.dart",
     "state": "published",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "settings",
@@ -163,9 +202,12 @@
     "description": "昵称、隐私条款、客服、应用信息与账号注销。",
     "source": "apps/mobile/lib/main.dart",
     "state": "settings",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "notifications",
@@ -175,9 +217,12 @@
     "description": "无新通知的真实空状态。",
     "source": "apps/mobile/lib/main.dart",
     "state": "empty",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "empty"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "empty",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "member",
@@ -187,9 +232,12 @@
     "description": "API实际导出的待接单、进行中服务和账本；离线只读。",
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "member_orders",
@@ -199,9 +247,12 @@
     "description": "本人已指派服务与当前履约状态。",
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "member_order",
@@ -211,9 +262,12 @@
     "description": "实际待接单内容、服务时段、客户需求和冻结分成。",
     "source": "apps/mobile/lib/member.dart",
     "state": "awaiting_acceptance",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "delivery",
@@ -223,9 +277,12 @@
     "description": "进行中订单的服务内容与HTTPS凭证表单；离线不提交。",
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "member_notifications",
@@ -235,9 +292,12 @@
     "description": "真实API流程产生的本人订单通知。",
     "source": "apps/mobile/lib/main.dart",
     "state": "read-only",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "availability",
@@ -247,9 +307,12 @@
     "description": "实际通过API设置的18:00–23:30晚间排班。",
     "source": "apps/mobile/lib/member.dart",
     "state": "read-only",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "earnings",
@@ -259,9 +322,12 @@
     "description": "服务分成、待确认金额与已登记结算账目。",
     "source": "apps/mobile/lib/member.dart",
     "state": "ledger",
-    "width": 390,
-    "height": 844,
-    "stateGroup": "ready"
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "welcome",
@@ -272,8 +338,11 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "login",
@@ -284,8 +353,11 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "phone",
@@ -296,8 +368,11 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "code",
@@ -308,8 +383,11 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "verification",
     "stateGroup": "verification",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "code_error",
@@ -320,8 +398,11 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "error",
     "stateGroup": "error",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "code_verifying",
@@ -332,9 +413,12 @@
     "source": "apps/mobile/lib/auth.dart",
     "state": "verification",
     "stateGroup": "loading",
-    "width": 390,
-    "height": 844,
-    "demo": "/demo/?screen=code"
+    "width": 780,
+    "height": 1688,
+    "demo": "/demo/?screen=code",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "home_loading",
@@ -345,9 +429,12 @@
     "source": "apps/mobile/lib/loading.dart",
     "state": "loading",
     "stateGroup": "loading",
-    "width": 390,
-    "height": 844,
-    "demo": "/demo/?screen=home"
+    "width": 780,
+    "height": 1688,
+    "demo": "/demo/?screen=home",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "home_error",
@@ -358,8 +445,11 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "error",
     "stateGroup": "error",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "orders_empty",
@@ -370,8 +460,11 @@
     "source": "apps/mobile/lib/orders.dart",
     "state": "empty",
     "stateGroup": "empty",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "orders_guest",
@@ -382,8 +475,11 @@
     "source": "apps/mobile/lib/orders.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "privacy",
@@ -394,8 +490,11 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "terms",
@@ -406,8 +505,11 @@
     "source": "apps/mobile/lib/main.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   },
   {
     "id": "home_android",
@@ -418,8 +520,11 @@
     "source": "apps/mobile/lib/discover.dart",
     "state": "ready",
     "stateGroup": "ready",
-    "width": 390,
-    "height": 844,
-    "platform": "android"
+    "width": 780,
+    "height": 1688,
+    "platform": "android",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2
   }
 ]

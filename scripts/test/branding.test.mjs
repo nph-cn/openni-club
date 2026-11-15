@@ -72,7 +72,8 @@ test('generator refuses path escapes, hostile SVG and symlink output targets', a
   await assert.rejects(loadClubConfig(f.configPath), ConfigError);
   await writeFile(f.configPath, JSON.stringify(f.source)); await writeFile(join(f.root, 'config/assets/logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://remote.invalid/image"/></svg>');
   await assert.rejects(loadClubConfig(f.configPath), ConfigError);
-  await mkdir(join(f.root, 'apps')); await symlink(join(f.root, 'config'), join(f.root, 'apps/mobile'));
+  // Windows 用无管理员权限也能创建的目录联接，仍验证生成器拒绝链接目标。
+  await mkdir(join(f.root, 'apps')); await symlink(join(f.root, 'config'), join(f.root, 'apps/mobile'), process.platform === 'win32' ? 'junction' : 'dir');
   await assert.rejects(applyArtifacts(f.root, new Map([['apps/mobile/file', Buffer.from('bad')]])), ConfigError);
 });
 test('production requires legal facts and explicit platform identity/signing; no secrets enter commands', async t => {

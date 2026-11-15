@@ -53,19 +53,20 @@ class _HomePageState extends State<HomePage> {
         children: [
           Row(
             children: [
-              BrandMark(repo, size: 30),
+              BrandMark(repo, size: 34),
               const SizedBox(width: 9),
               Expanded(
                 child: Text(
                   repo.clubName,
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 24,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
               IconButton(
                 tooltip: '通知',
+                style: IconButton.styleFrom(backgroundColor: Colors.white),
                 onPressed: () => context.push('/notifications'),
                 icon: const Icon(Icons.notifications_none_rounded),
               ),
@@ -74,70 +75,75 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 10),
           InkWell(
             onTap: () => context.go('/services'),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(18),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: rule, width: .6),
               ),
               child: const Row(
                 children: [
                   Icon(Icons.search_rounded, size: 21, color: muted),
                   SizedBox(width: 9),
-                  Text(
-                    '搜索游戏、服务、陪练',
-                    style: TextStyle(fontSize: 15, color: muted),
-                  ),
+                  Text('搜索游戏或服务', style: TextStyle(fontSize: 15, color: muted)),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 16),
+          if (active != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: InkWell(
+                onTap: () => context.push('/orders/${active['id']}'),
+                child: Surface(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 14,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.timelapse_rounded,
+                        size: 18,
+                        color: brandColor(repo),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        stageName(stage(active)),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          '${active['serviceTitle']}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13, color: muted),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        size: 19,
+                        color: muted,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(height: 14),
           if (repo.banners.isNotEmpty)
             HomeBanners(repo)
           else if (services.isNotEmpty)
             AspectRatio(
               aspectRatio: 2.25,
               child: ServiceArt(services.first, radius: 16, banner: true),
-            ),
-          if (active != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: InkWell(
-                onTap: () => context.push('/orders/${active['id']}'),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.timelapse_rounded,
-                      size: 18,
-                      color: brandColor(repo),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      stageName(stage(active)),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: Text(
-                        '${active['serviceTitle']}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13, color: muted),
-                      ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      size: 19,
-                      color: muted,
-                    ),
-                  ],
-                ),
-              ),
             ),
           const SizedBox(height: 20),
           Row(
@@ -214,14 +220,22 @@ class HomeBanners extends StatefulWidget {
 
 class _HomeBannersState extends State<HomeBanners> {
   int page = 0;
+  final controller = PageController();
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => AspectRatio(
-    aspectRatio: 2.25,
+    aspectRatio: 2.05,
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(24),
       child: Stack(
         children: [
           PageView.builder(
+            controller: controller,
             itemCount: widget.repo.banners.length,
             onPageChanged: (v) => setState(() => page = v),
             itemBuilder: (context, i) {
@@ -256,11 +270,11 @@ class _HomeBannersState extends State<HomeBanners> {
                     Positioned(
                       left: 18,
                       right: 20,
-                      bottom: 24,
+                      bottom: 25,
                       child: Text(
                         '${banner['title']}',
                         style: const TextStyle(
-                          fontSize: 23,
+                          fontSize: 25,
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
                         ),
@@ -274,12 +288,16 @@ class _HomeBannersState extends State<HomeBanners> {
           if (widget.repo.banners.length > 1)
             Positioned(
               left: 18,
-              bottom: 12,
+              bottom: 8,
               child: Row(
                 children: List.generate(
                   widget.repo.banners.length,
                   (i) => AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
+                    duration:
+                        MediaQuery.of(context).disableAnimations ||
+                            MediaQuery.of(context).reduceMotion
+                        ? Duration.zero
+                        : const Duration(milliseconds: 180),
                     margin: const EdgeInsets.only(right: 4),
                     width: i == page ? 17 : 5,
                     height: 3,
@@ -288,6 +306,52 @@ class _HomeBannersState extends State<HomeBanners> {
                         alpha: i == page ? 1 : .45,
                       ),
                       borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          if (widget.repo.banners.length > 1)
+            Positioned(
+              top: 12,
+              right: 12,
+              child: Tooltip(
+                message: '下一张横幅',
+                child: TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 44),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    foregroundColor: Colors.white,
+                    backgroundColor: const Color(0x66000000),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(22),
+                      side: const BorderSide(
+                        color: Color(0x40FFFFFF),
+                        width: .7,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    final next = (page + 1) % widget.repo.banners.length;
+                    if (MediaQuery.of(context).reduceMotion ||
+                        MediaQuery.of(context).disableAnimations) {
+                      controller.jumpToPage(next);
+                    } else {
+                      controller.animateToPage(
+                        next,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeOutCubic,
+                      );
+                    }
+                  },
+                  child: Text(
+                    '${page + 1} / ${widget.repo.banners.length}',
+                    semanticsLabel:
+                        '下一张横幅，当前第 ${page + 1} 张，共 ${widget.repo.banners.length} 张',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -316,17 +380,18 @@ class GameSelector extends StatelessWidget {
     child: Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(3),
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            color: selected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(21),
             border: Border.all(
-              color: selected ? ink : Colors.transparent,
-              width: 1.5,
+              color: selected ? rule : Colors.transparent,
+              width: 1,
             ),
           ),
           child: SizedBox(
-            width: 47,
-            height: 47,
+            width: 44,
+            height: 44,
             child: ServiceArt(service, radius: 12, icon: true),
           ),
         ),
@@ -392,13 +457,21 @@ class ServiceFeature extends StatelessWidget {
     );
     return InkWell(
       onTap: () => context.push('/services/${service['id']}'),
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(22),
       child: Container(
         decoration: embedded
             ? null
             : BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: Colors.white, width: .7),
+                boxShadow: [
+                  BoxShadow(
+                    color: ink.withValues(alpha: .035),
+                    blurRadius: 18,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
         padding: poster ? EdgeInsets.zero : const EdgeInsets.all(12),
         child: poster
@@ -406,8 +479,8 @@ class ServiceFeature extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AspectRatio(
-                    aspectRatio: 1.95,
-                    child: ServiceArt(service, radius: 14),
+                    aspectRatio: 1.4,
+                    child: ServiceArt(service, radius: 20),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 10, 10, 12),
@@ -420,12 +493,15 @@ class ServiceFeature extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             price,
-                            const Spacer(),
-                            Text(
-                              '${quote['durationMinutes']}分钟',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: muted,
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                '${quote['durationMinutes']}分钟',
+                                textAlign: TextAlign.right,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: muted,
+                                ),
                               ),
                             ),
                           ],
@@ -501,7 +577,8 @@ class ServiceArt extends StatelessWidget {
       child: url.startsWith('https://')
           ? Image.network(
               url,
-              fit: BoxFit.cover,
+              fit: icon ? BoxFit.contain : BoxFit.cover,
+              filterQuality: FilterQuality.high,
               alignment: Alignment.center,
               webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
               frameBuilder: (_, child, frame, wasSynchronouslyLoaded) =>
@@ -627,6 +704,13 @@ class ServicesPage extends StatefulWidget {
 class _ServicesPageState extends State<ServicesPage> {
   late String game = widget.initialGame;
   String query = '';
+  final search = TextEditingController();
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
@@ -644,9 +728,22 @@ class _ServicesPageState extends State<ServicesPage> {
       child: PageList(
         children: [
           TextField(
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search_rounded),
+            controller: search,
+            textInputAction: TextInputAction.search,
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search_rounded),
               hintText: '搜索游戏或服务',
+              suffixIcon: query.isEmpty
+                  ? null
+                  : IconButton(
+                      tooltip: '清除搜索',
+                      icon: const Icon(Icons.cancel_rounded, size: 20),
+                      onPressed: () {
+                        search.clear();
+                        setState(() => query = '');
+                      },
+                    ),
             ),
             onChanged: (v) => setState(() => query = v),
           ),
@@ -673,7 +770,21 @@ class _ServicesPageState extends State<ServicesPage> {
             ),
           ),
           const SizedBox(height: 20),
-          if (items.isEmpty) const EmptyState('没有匹配的服务', '试试其他游戏或关键词。'),
+          if (items.isEmpty)
+            EmptyState(
+              '没有匹配的服务',
+              '试试其他游戏或关键词。',
+              action: OutlinedButton(
+                onPressed: () {
+                  search.clear();
+                  setState(() {
+                    query = '';
+                    game = '全部';
+                  });
+                },
+                child: const Text('清除筛选'),
+              ),
+            ),
           ...items.map(
             (s) => Padding(
               padding: const EdgeInsets.only(bottom: 16),

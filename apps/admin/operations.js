@@ -1,7 +1,8 @@
-import {el,money,dateTime,safeImage,apiAddress,shanghaiInput,fromShanghaiInput,fulfillmentLabels as statuses,ledgerLabels,paymentLabels} from './ui.js';
+import {el,icon,money,dateTime,safeImage,apiAddress,shanghaiInput,fromShanghaiInput,fulfillmentLabels as statuses,ledgerLabels,paymentLabels} from './ui.js';
 import {contentManager} from './content.js';
 
 const $=selector=>document.querySelector(selector);
+document.querySelectorAll('[data-icon]').forEach(node=>node.replaceChildren(icon(node.dataset.icon)));
 const titles={overview:'今日待办',dispatch:'派单工作台',orders:'全部订单',members:'成员与排班',settlements:'收入与结算',disputes:'售后处理',brand:'品牌与发布',connection:'连接与集成',services:'服务目录',announcements:'俱乐部公告',banners:'首页横幅'};
 let data={orders:[],players:[],services:[],announcements:[],banners:[],club:{},overview:{counts:{},totals:{}},settlements:{entries:[],totals:{},settlements:[]},disputes:[]};
 let workspace='overview',apiBase='',adminToken='',orderFilter='all',orderSearch='',currentOrderId=null,actionSubmit=null,loadVersion=0;
@@ -17,7 +18,7 @@ const shortId=id=>String(id||'').slice(0,8).toUpperCase();
 const badge=(text,state='neutral')=>el('span',{class:`badge ${state}`},text);
 const statusBadge=o=>badge(statuses[o.fulfillmentStatus]||o.fulfillmentStatus,o.fulfillmentStatus);
 const button=(text,fn,style='soft',disabled=false)=>el('button',{type:'button',class:`action ${style}`,onclick:event=>{Promise.resolve().then(()=>fn(event)).catch(error=>notify(error.message,true));},disabled},text);
-const empty=text=>el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},'✓'),text);
+const empty=text=>el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},text));
 const header=(title,action)=>el('div',{class:'ops-page-header'},el('h1',{},title),action||null);
 const panel=(title,body,action)=>el('section',{class:'ops-panel'},el('div',{class:'panel-header'},el('h2',{},title),action||null),body);
 const field=(label,input)=>el('label',{class:'ops-field'},el('span',{},label),input);
@@ -68,7 +69,7 @@ function orderTitle(order){return el('div',{class:'table-main'},order.serviceTit
 function renderOverview(){
  const counts=data.overview.counts,totals=data.overview.totals;
  const rows=[['待派单',counts.awaitingAssignment,'dispatch'],['待接单',counts.awaitingAcceptance,'dispatch'],['服务中',counts.inProgress,'orders'],['待客户确认',counts.awaitingConfirmation,'orders'],['待处理售后',counts.disputed,'disputes']];
- const queue=el('div',{class:'queue-list'},rows.map(([label,count,tab],index)=>el('button',{class:'queue-row',onclick:()=>navigate(tab)},el('span',{class:'queue-icon'},['↗','◷','▷','✓','!'][index]),el('span',{class:'queue-text'},label),el('strong',{class:'queue-number'},count||0),el('span',{class:'row-arrow'},'→'))));
+ const queue=el('div',{class:'queue-list'},rows.map(([label,count,tab],index)=>el('button',{class:'queue-row',onclick:()=>navigate(tab)},el('span',{class:'queue-icon'},icon(['dispatch','clock','play','check','disputes'][index])),el('span',{class:'queue-text'},label),el('strong',{class:'queue-number'},count||0),el('span',{class:'row-arrow','aria-hidden':'true'},'→'))));
  const upcoming=data.orders.filter(o=>!['completed','cancelled'].includes(o.fulfillmentStatus)).sort((a,b)=>a.scheduledAt.localeCompare(b.scheduledAt)).slice(0,5);
  return el('div',{},header('今天的安排',button('开始派单',()=>navigate('dispatch'),'dark')),
   metrics([['待派单',counts.awaitingAssignment||0,'等待安排成员',()=>navigate('dispatch')],['进行中',(counts.inProgress||0)+(counts.awaitingConfirmation||0),'服务与确认',()=>navigate('orders')],['售后',counts.disputed||0,'待处理',()=>navigate('disputes')],['待结算',money(totals.memberAvailableCents),'成员收入',()=>navigate('settlements')]]),

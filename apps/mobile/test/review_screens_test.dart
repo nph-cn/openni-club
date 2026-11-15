@@ -1,3 +1,4 @@
+import 'capture_2x.dart';
 import 'catalog_media_cache.dart';
 
 import 'dart:convert';
@@ -21,6 +22,7 @@ void main() {
   });
   for (final screen in ['home', 'service', 'player', 'order']) {
     testWidgets('v2 review: $screen', (tester) async {
+      enableCaptureShadows();
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       tester.view.physicalSize = const Size(390, 844);
@@ -62,7 +64,7 @@ void main() {
         reason: '$screen must have no overflow',
       );
       await expectLater(
-        find.byKey(key),
+        await captureAt2x(key),
         matchesGoldenFile('../screenshots/$screen.png'),
       );
       await tester.pumpWidget(const SizedBox.shrink());

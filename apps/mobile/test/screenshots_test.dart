@@ -1,3 +1,4 @@
+import 'capture_2x.dart';
 import 'catalog_media_cache.dart';
 
 import 'package:flutter/foundation.dart';
@@ -37,6 +38,7 @@ void main() {
     ].contains(s),
   )) {
     testWidgets('working iOS gallery: $screen', (tester) async {
+      enableCaptureShadows();
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       tester.view.physicalSize = const Size(390, 844);
@@ -72,7 +74,7 @@ void main() {
         reason: '$screen must render without overflow',
       );
       await expectLater(
-        find.byKey(key),
+        await captureAt2x(key),
         matchesGoldenFile('../screenshots/$screen.png'),
       );
       await tester.pumpWidget(const SizedBox.shrink());
