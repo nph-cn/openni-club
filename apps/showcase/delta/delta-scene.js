@@ -15,6 +15,7 @@ const smoothstep = (a, b, x) => {
 const CAMERA_KEYS = {
   hero: { a: { pos: [0.1, 0.22, 8.9], look: [0, 0.05, -3.0] }, b: { pos: [0.22, 0.12, 8.1], look: [0, 0.0, -3.4] } },
   modes: { a: { pos: [0.55, 0.04, 7.9], look: [0, 0, -4.2] }, b: { pos: [0.2, 0.02, 7.4], look: [0, 0, -4.35] } },
+  operators: { a: { pos: [0, 0.1, 10.8], look: [0, -0.12, -2.6] }, b: { pos: [0, 0.05, 10.4], look: [0, -0.16, -2.6] } },
   terrain: { a: { pos: [0, 3.2, 8.4], look: [0, -1.0, -2.2] }, b: { pos: [0.5, 3.0, 8.6], look: [0.1, -0.9, -2.2] } },
   squad: { a: { pos: [0, 0.34, 7.2], look: [0, 0.08, -0.4] }, b: { pos: [0.18, 0.28, 7.0], look: [0.1, 0.05, -0.4] } },
   deploy: { a: { pos: [0.45, 0.16, 8.4], look: [0, 0, -3.2] }, b: { pos: [0.12, 0.08, 7.6], look: [0, -0.05, -3.3] } },
@@ -50,6 +51,7 @@ void main(){
   col = mix(vec3(0.008, 0.011, 0.01), vec3(1.05, 1.0, 0.9), col);
   col += vec3(0.028, 0.045, 0.008) * smoothstep(0.5, 0.92, l);
   col *= 1.0 + (l - 0.5) * 0.1;
+  col *= 1.0 + (hash(vec2(floor(uTime * 24.0), 3.0)) - 0.5) * 0.018;
 
   float vig = 1.0 - smoothstep(0.35, 0.95, r2 * 1.25);
   col *= mix(1.0, vig, uVignette);
@@ -331,6 +333,13 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     squadBackdrop: './assets/squad-bg.webp',
     deployBg: './assets/deploy-bg.webp',
     deployOperator: './assets/deploy-operator.webp',
+    heroOperatorMain: './assets/hero-operator-main.webp',
+    op1: './assets/op-01.webp',
+    op2: './assets/op-02.webp',
+    op3: './assets/op-03.webp',
+    op4: './assets/op-04.webp',
+    op5: './assets/op-05.webp',
+    op6: './assets/op-06.webp',
   };
   const t = {};
   for (const [key, url] of Object.entries(urls)) t[key] = await loadTexture(url);
@@ -386,14 +395,14 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
 
   // ── 首屏 ──
   const hero = buildChapter('hero');
-  const heroBg = addPlane(hero, t.heroBg, { width: 13.5, height: 7.8, position: [0, 0, -5.8], opacity: 0.95, exposure: 0.9, tint: [1.02, 0.99, 0.93] });
+  const heroBg = addPlane(hero, t.heroBg, { width: 13.5, height: 7.8, position: [0, 0, -5.8], opacity: 0.9, exposure: 0.78, tint: [1.02, 0.99, 0.93] });
   const heroVideo = addPlane(hero, t.ambientPoster, { width: 22, height: 13, position: [0, 0, -5.5], opacity: 0.2, exposure: 0.72, tint: [1.0, 0.97, 0.9] });
-  const heroSmoke = addPlane(hero, t.smoke, { width: 20, height: 12, position: [0, -0.6, -3.4], opacity: 0.16, exposure: 1, tint: [0.9, 0.95, 0.86] });
+  const heroSmoke = addPlane(hero, t.smoke, { width: 22, height: 13, position: [0, -0.7, -3.2], opacity: 0.24, exposure: 1, tint: [0.88, 0.94, 0.84] });
   addPlane(hero, glowTex, { width: 7.5, height: 7.5, position: [1.5, -0.4, 0.4], opacity: 0.18, exposure: 1, tint: [0.9, 1.0, 0.8] });
-  const heroSupport = addPlane(hero, t.heroSupport, { width: 2.2, height: 3.3, position: [-3.15, -1.55, 0.05], opacity: 0.42, exposure: 0.72, tint: [0.92, 0.95, 0.88] });
-  heroSupport.userData.revealLocked = true;
-  const heroOperator = addPlane(hero, t.heroOperator, { width: 4.4, height: 3.4, position: [1.45, -0.7, 1.2], opacity: 1, exposure: 0.98, tint: [1.02, 0.99, 0.95] });
+  const heroOperator = addPlane(hero, t.heroOperatorMain, { width: 5.8, height: 3.67, position: [1.15, -0.95, 1.35], rotation: [0, -0.06, 0], opacity: 1, exposure: 1.0, tint: [1.02, 1.0, 0.96] });
   heroOperator.userData.revealLocked = true;
+  const heroRim = addPlane(hero, glowTex, { width: 5.4, height: 4.2, position: [1.35, -0.55, 0.85], opacity: 0.22, exposure: 1, tint: [0.86, 0.98, 0.76] });
+  heroRim.userData.revealLocked = true;
 
   // ── 行动方式 ──
   const modes = buildChapter('modes');
@@ -402,6 +411,28 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
   const modesOperator = addPlane(modes, t.modesOperator, { width: 3.1, height: 3.8, position: [2.45, -0.9, 0.9], opacity: 0.62, exposure: 0.88, tint: [0.98, 0.98, 0.92] });
   const modesVideoPlane = addPlane(modes, t.modeOpsBg, { width: 20, height: 11.6, position: [0, 0, -4.1], opacity: 0.13, exposure: 0.8, tint: [1, 0.98, 0.92] });
   addPlane(modes, glowTex, { width: 9, height: 9, position: [1.6, 0.4, 0.6], opacity: 0.1, exposure: 1, tint: [0.8, 1, 0.8] });
+
+  // ── 干员档案 ──
+  const operators = buildChapter('operators');
+  addPlane(operators, t.heroBg, { width: 18, height: 10.4, position: [0, 0, -6.4], opacity: 0.3, exposure: 0.58, tint: [0.92, 0.97, 0.9] });
+  addPlane(operators, t.smoke, { width: 28, height: 15, position: [0, -0.4, -4.2], opacity: 0.2, exposure: 1, tint: [0.9, 0.95, 0.85] });
+  addPlane(operators, glowTex, { width: 12, height: 8, position: [0, -0.4, -1.6], opacity: 0.1, exposure: 1, tint: [0.82, 1, 0.72] });
+  const operatorTextures = [t.op1, t.op2, t.op3, t.op4, t.op5, t.op6];
+  const operatorMeshes = operatorTextures.map((tex, i) => {
+    const aspect = tex.image ? tex.image.width / tex.image.height : 0.8;
+    const height = i === 3 ? 3.5 : 3.15;
+    const width = height * aspect;
+    const x = (i - (operatorTextures.length - 1) / 2) * 2.9;
+    const mesh = addPlane(operators, tex, {
+      width, height,
+      position: [x, -0.36 + (i % 2) * 0.1, i % 2 === 0 ? 0.15 : -0.1],
+      rotation: [0, -x * 0.055, 0],
+      opacity: 0.92, exposure: 0.72, tint: [1.0, 0.99, 0.96],
+    });
+    mesh.userData.opIndex = i;
+    mesh.userData.baseY = mesh.position.y;
+    return mesh;
+  });
 
   // ── 地形情报 ──
   const terrain = buildChapter('terrain');
@@ -480,7 +511,7 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     pointer: new THREE.Vector2(0, 0),
     pointerTarget: new THREE.Vector2(0, 0),
     active: 'hero',
-    progress: { hero: 0, modes: 0, terrain: 0, squad: 0, deploy: 0 },
+    progress: { hero: 0, modes: 0, operators: 0, terrain: 0, squad: 0, deploy: 0 },
     mode: 'operations',
     map: 'spaceport',
     hold: 0,
@@ -492,8 +523,9 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     mapDrag: 0,
     mapDragTarget: 0,
     scanPulseT: 0,
+    operatorFocus: null,
   };
-  const groupKeys = ['hero', 'modes', 'terrain', 'squad', 'deploy'];
+  const groupKeys = ['hero', 'modes', 'operators', 'terrain', 'squad', 'deploy'];
   for (const key of groupKeys) {
     groups[key].userData.revealTarget = key === 'hero' ? 1 : 0;
     groups[key].userData.reveal = key === 'hero' ? 0 : 0;
@@ -502,6 +534,9 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
   const camPos = camera.position.clone();
   const camLookCurrent = camLook.clone();
   const camTarget = { pos: new THREE.Vector3(), look: new THREE.Vector3() };
+  const orbitOffset = new THREE.Vector3();
+  const orbitUp = new THREE.Vector3(0, 1, 0);
+  const orbitRight = new THREE.Vector3(1, 0, 0);
   const raycaster = new THREE.Raycaster();
   const pointerNdc = new THREE.Vector2(0, 0);
 
@@ -514,17 +549,19 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     if (portrait) {
       if (key === 'hero') { camTarget.pos.set(0.1, 0.25, 11.4); camTarget.look.set(0, 0.05, -3.2); }
       if (key === 'modes') { camTarget.pos.set(0.2, 0.05, 10.2); camTarget.look.set(0, 0, -4.3); }
+      if (key === 'operators') { camTarget.pos.set(0, 0.25, 13.6); camTarget.look.set(0, -0.15, -2.6); }
       if (key === 'terrain') { camTarget.pos.set(0.1, 3.6, 10.4); camTarget.look.set(0, -1.0, -2.2); }
       if (key === 'squad') { const pan = lerp(-0.55, 0.55, p); camTarget.pos.set(pan, 0.3, 9.1); camTarget.look.set(pan, 0.02, -0.2); }
       if (key === 'deploy') { camTarget.pos.set(0.3, 0.2, 10.4); camTarget.look.set(0, 0, -3.3); }
     }
     if (!state.reduced) {
-      camTarget.pos.x += state.pointer.x * 0.16;
-      camTarget.pos.y += -state.pointer.y * 0.1;
-      camTarget.look.x += state.pointer.x * 0.06;
-      camTarget.look.y += -state.pointer.y * 0.04;
+      orbitOffset.copy(camTarget.pos).sub(camTarget.look);
+      const yaw = state.pointer.x * (state.active === 'squad' ? 0.055 : 0.024);
+      const pitch = -state.pointer.y * (state.active === 'hero' ? 0.02 : 0.015);
+      orbitOffset.applyAxisAngle(orbitUp, yaw);
+      orbitOffset.applyAxisAngle(orbitRight, pitch);
+      camTarget.pos.copy(camTarget.look).add(orbitOffset);
     }
-    if (state.active === 'squad') camTarget.look.x += state.pointer.x * 0.25;
     const intro = 1 - smoothstep(0, 1, state.entered);
     camTarget.pos.z += intro * (portrait ? 1.6 : 2.6);
     camTarget.pos.y += intro * 0.35;
@@ -537,17 +574,19 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
       squad.scale.set(0.82, 0.82, 1);
       squad.position.y = 0.16;
       heroBg.scale.set(1.16, 1.16, 1);
-      heroOperator.position.set(0.35, -1.25, 1.2);
-      heroOperator.scale.set(0.72, 0.72, 1);
-      heroSupport.position.set(-1.5, -1.7, 0.1);
+      heroOperator.position.set(0.2, -1.55, 1.35);
+      heroOperator.scale.set(0.66, 0.66, 1);
+      operators.scale.set(0.72, 0.72, 1);
+      operators.position.y = 0.1;
       deployPhone.position.set(0.85, -0.1, 0.9);
     } else {
       squad.scale.set(1, 1, 1);
       squad.position.y = 0;
       heroBg.scale.set(1, 1, 1);
-      heroOperator.position.set(1.45, -0.7, 1.2);
+      heroOperator.position.set(1.15, -0.95, 1.35);
       heroOperator.scale.set(1, 1, 1);
-      heroSupport.position.set(-2.2, -0.9, 0.1);
+      operators.scale.set(1, 1, 1);
+      operators.position.y = 0;
       deployPhone.position.set(1.5, -0.15, 0.9);
     }
   }
@@ -613,10 +652,19 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     }
     const enterReveal = smoothstep(0.02, 1, state.entered);
     heroOperator.material.uniforms.uReveal.value = enterReveal;
-    heroSupport.material.uniforms.uReveal.value = enterReveal;
-    heroBg.material.uniforms.uExposure.value = 0.9 + state.hold * 0.06;
-    const opTargetX = state.portrait ? 0.35 : 1.45;
+    heroBg.material.uniforms.uExposure.value = 0.78 + state.hold * 0.05;
+    const opTargetX = state.portrait ? 0.2 : 1.15;
     heroOperator.position.x = damp(heroOperator.position.x, opTargetX - state.hold * 0.08, 2.0, dt);
+    const opProgress = state.progress.operators || 0;
+    const opActive = clamp(Math.round(opProgress * (operatorMeshes.length - 1)), 0, operatorMeshes.length - 1);
+    const operatorCenter = (operatorMeshes.length - 1) / 2;
+    const focusIndex = state.operatorFocus !== null ? state.operatorFocus : opActive;
+    operators.position.x = damp(operators.position.x, (operatorCenter - focusIndex) * 2.9, 3.4, dt);
+    operatorMeshes.forEach((mesh, i) => {
+      const active = i === opActive;
+      mesh.material.uniforms.uExposure.value = damp(mesh.material.uniforms.uExposure.value, active ? 1.07 : 0.55, 4.0, dt);
+      mesh.position.y = damp(mesh.position.y, mesh.userData.baseY + (active ? 0.14 : 0), 4.0, dt);
+    });
     modesOperator.position.x = damp(modesOperator.position.x, (state.portrait ? 0.6 : 2.45) + state.pointer.x * 0.12, 2.4, dt);
     modesOperator.position.y = damp(modesOperator.position.y, (state.portrait ? -1.5 : -0.9) + state.pointer.y * 0.06, 2.4, dt);
     memberMeshes.forEach((mesh, i) => {
@@ -642,6 +690,10 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     state.hold = damp(state.hold, state.holdTarget, 2.4, dt);
     const key = state.active;
     cameraTargetFor(key, state.progress[key] || 0);
+    const zoomKey = key === 'deploy' ? 22.3 : key === 'operators' ? 22.8 : key === 'terrain' ? 23.1 : key === 'modes' ? 24.2 : 23.7;
+    const fovBase = camera.aspect < 0.82 ? 34 : 24;
+    camera.fov = damp(camera.fov, fovBase + (zoomKey - 24) * 1.15, 1.8, dt);
+    camera.updateProjectionMatrix();
     scanMesh.visible = key === 'terrain' && state.entered > 0.2;
     camPos.x = damp(camPos.x, camTarget.pos.x, 2.2, dt);
     camPos.y = damp(camPos.y, camTarget.pos.y, 2.2, dt);
@@ -707,6 +759,7 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
   }
   function setHover(result) { state.squadHover = result?.type === 'member' ? result.index : -1; }
   function setMapDrag(delta) { state.mapDragTarget = clamp(delta, -1, 1); }
+  function setOperatorFocus(index) { state.operatorFocus = clamp(Math.round(index), 0, operatorMeshes.length - 1); }
   function scanPulse() { state.scanPulseT = 1.6; }
   function startVideo() { syncVideos(); }
   function stopVideo() {
@@ -742,6 +795,7 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     pick,
     setHover,
     setMapDrag,
+  setOperatorFocus,
     scanPulse,
     setRawMode: (v) => { state.rawMode = Boolean(v); },
     startVideo,

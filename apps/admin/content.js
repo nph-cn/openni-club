@@ -7,12 +7,21 @@ const schemas={
 };
 const labels={PC:'电脑端',mobile:'手机端',hourly:'按时组队',escort:'护航',review:'复盘',hour:'小时',session:'次',target:'目标'};
 export function contentManager({request,isConnected,getData,onChange}){
- const $=s=>document.querySelector(s);let section='services',editing=null;
+ const $=s=>document.querySelector(s);let section='services',editing=null,serviceGame='';
  function show(next){section=next;$('#content-title').textContent=schemas[section].title;$('#create-content').textContent=`新增${schemas[section].singular}`;$('#create-content').hidden=!isConnected();render();}
+ function serviceFilter(){
+  const games=getData().games||[],all=getData().services||[];
+  if(!games.length)return null;
+  return el('div',{class:'service-filter'},el('span',{class:'service-filter-label'},'按游戏筛选'),el('div',{class:'ops-chips',role:'group','aria-label':'按游戏筛选服务'},[['','全部游戏'],...games.map(game=>[game.name,`${game.shortName||game.name} ${all.filter(item=>item.game===game.name).length}`])].map(([value,label])=>el('button',{type:'button',class:serviceGame===value?'selected':'',onclick:()=>{serviceGame=value;render();}},label))));
+ }
  function render(){
   const list=$('#content-list');list.classList.toggle('banner-grid',section==='banners');list.replaceChildren();$('#content-message').textContent='';
-  const records=getData()[section]||[];
-  if(!records.length){list.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},`还没有${schemas[section].singular}`)));return;}
+  const all=getData()[section]||[],records=section==='services'?all.filter(item=>!serviceGame||item.game===serviceGame):all;
+  if(section==='services'){const filter=serviceFilter();if(filter)list.append(filter);}
+  if(!records.length){
+   if(section==='services'&&serviceGame){list.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},`「${serviceGame}」下还没有服务`),el('button',{type:'button',class:'action soft',onclick:()=>{serviceGame='';render();}},'查看全部服务')));return;}
+   list.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},`还没有${schemas[section].singular}`)));return;
+  }
   for(const item of records){
    const row=el('article',{class:`content-row${item.archived?' archived':''}`}),text=el('div',{class:'content-copy'},el('h3',{},item.title||item.name));
    if(section==='services'){
@@ -96,5 +105,5 @@ export function contentManager({request,isConnected,getData,onChange}){
   }catch(e){$('#editor-error').textContent=e instanceof SyntaxError?'规格 JSON 格式有误。':e.message;}finally{submit.disabled=false;}
  };
  $('#create-content').onclick=()=>open();$('#close-editor').onclick=()=>$('#editor').close();
- return {show,render,editMember:item=>open(item,'players')};
+ return {show,render,editMember:item=>open(item,'players'),showServicesFor:game=>{serviceGame=game||'';show('services');},clearServiceFilter:()=>{serviceGame='';}};
 }

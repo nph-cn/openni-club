@@ -1136,6 +1136,100 @@ class Tag extends StatelessWidget {
   );
 }
 
+Color colorFromHex(String? value, {Color fallback = muted}) {
+  final hex = (value ?? '').replaceFirst('#', '').trim();
+  if (hex.length != 6) return fallback;
+  return Color(int.tryParse('FF$hex', radix: 16) ?? fallback.toARGB32());
+}
+
+/// 打手分级徽章。分级来自俱乐部实际配置，不根据价格或 UI 猜测。
+class TierBadge extends StatelessWidget {
+  const TierBadge({
+    super.key,
+    required this.tier,
+    this.compact = false,
+    this.showLevel = false,
+  });
+  final Json? tier;
+  final bool compact, showLevel;
+  @override
+  Widget build(BuildContext context) {
+    if (tier == null) return const SizedBox.shrink();
+    final color = colorFromHex('${tier!['color']}', fallback: warning);
+    final label = '${tier!['label'] ?? tier!['id']}';
+    final level = tier!['level'];
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 5 : 7,
+        vertical: compact ? 2 : 3,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .13),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: .32), width: .6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.military_tech_rounded, size: compact ? 10 : 12, color: color),
+          const SizedBox(width: 3),
+          Text(
+            showLevel && level != null ? '$label · Lv$level' : label,
+            style: TextStyle(
+              fontSize: compact ? 9.5 : 10.5,
+              height: 1.15,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .1,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 目录图片：同时支持官方 HTTPS 素材与仓库内本地演示图，失败时显示真实文字兜底。
+class CatalogImage extends StatelessWidget {
+  const CatalogImage(
+    this.source, {
+    super.key,
+    this.fit = BoxFit.cover,
+    this.alignment = Alignment.center,
+    this.fallback,
+    this.filterQuality = FilterQuality.medium,
+  });
+  final String source;
+  final BoxFit fit;
+  final Alignment alignment;
+  final FilterQuality filterQuality;
+  final Widget? fallback;
+  @override
+  Widget build(BuildContext context) {
+    final value = source.trim();
+    if (value.startsWith('assets/')) {
+      return Image.asset(
+        value,
+        fit: fit,
+        alignment: alignment,
+        filterQuality: filterQuality,
+        errorBuilder: (_, _, _) => fallback ?? const SizedBox.shrink(),
+      );
+    }
+    if (value.startsWith('https://')) {
+      return Image.network(
+        value,
+        fit: fit,
+        alignment: alignment,
+        filterQuality: filterQuality,
+        webHtmlElementStrategy: WebHtmlElementStrategy.fallback,
+        errorBuilder: (_, _, _) => fallback ?? const SizedBox.shrink(),
+      );
+    }
+    return fallback ?? const SizedBox.shrink();
+  }
+}
+
 class Surface extends StatelessWidget {
   const Surface({
     super.key,
@@ -1234,13 +1328,22 @@ class PlayerArt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final url = '${player['avatarUrl'] ?? ''}';
+    final demoAsset = !repo.isProduction
+        ? '${player['avatarAsset'] ?? ''}'
+        : '';
     final asset = !repo.isProduction
-        ? {
-            'p1': 'assets/demo/player-yu.png',
-            'p2': 'assets/demo/player-bei.png',
-            'p3': 'assets/demo/player-xiaoman.webp',
-            'p4': 'assets/demo/player-north.webp',
-          }[player['id']]
+        ? demoAsset.isNotEmpty
+              ? demoAsset
+              : {
+                  'p1': 'assets/demo/player-yu.png',
+                  'p2': 'assets/demo/player-bei.png',
+                  'p3': 'assets/demo/player-xiaoman.webp',
+                  'p4': 'assets/demo/player-north.webp',
+                  'p5': 'assets/demo/avatar-nyx.webp',
+                  'p6': 'assets/demo/avatar-gale.webp',
+                  'p7': 'assets/demo/avatar-abyss.webp',
+                  'p8': 'assets/demo/avatar-wing.webp',
+                }[player['id']]
         : null;
     final fallback = Container(
       color: sage,

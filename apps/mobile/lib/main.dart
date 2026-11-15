@@ -11,6 +11,7 @@ import 'discover.dart';
 import 'orders.dart';
 import 'booking.dart';
 import 'member.dart';
+import 'club_programs.dart';
 import 'accessibility.dart';
 import 'auth.dart';
 import 'loading.dart';
@@ -232,6 +233,8 @@ class _OpenNIAppState extends State<OpenNIApp> {
           'profile_loading': '/states/loading-profile',
           'member_loading': '/states/loading-member',
           'notifications_loading': '/states/loading-notifications',
+          'tiers_loading': '/states/loading-tiers',
+          'club_features_loading': '/states/loading-features',
           'privacy': '/legal/privacy',
           'terms': '/legal/terms',
           'home_android': '/',
@@ -271,6 +274,8 @@ class _OpenNIAppState extends State<OpenNIApp> {
               '/member/orders/$inProgressOrderId?delivery=1',
           'availability': '/member/availability',
           'earnings': '/member/earnings',
+          'tiers': '/club/tiers',
+          'club_features': '/club/features',
         }[widget.initialScreen] ??
         '/';
     router = GoRouter(
@@ -390,6 +395,22 @@ class _OpenNIAppState extends State<OpenNIApp> {
               repo: repo,
               title: '通知',
               child: const ClubSkeleton(kind: SkeletonKind.notifications),
+            ),
+          ),
+          GoRoute(
+            path: '/states/loading-tiers',
+            builder: (_, _) => ClubPage(
+              repo: repo,
+              title: '打手分级',
+              child: const ClubSkeleton(kind: SkeletonKind.tiers),
+            ),
+          ),
+          GoRoute(
+            path: '/states/loading-features',
+            builder: (_, _) => ClubPage(
+              repo: repo,
+              title: '俱乐部能力',
+              child: const ClubSkeleton(kind: SkeletonKind.clubFeatures),
             ),
           ),
           GoRoute(
@@ -522,6 +543,14 @@ class _OpenNIAppState extends State<OpenNIApp> {
         GoRoute(
           path: '/member/availability',
           builder: (_, _) => live(() => AvailabilityPage(repo)),
+        ),
+        GoRoute(
+          path: '/club/tiers',
+          builder: (_, _) => live(() => TiersPage(repo)),
+        ),
+        GoRoute(
+          path: '/club/features',
+          builder: (_, _) => live(() => ClubFeaturesPage(repo)),
         ),
       ],
       errorBuilder: (_, _) => ClubPage(
@@ -875,6 +904,21 @@ class _AccountPageState extends State<AccountPage> {
           onTap: busy
               ? null
               : () => edit('输入俱乐部邀请码', '', repo.acceptInvitation),
+        ),
+      if (!settings)
+        GroupRow(
+          leading: const Icon(Icons.military_tech_outlined, size: 17),
+          title: '打手分级',
+          subtitle: '分级、认证与分成规则',
+          onTap: () => context.push('/club/tiers'),
+        ),
+      if (!settings)
+        GroupRow(
+          leading: const Icon(Icons.tune_rounded, size: 17),
+          title: '俱乐部能力',
+          subtitle:
+              '已开通 ${repo.clubFeatures.where((f) => f['enabled'] == true).length}/${repo.clubFeatures.length} 项',
+          onTap: () => context.push('/club/features'),
         ),
       GroupRow(
         leading: const Icon(CupertinoIcons.lock_shield, size: 17),

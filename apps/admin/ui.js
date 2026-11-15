@@ -28,7 +28,15 @@ const iconPaths={
  empty:'M5 5h14l3 10v5H2v-5L5 5z M2 15h6l2 3h4l2-3h6',
  refresh:'M20 7v5h-5 M20 12a8 8 0 1 0-2 5 M20 7l-3-3',
  menu:'M4 6h16 M4 12h16 M4 18h16',
- close:'M6 6l12 12 M18 6 6 18'
+ close:'M6 6l12 12 M18 6 6 18',
+ games:'M7 9h10a5 5 0 0 1 5 5v1a4 4 0 0 1-4 4h-1.5L14 17h-4l-2.5 2H6a4 4 0 0 1-4-4v-1a5 5 0 0 1 5-5z M8 12.5v3 M6.5 14h3 M16 12.5h.01 M18 14.5h.01',
+ features:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z M18.5 15l.9 2.1 2.1.9-2.1.9-.9 2.1-.9-2.1L15.5 18l2.1-.9.9-2.1z',
+ star:'M12 3l2.5 5.1 5.6.8-4 3.9.9 5.6L12 15.7 7 18.4l.9-5.6-4-3.9 5.6-.8L12 3z',
+ pause:'M9 5v14 M15 5v14',
+ plus:'M12 5v14 M5 12h14',
+ search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16 M21 21l-4.3-4.3',
+ checkCircle:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0 M8 12l3 3 5-6',
+ analytics:'M4 20V10 M10 20V4 M16 20v-7 M22 20H2'
 };
 export function icon(name){
  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');

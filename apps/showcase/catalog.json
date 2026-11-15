@@ -749,5 +749,86 @@
   "flow": "member",
   "description": "收入账本的后续结算条目。",
   "flowOrder": 20
+ },
+ {
+  "id": "tiers",
+  "title": "打手分级",
+  "role": "member",
+  "flow": "member",
+  "description": "打手分级、认证与分成规则，含各等级成员与升级流程；示例规则，真实以运营配置为准。",
+  "flowOrder": 21,
+  "source": "apps/mobile/lib/club_programs.dart"
+ },
+ {
+  "id": "club_features",
+  "title": "俱乐部能力",
+  "role": "member",
+  "flow": "member",
+  "description": "俱乐部可开通能力清单：分级、认证、试听、多游戏类目、语音房、发票、会员卡与车队；示例配置。",
+  "flowOrder": 22,
+  "source": "apps/mobile/lib/club_programs.dart"
+ },
+ {
+  "id": "tiers_loading",
+  "title": "打手分级加载",
+  "role": "member",
+  "flow": "member",
+  "description": "打手分级页的骨架加载状态，按真实版式占位。",
+  "flowOrder": 23,
+  "source": "apps/mobile/lib/loading.dart"
+ },
+ {
+  "id": "club_features_loading",
+  "title": "俱乐部能力加载",
+  "role": "member",
+  "flow": "member",
+  "description": "俱乐部能力页的骨架加载状态，按真实版式占位。",
+  "flowOrder": 24,
+  "source": "apps/mobile/lib/loading.dart"
+ },
+ {
+  "id": "tiers_sections_grading",
+  "title": "打手分级·标准与成员",
+  "role": "member",
+  "flow": "member",
+  "description": "打手分级的等级标准、分成、权益与成员分布后续内容段。",
+  "flowOrder": 25,
+  "source": "apps/mobile/lib/club_programs.dart"
+ },
+ {
+  "id": "club_features_sections_more",
+  "title": "俱乐部能力·更多模块",
+  "role": "member",
+  "flow": "member",
+  "description": "俱乐部可开通能力清单的后续模块与状态说明。",
+  "flowOrder": 26,
+  "source": "apps/mobile/lib/club_programs.dart"
+ },
+ {
+  "id": "admin-roster",
+  "title": "打手管理",
+  "role": "operator",
+  "flow": "member",
+  "description": "分级、认证与成员状态",
+  "flowOrder": 27,
+  "source": "apps/admin/operations.js"
+ },
+ {
+  "id": "admin-games",
+  "title": "游戏类目",
+  "role": "operator",
+  "flow": "member",
+  "description": "8 个游戏类目的启停与联动",
+  "flowOrder": 28,
+  "source": "apps/admin/operations.js"
+ },
+ {
+  "id": "admin-features",
+  "title": "能力开通",
+  "role": "operator",
+  "flow": "member",
+  "description": "俱乐部可开通模块与示例状态",
+  "flowOrder": 29,
+  "source": "apps/admin/operations.js"
  }
 ]

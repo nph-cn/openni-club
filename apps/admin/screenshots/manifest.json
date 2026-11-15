@@ -130,5 +130,41 @@
     "width": 1280,
     "height": 720,
     "capture": "2026-11-16 · CUA · Chromium · 本机 demo 只读运行截图"
+  },
+  {
+    "id": "admin-roster",
+    "file": "admin-roster.jpg",
+    "title": "打手管理",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "分级、认证与成员状态"
+  },
+  {
+    "id": "admin-games",
+    "file": "admin-games.jpg",
+    "title": "游戏类目",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "8 个游戏类目的启停与联动"
+  },
+  {
+    "id": "admin-features",
+    "file": "admin-features.jpg",
+    "title": "能力开通",
+    "role": "operator",
+    "flow": "member",
+    "source": "apps/admin/operations.js",
+    "width": 1266,
+    "height": 712,
+    "capture": "2026-11-16 · Chromium · 本机 demo 只读运行截图",
+    "description": "俱乐部可开通模块与示例状态"
   }
 ]

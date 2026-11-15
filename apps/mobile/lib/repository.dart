@@ -115,6 +115,9 @@ class ClubRepository extends ChangeNotifier {
   List<Json> banners = [];
   List<Json> services = [];
   List<Json> players = [];
+  List<Json> games = [];
+  List<Json> tiers = [];
+  List<Json> clubFeatures = [];
   List<Json> announcements = [];
   List<Json> orders = [];
   bool favorite = false;
@@ -128,6 +131,49 @@ class ClubRepository extends ChangeNotifier {
   String get clubName => '${club['name'] ?? brand['name'] ?? '俱乐部'}';
   String get shortName =>
       '${club['shortName'] ?? brand['shortName'] ?? clubName}';
+
+  /// 只展示俱乐部已开通且启用的游戏类目。
+  List<Json> get enabledGames => games
+      .where((game) => game['enabled'] != false)
+      .toList()
+    ..sort(
+      (a, b) => (a['sortOrder'] as num? ?? 99).compareTo(
+        b['sortOrder'] as num? ?? 99,
+      ),
+    );
+
+  Json? gameByName(String name) {
+    for (final game in games) {
+      if ('${game['name']}' == name) return game;
+    }
+    return null;
+  }
+
+  Json? playerById(String? id) {
+    if (id == null) return null;
+    for (final player in players) {
+      if ('${player['id']}' == id) return player;
+    }
+    return null;
+  }
+
+  Json? tierFor(Json player) {
+    final id = '${player['tier'] ?? ''}';
+    if (id.isEmpty) return null;
+    for (final tier in tiers) {
+      if ('${tier['id']}' == id) return tier;
+    }
+    return null;
+  }
+
+  List<Json> get certifiedPlayers => players
+      .where((player) => player['certified'] == true)
+      .toList();
+
+  bool featureEnabled(String id) => clubFeatures.any(
+    (feature) => feature['id'] == id && feature['enabled'] == true,
+  );
+
 
   void _requireSession(int revision) {
     if (revision != _sessionRevision) {
@@ -251,6 +297,15 @@ class ClubRepository extends ChangeNotifier {
         players = (catalog['players'] as List)
             .map((v) => Json.from(v))
             .toList();
+        games = (catalog['games'] as List? ?? [])
+            .map((v) => Json.from(v))
+            .toList();
+        tiers = (catalog['tiers'] as List? ?? [])
+            .map((v) => Json.from(v))
+            .toList();
+        clubFeatures = (catalog['clubFeatures'] as List? ?? [])
+            .map((v) => Json.from(v))
+            .toList();
         announcements = (catalog['announcements'] as List)
             .map((v) => Json.from(v))
             .toList();
@@ -284,6 +339,47 @@ class ClubRepository extends ChangeNotifier {
         players = (results[2] as List).map((e) => Json.from(e)).toList();
         announcements = (results[3] as List).map((e) => Json.from(e)).toList();
         banners = (results[4] as List).map((e) => Json.from(e)).toList();
+      }
+      // 兼容尚未返回 games/tiers 的旧接口与网关：从真实服务目录派生，不编造新类目。
+      if (games.isEmpty) {
+        final names = <String>[];
+        for (final service in services) {
+          final name = '${service['game'] ?? ''}'.trim();
+          if (name.isNotEmpty && !names.contains(name)) names.add(name);
+        }
+        games = [
+          for (var i = 0; i < names.length; i++)
+            Json.from({
+              'id': 'game-${i + 1}',
+              'name': names[i],
+              'shortName': names[i],
+              'category': '游戏',
+              'platform': 'PC',
+              'accent': '#8A9A5B',
+              'enabled': true,
+              'sortOrder': i + 1,
+              'coverUrl': services
+                  .firstWhere((s) => s['game'] == names[i])['coverUrl'],
+              'description': '',
+            }),
+        ];
+      }
+      if (tiers.isEmpty) {
+        tiers = [
+          for (final tier in const [
+            ('S', '王牌', 5, '#C6A15B'),
+            ('A', '精英', 4, '#6FA7C9'),
+            ('B', '进阶', 3, '#8FB27C'),
+            ('C', '新锐', 2, '#A8A8A8'),
+          ])
+            Json.from({
+              'id': tier.$1,
+              'label': tier.$2,
+              'level': tier.$3,
+              'color': tier.$4,
+              'perks': const <String>[],
+            }),
+        ];
       }
     } catch (e) {
       error = e.toString().replaceFirst('Exception: ', '');

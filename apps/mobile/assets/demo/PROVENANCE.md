@@ -18,3 +18,10 @@ Prompts:
 `order-in-progress.json` is copied from `services/api/test/fixtures/order-in-progress.json`, produced through actual HTTP actions: customer creates demo order; owner assigns p1; p1 accepts; p1 starts. The fixture preserves the server-produced events and state. It contains no customer session token. It is loaded only in the explicitly labeled offline demo and screenshot tests, never production.
 
 `member-preview.json` contains actual p1 responses from authenticated `/me`, `/member/orders`, `/member/earnings`, `/member/availability`, and `/notifications`. The generating script creates, assigns, accepts, starts, submits, confirms and records a manual settlement; it also creates separate in-progress and awaiting-acceptance orders. Availability is set through the API to 18:00–23:30. Offline member operations are read-only. See `services/api/scripts/generate-demo-snapshot.mjs` and the fixture README. The app never rewrites fixture status, ledger amounts or event timestamps for visual effect.
+
+
+## 2026-11-16 新增：打手分级演示头像
+
+`avatar-nyx.webp`、`avatar-gale.webp`、`avatar-abyss.webp`、`avatar-wing.webp` 是从三角洲行动官方公开角色美术（元数据见 `apps/showcase/delta/assets-manifest.json`）裁切的方形演示头像，用于打手分级与更多类目的示例成员；不是真实人物照片，也不代表真实陪练、签约人员或客户身份。生产环境成员必须使用本人授权上传的头像或默认首字母，不使用官方游戏角色美术作为真人头像。
+
+游戏封面与图标来源见同仓库 `assets/games/PROVENANCE.md`。

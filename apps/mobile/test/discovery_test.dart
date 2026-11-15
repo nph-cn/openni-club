@@ -74,7 +74,7 @@ void main() {
     expect(shownPlayers(tester), ['p1']);
     await tester.enterText(find.byType(EditableText), '英雄联盟');
     await tester.pumpAndSettle();
-    expect(shownPlayers(tester), ['p3', 'p4']);
+    expect(shownPlayers(tester), ['p3', 'p4', 'p8']);
     final deltaChip = find.widgetWithText(ChoiceChip, '三角洲行动');
     await tester.ensureVisible(deltaChip);
     await tester.tap(deltaChip);
@@ -85,7 +85,7 @@ void main() {
     expect(find.text('没有匹配的陪练'), findsOneWidget);
     await tester.tap(find.text('清除筛选'));
     await tester.pumpAndSettle();
-    expect(shownPlayers(tester), ['p1', 'p2', 'p3', 'p4']);
+    expect(shownPlayers(tester), ['p1', 'p2', 'p3', 'p4', 'p5']);
     expect(
       tester.widget<EditableText>(find.byType(EditableText)).controller.text,
       isEmpty,
@@ -101,10 +101,10 @@ void main() {
     expect(find.text('无畏契约 · 组队小时陪'), findsOneWidget);
     expect(find.text('三角洲 · PC 小时陪'), findsNothing);
     await chooseSection(tester, '俱乐部陪练');
-    expect(shownPlayers(tester), ['p2', 'p3']);
+    expect(shownPlayers(tester), ['p2', 'p3', 'p7']);
     router.push('/players?game=${Uri.encodeComponent('英雄联盟')}');
     await tester.pumpAndSettle();
-    expect(shownPlayers(tester), ['p3', 'p4']);
+    expect(shownPlayers(tester), ['p3', 'p4', 'p8']);
     expect(find.byTooltip('返回'), findsOneWidget);
     expect(find.byType(ClubTabBar), findsNothing);
     expect(tester.takeException(), isNull);
@@ -126,7 +126,7 @@ void main() {
     expect(selectedLabel.style?.color, onBrand(repo));
     await tester.tap(find.text('查看全部陪练'));
     await tester.pumpAndSettle();
-    expect(shownPlayers(tester), ['p1', 'p2', 'p3', 'p4']);
+    expect(shownPlayers(tester), ['p1', 'p2', 'p3', 'p4', 'p5']);
     expect(tester.takeException(), isNull);
   });
 

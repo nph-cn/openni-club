@@ -19,6 +19,7 @@
     <div class="loader-inner">
       <div class="loader-top">
         <span>OPENNI / FIELD DOSSIER</span>
+        <span class="loader-file" id="loader-file">OPS_SCENE.TEX</span>
         <span class="loader-count"><b id="loader-progress">000</b><i>%</i></span>
       </div>
       <div class="loader-bar" aria-hidden="true"><i id="loader-fill"></i></div>
@@ -31,12 +32,13 @@
         <button class="loader-enter" id="enter-sound" type="button" disabled>开启声音进入 <span aria-hidden="true">↗</span></button>
         <button class="loader-quiet" id="enter-silent" type="button" disabled>静音进入</button>
       </div>
-      <div class="loader-meta" aria-hidden="true"><span>3D / WEBGL2</span><span>01 — 05</span><span>2026</span></div>
+      <div class="loader-meta" aria-hidden="true"><span>3D / WEBGL2</span><span>01 — 06</span><span>2026</span></div>
     </div>
   </div>
 
   <div class="cursor" id="cursor" aria-hidden="true"><i></i><span id="cursor-label"></span></div>
   <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="chapter-wipe" id="chapter-wipe" aria-hidden="true"><i class="wt"></i><i class="wb"></i></div>
   <div class="stage-fallback" aria-hidden="true">
     <img id="fallback-plate" src="./assets/operations-scene.jpg" alt="">
     <img id="fallback-operator" src="./assets/operation-role.webp" alt="">
@@ -54,9 +56,10 @@
     <nav class="chapter-nav" aria-label="章节导航">
       <a href="#entry" data-nav="hero"><b>00</b><span>入局</span></a>
       <a href="#modes" data-nav="modes"><b>01</b><span>战法</span></a>
-      <a href="#maps" data-nav="terrain"><b>02</b><span>地形</span></a>
-      <a href="#squad" data-nav="squad"><b>03</b><span>小队</span></a>
-      <a href="#deploy" data-nav="deploy"><b>04</b><span>部署</span></a>
+      <a href="#operators" data-nav="operators"><b>02</b><span>干员</span></a>
+      <a href="#maps" data-nav="terrain"><b>03</b><span>地形</span></a>
+      <a href="#squad" data-nav="squad"><b>04</b><span>小队</span></a>
+      <a href="#deploy" data-nav="deploy"><b>05</b><span>部署</span></a>
     </nav>
     <div class="topbar-actions">
       <button class="icon-button" id="sound-toggle" type="button" aria-pressed="false" aria-label="开启环境声">声</button>
@@ -71,9 +74,10 @@
     <ol>
       <li><a href="#entry" data-rail="hero"><span>00</span><em>入局</em></a></li>
       <li><a href="#modes" data-rail="modes"><span>01</span><em>战法</em></a></li>
-      <li><a href="#maps" data-rail="terrain"><span>02</span><em>地形</em></a></li>
-      <li><a href="#squad" data-rail="squad"><span>03</span><em>小队</em></a></li>
-      <li><a href="#deploy" data-rail="deploy"><span>04</span><em>部署</em></a></li>
+      <li><a href="#operators" data-rail="operators"><span>02</span><em>干员</em></a></li>
+      <li><a href="#maps" data-rail="terrain"><span>03</span><em>地形</em></a></li>
+      <li><a href="#squad" data-rail="squad"><span>04</span><em>小队</em></a></li>
+      <li><a href="#deploy" data-rail="deploy"><span>05</span><em>部署</em></a></li>
     </ol>
     <span class="rail-note" aria-hidden="true">OPENNI / FIELD DOSSIER</span>
   </aside>
@@ -96,12 +100,13 @@
         <div class="hero-ghost" aria-hidden="true">DELTA</div>
         <h1 class="hero-title" id="entry-title"><span class="type-line">三角洲</span><span class="type-line line-bottom">行动<i aria-hidden="true">.</i></span></h1>
         <p class="hero-lead">一次默契的组队，<br>从有人补位开始。</p>
+        <div class="hero-op-tag" aria-hidden="true"><span>OP-04 / 猎隼</span><b>狙击 · 远程架点</b><i>战术档案 04</i></div>
         <div class="hero-bottom">
           <a class="scroll-cue" href="#modes"><span class="cue-arrow" aria-hidden="true">↓</span><span>进入战地档案</span></a>
           <p class="hero-note">非官方游戏视觉专题。<br>画面使用已核源的官方公开素材，经 Three.js 重构。</p>
           <button class="hold-button" id="hold-button" type="button" data-cursor="按住"><span class="hold-ring" aria-hidden="true"></span>按住 · 战地呼吸</button>
         </div>
-        <div class="hero-tags" aria-hidden="true"><span>FIELD DOSSIER</span><span>01 / 05</span><span>THREE.JS STUDY</span></div>
+        <div class="hero-tags" aria-hidden="true"><span>FIELD DOSSIER</span><span>01 / 06</span><span>THREE.JS STUDY</span></div>
       </div>
     </section>
 
@@ -144,10 +149,36 @@
       </div>
     </section>
 
+    <section id="operators" class="chapter chapter-operators" data-chapter="operators" data-plate="./assets/operations-scene.jpg" data-code="OPERATORS" aria-labelledby="operators-title">
+      <div class="operators-sticky">
+        <div class="operators-head">
+          <p class="eyebrow">02 / 干员档案</p>
+          <h2 id="operators-title" class="reveal-type">六个位置，<br><em>六种打法。</em></h2>
+          <p class="operators-intro">从侦察到重装，从远程架点到残局补位。滚动浏览干员档案，3D 画面会跟随你的进度平移。</p>
+        </div>
+        <div class="operators-readout" id="operators-readout" aria-live="polite">
+          <span class="op-code" id="op-code">OP-01 / RECON</span>
+          <strong class="op-name" id="op-name">骇爪</strong>
+          <p class="op-role" id="op-role">侦察 · 信息获取</p>
+          <p class="op-line" id="op-line">先看到，才有得选。</p>
+          <div class="op-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="operators-tabs" role="tablist" aria-label="干员档案">
+          <button type="button" role="tab" aria-selected="true" data-op="0"><span>01</span><strong>骇爪</strong><small>侦察</small></button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-op="1"><span>02</span><strong>露娜</strong><small>突击</small></button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-op="2"><span>03</span><strong>牧羊人</strong><small>重装</small></button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-op="3"><span>04</span><strong>猎隼</strong><small>狙击</small></button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-op="4"><span>05</span><strong>无名</strong><small>支援</small></button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-op="5"><span>06</span><strong>银翼</strong><small>自由人</small></button>
+        </div>
+        <p class="operators-foot">干员画面来自三角洲官方公开角色美术；代号与档案文案为二创整理，非官方设定。</p>
+      </div>
+    </section>
+
     <section id="maps" class="chapter chapter-maps" data-chapter="terrain" data-plate="./assets/spaceport-scene.jpg" data-code="TERRAIN" aria-labelledby="maps-title">
       <div class="maps-sticky">
         <div class="maps-head">
-          <p class="eyebrow">02 / 地形情报</p>
+          <p class="eyebrow">03 / 地形情报</p>
           <h2 id="maps-title" class="reveal-type">每一张地图，<br><em>都值得重新判断。</em></h2>
           <p class="maps-intro">从开阔地到建筑内部，和小队一起观察地形、沟通路线。</p>
         </div>
@@ -181,7 +212,7 @@
     <section id="squad" class="chapter chapter-squad is-paper" data-chapter="squad" data-plate="./assets/operations-scene.jpg" data-code="SQUAD" aria-labelledby="squad-title">
       <div class="squad-grid">
         <div class="squad-sheet squad-top">
-          <p class="eyebrow">03 / 小队集结</p>
+          <p class="eyebrow">04 / 小队集结</p>
           <h2 id="squad-title" class="reveal-type">一个人的枪法，<br><em>四个人的战局。</em></h2>
           <p class="squad-lead">在 OpenNI，找到能补上你空缺的队友：<br>指挥、教练、搭子与全能位。</p>
         </div>
@@ -212,7 +243,7 @@
     <section id="deploy" class="chapter chapter-deploy" data-chapter="deploy" data-plate="./assets/warfare-scene.jpg" data-code="DEPLOY" aria-labelledby="deploy-title">
       <div class="deploy-sticky">
         <div class="deploy-copy">
-          <p class="eyebrow">04 / 部署</p>
+          <p class="eyebrow">05 / 部署</p>
           <h2 id="deploy-title" class="reveal-type">下一局，<br><em>别再一个人排。</em></h2>
           <p class="deploy-lead">选择模式、地图与时段，<br>把位置交给能补位的人。</p>
           <div class="deploy-actions">
@@ -247,9 +278,10 @@
     <nav class="menu-nav" aria-label="章节">
       <a href="#entry" data-menu="hero"><span>00</span><strong>入局</strong><em>ENTRY</em></a>
       <a href="#modes" data-menu="modes"><span>01</span><strong>行动方式</strong><em>MODES</em></a>
-      <a href="#maps" data-menu="terrain"><span>02</span><strong>地形情报</strong><em>TERRAIN</em></a>
-      <a href="#squad" data-menu="squad"><span>03</span><strong>小队集结</strong><em>SQUAD</em></a>
-      <a href="#deploy" data-menu="deploy"><span>04</span><strong>部署</strong><em>DEPLOY</em></a>
+      <a href="#operators" data-menu="operators"><span>02</span><strong>干员档案</strong><em>OPERATORS</em></a>
+      <a href="#maps" data-menu="terrain"><span>03</span><strong>地形情报</strong><em>TERRAIN</em></a>
+      <a href="#squad" data-menu="squad"><span>04</span><strong>小队集结</strong><em>SQUAD</em></a>
+      <a href="#deploy" data-menu="deploy"><span>05</span><strong>部署</strong><em>DEPLOY</em></a>
     </nav>
     <p class="menu-foot">非官方视觉专题 · OpenNI 2026</p>
   </dialog>

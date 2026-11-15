@@ -13,6 +13,8 @@ const stateScreenNames = [
   'privacy',
   'terms',
   'home_android',
+  'tiers_loading',
+  'club_features_loading',
 ];
 const screenNames = [
   'home',
@@ -38,6 +40,8 @@ const screenNames = [
   'member_notifications',
   'availability',
   'earnings',
+  'tiers',
+  'club_features',
   ...stateScreenNames,
 ];
 
@@ -53,6 +57,7 @@ const sectionScreenNames = [
   'member_sections_earnings', 'member_orders_sections_more', 'member_order_sections_more', 'earnings_sections_more',
   'earnings_sections_settlement', 'availability_sections_more', 'delivery_sections_more',
   'member_notifications_sections_more', 'home_android_sections_more',
+  'tiers_sections_grading', 'club_features_sections_more',
 ];
 
 /// 通过真实交互捕获的状态，不作为直接页面路由。

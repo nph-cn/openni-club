@@ -1,11 +1,14 @@
 import {el,icon,money,dateTime,safeImage,apiAddress,shanghaiInput,fromShanghaiInput,fulfillmentLabels as statuses,ledgerLabels,paymentLabels} from './ui.js';
 import {contentManager} from './content.js';
+import {applyDemoOverlay,saveDemoSection,resetDemoPreview,hasDemoEdits} from './demo-store.js';
 
 const $=selector=>document.querySelector(selector);
 document.querySelectorAll('[data-icon]').forEach(node=>node.replaceChildren(icon(node.dataset.icon)));
-const titles={overview:'今日待办',dispatch:'派单工作台',orders:'全部订单',members:'成员与排班',settlements:'收入与结算',disputes:'售后处理',brand:'品牌与发布',connection:'连接与集成',services:'服务目录',announcements:'俱乐部公告',banners:'首页横幅'};
-let data={orders:[],players:[],services:[],announcements:[],banners:[],club:{},overview:{counts:{},totals:{}},settlements:{entries:[],totals:{},settlements:[]},disputes:[]};
+const titles={overview:'今日待办',dispatch:'派单工作台',orders:'全部订单',members:'打手管理',settlements:'收入与结算',disputes:'售后处理',brand:'品牌与发布',connection:'连接与集成',services:'服务目录',games:'游戏类目',features:'能力开通',announcements:'俱乐部公告',banners:'首页横幅'};
+const tierNames={S:'王牌',A:'资深',B:'熟练',C:'新锐'};
+let data={orders:[],players:[],services:[],games:[],features:[],announcements:[],banners:[],club:{},overview:{counts:{},totals:{}},settlements:{entries:[],totals:{},settlements:[]},disputes:[]};
 let workspace='overview',apiBase='',adminToken='',orderFilter='all',orderSearch='',currentOrderId=null,actionSubmit=null,loadVersion=0;
+let rosterTier='all',rosterState='all',rosterSearch='',gameCategory='all',gameSearch='';
 const connected=()=>Boolean(apiBase&&adminToken);
 const mobileNavigation=matchMedia('(max-width:900px)');
 const navBackdrop=el('button',{type:'button',class:'sidebar-backdrop','aria-label':'关闭菜单',hidden:true,onclick:()=>setMenu(false)});
@@ -19,11 +22,16 @@ const badge=(text,state='neutral')=>el('span',{class:`badge ${state}`},text);
 const statusBadge=o=>badge(statuses[o.fulfillmentStatus]||o.fulfillmentStatus,o.fulfillmentStatus);
 const button=(text,fn,style='soft',disabled=false)=>el('button',{type:'button',class:`action ${style}`,onclick:event=>{Promise.resolve().then(()=>fn(event)).catch(error=>notify(error.message,true));},disabled},text);
 const empty=text=>el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('empty')),el('p',{},text));
-const header=(title,action)=>el('div',{class:'ops-page-header'},el('h1',{},title),action||null);
+const header=(title,action,kicker)=>el('div',{class:'ops-page-header'},el('div',{class:'page-heading'},kicker?el('span',{class:'page-kicker'},kicker):null,el('h1',{},title)),action||null);
 const panel=(title,body,action)=>el('section',{class:'ops-panel'},el('div',{class:'panel-header'},el('h2',{},title),action||null),body);
 const field=(label,input)=>el('label',{class:'ops-field'},el('span',{},label),input);
 const fact=(label,value)=>el('div',{},el('dt',{},label),el('dd',{},value??'—'));
 const notify=(text,error=false)=>{const node=$('#global-message');node.textContent=text;node.hidden=!text;node.className=error?'error':'';};
+const activePlayer=p=>!p.archived&&p.status!=='paused';
+const tierBadge=tier=>tier?el('span',{class:`tier-badge tier-${tier}`},el('b',{},tier),el('span',{},tierNames[tier]||'')):el('span',{class:'tier-badge tier-none'},'未分级');
+const certifiedBadge=()=>el('span',{class:'cert-badge'},icon('checkCircle'),'认证');
+const demoNote=(text,label='示例数据')=>el('div',{class:'demo-note'},el('span',{class:'status-dot'}),el('strong',{},label),el('p',{},text));
+const switchButton=(checked,label,onclick,disabled=false)=>el('button',{type:'button',class:`switch${checked?' on':''}`,role:'switch','aria-checked':String(Boolean(checked)),'aria-label':label,disabled,onclick},el('span',{class:'switch-knob'}));
 
 async function request(path,options={}){
  if(!connected())throw Error('请先连接俱乐部后端。');
@@ -43,7 +51,7 @@ async function refresh(){
   if(connected()){
    const paths={overview:'/admin/overview',orders:'/admin/orders',players:'/admin/players',services:'/admin/services',announcements:'/admin/announcements',banners:'/admin/banners',club:'/admin/club',settlements:'/admin/settlements',disputes:'/admin/disputes',config:'/admin/config/status'};
    const results=await Promise.all(Object.entries(paths).map(async([key,path])=>[key,await request(path)]));next=Object.fromEntries(results);
-  }else{const response=await fetch('/admin/demo-snapshot.json',{cache:'no-store'});if(!response.ok)throw Error('示例数据暂时无法读取。');next=await response.json();}
+  }else{const response=await fetch('/admin/demo-snapshot.json',{cache:'no-store'});if(!response.ok)throw Error('示例数据暂时无法读取。');next=applyDemoOverlay(await response.json());}
   if(version!==loadVersion)return;
   data=next;render();if(currentOrderId&&$('#order-drawer').open)renderOrder(currentOrderId);
  }catch(e){if(version===loadVersion)notify(e.message,true);throw e;}finally{if(version===loadVersion)$('#refresh-all').disabled=false;}
@@ -54,14 +62,17 @@ function render(){
  const logo=safeImage(club.logoUrl);$('#club-logo').src=logo||'/icon.svg';
  $('#workspace-label').textContent=titles[workspace];
  $('#today-label').textContent=new Intl.DateTimeFormat('zh-CN',{month:'long',day:'numeric',weekday:'long',timeZone:'Asia/Shanghai'}).format(new Date(connected()?Date.now():data.generatedAt||Date.now()));
- $('#mode-label').textContent=connected()?(data.config?.demo?'演示后端':'已连接'):'只读示例';
+ $('#mode-label').textContent=connected()?(data.config?.demo?'演示后端':'已连接'):'示例工作台';
  $('#mode-label').classList.toggle('live',connected()&&!data.config?.demo);
  $('#open-connection').textContent=connected()?'连接设置':'连接俱乐部';$('#preview-banner').hidden=connected();
  $('#dispatch-count').textContent=data.overview.counts.awaitingAssignment||0;$('#dispute-count').textContent=data.overview.counts.disputed||0;
+ const enabledFeatures=(data.features||[]).filter(feature=>feature.enabled).length,enabledGames=(data.games||[]).filter(game=>game.enabled).length;
+ if($('#feature-count'))$('#feature-count').textContent=connected()?'—':enabledFeatures;
+ if($('#game-count'))$('#game-count').textContent=connected()?'—':enabledGames;
  document.querySelectorAll('[data-workspace],[data-section]').forEach(node=>{const active=(node.dataset.workspace||node.dataset.section)===workspace;node.classList.toggle('selected',active);node.setAttribute('aria-current',active?'page':'false');});
  const isContent=['services','announcements','banners'].includes(workspace);$('#content-panel').hidden=!isContent;$('#orders-panel').hidden=isContent;
  if(isContent){content.show(workspace);return;}
- const views={overview:renderOverview,dispatch:renderDispatch,orders:renderOrders,members:renderMembers,settlements:renderSettlements,disputes:renderDisputes,brand:renderBrand,connection:renderConnection};
+ const views={overview:renderOverview,dispatch:renderDispatch,orders:renderOrders,members:renderRoster,settlements:renderSettlements,disputes:renderDisputes,games:renderGames,features:renderFeatures,brand:renderBrand,connection:renderConnection};
  $('#ops-content').replaceChildren(views[workspace]());
 }
 function metrics(items){return el('div',{class:'metrics'},items.map(([label,value,foot,fn])=>el(fn?'button':'div',{class:'metric',...(fn?{onclick:fn}:{})},el('span',{class:'metric-label'},label),el('strong',{class:'metric-value'},value),foot?el('span',{class:'metric-footer'},foot):null)));}
@@ -97,12 +108,184 @@ function renderOrders(){
  root.append(el('div',{class:'ops-table-tools'},chips,input),region);return root;
 }
 function avatar(p){const image=safeImage(p?.avatarUrl);return image?el('img',{class:'member-avatar',src:image,alt:''}):el('span',{class:'member-avatar'},p?.initials||'—');}
-function renderMembers(){
- return el('div',{},header('成员与排班',connected()?button('新增成员',()=>content.editMember(null),'dark'):null),el('div',{class:'member-grid'},data.players.map(p=>{
-  const active=data.orders.filter(o=>o.assignedPlayerId===p.id&&!['completed','cancelled'].includes(o.fulfillmentStatus)).length;
-  return el('article',{class:'member-card'},el('div',{class:'member-card-head'},avatar(p),el('div',{},el('h2',{},p.name),el('p',{},p.role)),p.archived?badge('已归档'):null),el('div',{class:'member-games'},(p.games||[]).map(g=>badge(g))),el('dl',{class:'member-facts'},fact('当前订单',active),fact('成员账号',p.boundUserId?'已绑定':'未绑定')),el('div',{class:'member-card-actions'},button('排班',()=>availability(p),'soft',!connected()),button('资料',()=>content.editMember(p),'plain'),!p.boundUserId?button('邀请',()=>invitation(p),'plain',!connected()):null));
- })));
+const playerRating=p=>{const rating=Number(p?.rating);return Number.isFinite(rating)&&rating>0?rating.toFixed(1):'—';};
+const playerHourly=p=>{const cents=Number(p?.hourlyRateCents);return Number.isFinite(cents)&&cents>0?`${money(cents)}/时`:'—';};
+const splitList=value=>String(value||'').split(/[,，]/).map(item=>item.trim()).filter(Boolean);
+
+function demoSave(section,records){data={...data,[section]:records};saveDemoSection(section,records);render();}
+function updatePlayer(target,patch){if(connected())return false;demoSave('players',data.players.map(item=>item.id===target.id?{...item,...patch}:item));return true;}
+function togglePlayer(target){
+ const paused=target.status==='paused';
+ if(updatePlayer(target,{status:paused?'active':'paused'}))notify(`${target.name} 已${paused?'恢复接单':'暂停接单'}（示例预览）。`);
 }
+function resetDemoData(){
+ if(!confirm('恢复示例数据？将清除本机保存的打手、游戏类目和能力开通预览改动。'))return;
+ resetDemoPreview();refresh().then(()=>notify('已恢复示例快照。')).catch(error=>notify(error.message,true));
+}
+function openPlayerTier(target){
+ if(connected()){notify('已连接后端：分级与认证由后端成员资料管理，示例界面不可修改。',true);return;}
+ const select=el('select',{name:'tier'},...['S','A','B','C'].map(tier=>el('option',{value:tier},`${tier} · ${tierNames[tier]}`)));select.value=target.tier||'B';
+ const rating=el('input',{type:'number',name:'rating',min:'0',max:'5',step:'0.1',value:target.rating??5});
+ const certified=el('input',{type:'checkbox',name:'certified'});certified.checked=Boolean(target.certified);
+ showAction({title:`${target.name} · 分级与认证`,fields:[
+  field('服务分级',select),
+  field('客户评分 / 5',rating),
+  el('label',{class:'check-field full-width'},certified,el('span',{},'展示认证打手标识'))
+ ],note:'示例数据：保存后仅写入本机浏览器，不会请求后端。',submit:'保存分级',run:async()=>{
+  const tier=select.value;updatePlayer(target,{tier,tierLabel:tierNames[tier],certified:certified.checked,rating:Number(rating.value)||0});
+  notify(`已更新 ${target.name} 的分级与认证（示例预览）。`);
+ }});
+}
+function openPlayerEditor(target=null){
+ if(connected()){content.editMember(target);return;}
+ const draft=target||{};
+ const name=el('input',{type:'text',name:'name',value:draft.name||'',required:true,maxlength:20,placeholder:'如：阿屿'});
+ const role=el('input',{type:'text',name:'role',value:draft.role||'',required:true,maxlength:30,placeholder:'如：小队指挥'});
+ const games=el('input',{type:'text',name:'games',value:(draft.games||[]).join('，'),required:true,placeholder:'用逗号分隔，如：三角洲行动，CS2'});
+ const tier=el('select',{name:'tier'},...['S','A','B','C'].map(item=>el('option',{value:item},`${item} · ${tierNames[item]}`)));tier.value=draft.tier||'B';
+ const hourly=el('input',{type:'number',name:'hourlyRateCents',min:'0',step:'1',value:draft.hourlyRateCents===undefined?'':draft.hourlyRateCents/100});
+ const rating=el('input',{type:'number',name:'rating',min:'0',max:'5',step:'0.1',value:draft.rating??5});
+ const completed=el('input',{type:'number',name:'completedOrders',min:'0',step:'1',value:draft.completedOrders??0});
+ const specialties=el('input',{type:'text',name:'specialties',value:(draft.specialties||[]).join('，'),placeholder:'用逗号分隔'});
+ const tags=el('input',{type:'text',name:'tags',value:(draft.tags||[]).join('，'),placeholder:'用逗号分隔'});
+ const bio=el('textarea',{name:'bio',rows:3,placeholder:'擅长什么、如何沟通、预约前需要确认什么。'});bio.value=draft.bio||'';
+ const certified=el('input',{type:'checkbox',name:'certified'});certified.checked=Boolean(draft.certified);
+ showAction({title:target?`编辑 ${target.name}`:'新增打手',fields:[
+  field('打手名称',name),field('定位 / 角色',role),field('擅长游戏',games),field('服务分级',tier),field('时薪 / 元',hourly),field('客户评分 / 5',rating),field('完成订单',completed),field('擅长专项',specialties),field('标签',tags),
+  el('label',{class:'ops-field full-width'},el('span',{},'个人介绍'),bio),
+  el('label',{class:'check-field full-width'},certified,el('span',{},'展示认证打手标识'))
+ ],note:'示例数据：保存后仅写入本机浏览器（localStorage），不会请求后端。',submit:target?'保存资料':'添加打手',run:async()=>{
+  const chosenTier=tier.value,patch={
+   name:name.value.trim(),role:role.value.trim(),games:splitList(games.value),tags:splitList(tags.value),specialties:splitList(specialties.value),bio:bio.value.trim(),
+   tier:chosenTier,tierLabel:tierNames[chosenTier],certified:certified.checked,rating:Number(rating.value)||0,completedOrders:Number(completed.value)||0,hourlyRateCents:Math.round(Number(hourly.value||0)*100)
+  };
+  if(target){updatePlayer(target,patch);notify(`已保存 ${patch.name} 的资料（示例预览）。`);}
+  else{
+   const palette=['#2455E7','#137B57','#AC4B38','#7356AA','#2F6B8F','#8A5A44'];
+   demoSave('players',[...data.players,{id:`p-${crypto.randomUUID().slice(0,8)}`,initials:patch.name.slice(0,1)||'新',color:palette[data.players.length%palette.length],avatarUrl:'',coverUrl:'',archived:false,boundUserId:null,memberName:null,status:'active',...patch}]);
+   notify(`已添加打手 ${patch.name}（示例预览）。`);
+  }
+ }});
+}
+function renderRoster(){
+ const players=data.players||[];
+ const actions=el('div',{class:'header-actions'},!connected()&&hasDemoEdits()?button('恢复示例数据',resetDemoData,'plain'):null,connected()?button('新增成员',()=>content.editMember(null),'dark'):button('新增打手',()=>openPlayerEditor(),'dark'));
+ const root=el('div',{},header('打手管理',actions,'成员与分级'),connected()
+  ?demoNote('已连接后端：分级、认证与启停为只读展示；成员资料仍使用原有的编辑、排班与邀请流程。','只读展示')
+  :demoNote('打手分级、认证与启停改动只保存在本机浏览器，可随时恢复示例数据；不会写入后端。','示例数据 · 可编辑预览'));
+ const ratings=players.map(item=>Number(item.rating)).filter(Number.isFinite),average=ratings.length?ratings.reduce((sum,value)=>sum+value,0)/ratings.length:0;
+ root.append(metrics([['打手总数',players.length,'含停用与归档'],['在岗打手',players.filter(activePlayer).length,'可接单'],['认证打手',players.filter(item=>item.certified).length,'展示认证'],['平均评分',average?average.toFixed(1):'—','客户评价']]));
+ const segmented=el('div',{class:'segmented',role:'group','aria-label':'按打手分级筛选'},[['all','全部分级'],['S','S 王牌'],['A','A 资深'],['B','B 熟练'],['C','C 新锐']].map(([value,label])=>el('button',{type:'button',class:rosterTier===value?'selected':'',onclick:()=>{rosterTier=value;render();}},label)));
+ const states=el('div',{class:'ops-chips'},[['all','全部状态'],['active','在岗'],['paused','已停用'],['certified','已认证']].map(([value,label])=>el('button',{type:'button',class:rosterState===value?'selected':'',onclick:()=>{rosterState=value;render();}},label)));
+ const search=el('input',{type:'search',class:'ops-search',placeholder:'搜索打手、定位或擅长游戏','aria-label':'搜索打手',value:rosterSearch});
+ const grid=el('div',{class:'roster-grid'});
+ const update=()=>{
+  const query=rosterSearch.trim().toLowerCase();
+  const filtered=players.filter(item=>{
+   if(rosterTier!=='all'&&item.tier!==rosterTier)return false;
+   if(rosterState==='active'&&(!activePlayer(item)||item.archived))return false;
+   if(rosterState==='paused'&&item.status!=='paused')return false;
+   if(rosterState==='certified'&&!item.certified)return false;
+   if(!query)return true;
+   return [item.name,item.role,...(item.games||[]),...(item.specialties||[]),...(item.tags||[])].join(' ').toLowerCase().includes(query);
+  });
+  if(!filtered.length){grid.replaceChildren(el('div',{class:'empty-state roster-empty'},el('span',{class:'empty-symbol'},icon('search')),el('p',{},'没有符合筛选条件的打手'),button('清除筛选',()=>{rosterTier='all';rosterState='all';rosterSearch='';render();},'soft')));return;}
+  grid.replaceChildren(...filtered.map(rosterCard));
+ };
+ search.oninput=()=>{rosterSearch=search.value;update();};
+ update();
+ root.append(el('div',{class:'roster-toolbar'},segmented,states,search),grid);
+ return root;
+}
+function rosterCard(p){
+ const currentOrders=data.orders.filter(order=>order.assignedPlayerId===p.id&&!['completed','cancelled'].includes(order.fulfillmentStatus)).length;
+ const paused=p.status==='paused';
+ const card=el('article',{class:`roster-card${paused?' is-paused':''}${p.archived?' is-archived':''}`});
+ const head=el('div',{class:'roster-head'},avatar(p),el('div',{class:'roster-identity'},
+  el('div',{class:'roster-name'},el('h2',{},p.name),tierBadge(p.tier)),
+  el('p',{class:'roster-role'},p.role||'未填写定位'),
+  el('div',{class:'roster-badges'},p.certified?certifiedBadge():badge('未认证','neutral'),p.archived?badge('已归档','neutral'):paused?badge('已停用','held'):badge('在岗','completed')))
+ );
+ const stats=el('div',{class:'roster-stats'},
+  el('div',{},el('strong',{},playerRating(p)),el('span',{},'客户评分')),
+  el('div',{},el('strong',{},p.completedOrders??0),el('span',{},'完成订单')),
+  el('div',{},el('strong',{},playerHourly(p)),el('span',{},'时薪')));
+ const games=el('div',{class:'member-games'},(p.games||[]).map(game=>badge(game,'game-badge')));
+ const specialties=(p.specialties||[]).length?el('p',{class:'roster-specialties'},`擅长：${p.specialties.join(' · ')}`):null;
+ const foot=el('div',{class:'roster-foot'},el('span',{class:'roster-meta'},`当前订单 ${currentOrders} · 账号 ${p.boundUserId?'已绑定':'未绑定'}`),connected()
+  ?el('div',{class:'roster-actions'},button('排班',()=>availability(p),'soft'),button('资料',()=>content.editMember(p),'plain'),!p.boundUserId?button('邀请',()=>invitation(p),'plain'):null)
+  :el('div',{class:'roster-actions'},button('编辑资料',()=>openPlayerEditor(p),'soft'),button('分级与认证',()=>openPlayerTier(p),'plain'),button(paused?'启用':'停用',()=>togglePlayer(p),'plain')));
+ card.append(head,stats,games,specialties,foot);return card;
+}
+
+function gameCounts(game){return {players:(data.players||[]).filter(item=>!item.archived&&(item.games||[]).includes(game.name)).length,services:(data.services||[]).filter(item=>item.game===game.name&&!item.archived).length};}
+function toggleGame(game){
+ if(connected()){notify('已连接后端：游戏类目为只读展示，请在服务端配置。',true);return;}
+ const next=data.games.map(item=>item.id===game.id?{...item,enabled:!item.enabled}:item);
+ data={...data,games:next};saveDemoSection('games',next);render();
+ notify(`已${game.enabled?'停用':'启用'}「${game.name}」游戏类目（示例预览）。`);
+}
+function openGameServices(name){content.showServicesFor(name);navigate('services');}
+function gameCard(game){
+ const counts=gameCounts(game),accent=/^#[0-9a-f]{6}$/i.test(game.accent||'')?game.accent:'#5b6472';
+ const tile=el('span',{class:'game-tile',style:`--game-accent:${accent};--game-soft:${accent}1f;--game-line:${accent}3d`},(game.shortName||game.name).slice(0,2));
+ const card=el('article',{class:`game-card${game.enabled?'':' is-off'}`});
+ const head=el('div',{class:'game-head'},tile,el('div',{class:'game-title'},el('div',{class:'game-name-row'},el('h2',{},game.name),badge(game.enabled?'已启用':'已停用',game.enabled?'completed':'held')),el('p',{},`${game.shortName||game.name} · ${game.category}`)));
+ const stats=el('div',{class:'game-stats'},el('div',{},el('strong',{},counts.players),el('span',{},'打手')),el('div',{},el('strong',{},counts.services),el('span',{},'服务')),el('div',{},el('strong',{},game.category),el('span',{},'分类')));
+ const foot=el('div',{class:'game-foot'},el('div',{class:'switch-line'},switchButton(game.enabled,`${game.name} 启用状态`,()=>toggleGame(game),connected()),el('span',{},game.enabled?'客户端可见':'客户端隐藏')),button('查看服务',()=>openGameServices(game.name),'plain'));
+ card.append(head,stats,foot);return card;
+}
+function renderGames(){
+ const root=el('div',{},header('游戏类目',button('打开服务目录',()=>{content.clearServiceFilter();navigate('services');},'soft'),'俱乐部设置'),connected()
+  ?demoNote('已连接后端：游戏类目为只读展示；服务筛选仍按后端返回的服务数据工作。','只读展示')
+  :demoNote('游戏启停与分类改动只保存在本机浏览器；游戏与服务目录的筛选联动可直接预览。','示例数据 · 可编辑预览'));
+ const games=data.games||[];
+ if(!games.length){root.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('games')),el('p',{},'当前后端未返回游戏类目数据；未连接时可查看示例数据。')));return root;}
+ root.append(metrics([['游戏总数',games.length,'含停用'],['已启用',games.filter(game=>game.enabled).length,'客户端可见'],['覆盖服务',(data.services||[]).length,'服务目录'],['打手覆盖',games.filter(game=>gameCounts(game).players>0).length,'有专长的游戏']]));
+ const categories=['all',...new Set(games.map(game=>game.category))];
+ const chips=el('div',{class:'ops-chips',role:'group','aria-label':'按游戏分类筛选'},categories.map(value=>el('button',{type:'button',class:gameCategory===value?'selected':'',onclick:()=>{gameCategory=value;render();}},value==='all'?'全部分类':value)));
+ const search=el('input',{type:'search',class:'ops-search',placeholder:'搜索游戏名称或分类','aria-label':'搜索游戏',value:gameSearch});
+ const grid=el('div',{class:'game-grid'});
+ const update=()=>{
+  const query=gameSearch.trim().toLowerCase();
+  const filtered=games.filter(game=>(gameCategory==='all'||game.category===gameCategory)&&(!query||[game.name,game.shortName,game.category].join(' ').toLowerCase().includes(query)));
+  if(!filtered.length){grid.replaceChildren(el('div',{class:'empty-state game-empty'},el('span',{class:'empty-symbol'},icon('games')),el('p',{},'没有符合条件的游戏'),button('清除筛选',()=>{gameCategory='all';gameSearch='';render();},'soft')));return;}
+  grid.replaceChildren(...filtered.map(gameCard));
+ };
+ search.oninput=()=>{gameSearch=search.value;update();};
+ update();
+ root.append(el('div',{class:'roster-toolbar'},chips,search),grid);return root;
+}
+
+const featureIcons={'经营基础':'services','打手管理':'members','履约效率':'dispatch','增长转化':'star','财务结算':'settlements','数据洞察':'analytics'};
+function toggleFeature(feature){
+ if(connected()){notify('已连接后端：能力开通为只读展示，请在服务端配置。',true);return;}
+ const next=data.features.map(item=>item.id===feature.id?{...item,enabled:!item.enabled}:item);
+ data={...data,features:next};saveDemoSection('features',next);render();
+ notify(`已${feature.enabled?'关闭':'开通'}「${feature.name}」预览（仅本机示例，不影响后端）。`);
+}
+function featureCard(feature){
+ const card=el('article',{class:`feature-card${feature.enabled?' is-on':''}`});
+ const head=el('div',{class:'feature-head'},el('span',{class:'feature-icon'},icon(featureIcons[feature.category]||'features')),el('div',{class:'feature-title'},el('div',{class:'feature-name'},el('h3',{},feature.name),feature.recommended?badge('推荐','reco'):null),el('p',{class:'feature-category'},feature.category)));
+ const description=el('p',{class:'feature-desc'},feature.description);
+ const foot=el('div',{class:'feature-foot'},badge(feature.enabled?'已开通':'未开通',feature.enabled?'completed':'neutral'),switchButton(feature.enabled,`${feature.name} 开通状态`,()=>toggleFeature(feature),connected()));
+ card.append(head,description,foot);return card;
+}
+function renderFeatures(){
+ const features=data.features||[];
+ const root=el('div',{},header('能力开通',!connected()&&hasDemoEdits()?button('恢复示例数据',resetDemoData,'soft'):null,'俱乐部设置'),connected()
+  ?demoNote('已连接后端：能力开通为只读展示，实际开通请在服务端配置。','只读展示')
+  :demoNote('开关只在本机浏览器预览，不会改变后端能力；所有模块凭据均为示例数据。','示例数据 · 仅预览'));
+ if(!features.length){root.append(el('div',{class:'empty-state'},el('span',{class:'empty-symbol'},icon('features')),el('p',{},'当前后端未返回可开通模块；未连接时可查看示例清单。')));return root;}
+ const enabled=features.filter(feature=>feature.enabled).length;
+ root.append(metrics([['可开通模块',features.length,'俱乐部能力清单'],['已开通',enabled,'当前预览状态'],['推荐开通',features.filter(feature=>feature.recommended).length,'优先配置'],['待开通',features.length-enabled,'可随时预览']]));
+ const groups=new Map();for(const feature of features){if(!groups.has(feature.category))groups.set(feature.category,[]);groups.get(feature.category).push(feature);}
+ for(const [category,items]of groups){
+  root.append(el('section',{class:'feature-group'},el('div',{class:'feature-group-head'},el('h2',{},category),el('span',{},`${items.filter(item=>item.enabled).length}/${items.length} 已开通`)),el('div',{class:'feature-grid'},items.map(featureCard))));
+ }
+ return root;
+}
+
 function renderSettlements(){
  const summary=data.settlements,selected=new Set();
  const recordButton=button('记录转账凭据',()=>recordSettlement([...selected]),'dark',true);
@@ -151,7 +334,7 @@ async function mutate(path,body,message,method='POST'){
  if(!connected())throw Error('示例工作台为只读。');await request(path,{method,body:JSON.stringify(body)});await refresh();notify(message);
 }
 function assign(order){
- if(!connected())return;const service=data.services.find(s=>s.id===order.serviceId),eligible=data.players.filter(p=>!p.archived&&(!service?.game||p.games?.includes(service.game)));
+ if(!connected())return;const service=data.services.find(s=>s.id===order.serviceId),eligible=data.players.filter(p=>!p.archived&&p.status!=='paused'&&(!service?.game||p.games?.includes(service.game)));
  const select=el('select',{name:'playerId',required:true},el('option',{value:''},'选择成员'),eligible.map(p=>el('option',{value:p.id},p.name)));select.value=order.assignedPlayerId||'';
  const commission=el('input',{type:'number',name:'commission',min:0,max:100,step:0.01,value:(order.commissionBps??2000)/100,required:true});
  const reason=el('textarea',{name:'reason',rows:3,required:Boolean(order.assignedPlayerId),maxlength:1000});
@@ -183,10 +366,10 @@ function recordSettlement(entryIds){
 async function exportSettlements(){try{const blob=await request('/admin/settlements/export.csv',{csv:true}),url=URL.createObjectURL(blob),link=el('a',{href:url,download:'openni-settlements.csv'});document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){notify(e.message,true);}}
 function expirePayments(){showAction({title:'清理超时未付订单',note:'处理超过 30 分钟的未付款订单。已发起支付的订单将先向微信核验并关单。',submit:'开始处理',run:async()=>{const result=await request('/admin/orders/expire-unpaid',{method:'POST',body:'{}'});await refresh();const failures=result.results.filter(r=>r.error);notify(`已处理 ${result.results.length-failures.length} 笔${failures.length?`，${failures.length} 笔待重试`:''}。`,Boolean(failures.length));}});}
 
-$('#action-form').onsubmit=async event=>{event.preventDefault();if(!actionSubmit||!connected())return;const submit=$('#action-submit');submit.disabled=true;try{const run=actionSubmit;await run();$('#action-dialog').close();}catch(e){$('#action-error').textContent=e.message;}finally{submit.disabled=false;}};
+$('#action-form').onsubmit=async event=>{event.preventDefault();if(!actionSubmit)return;const submit=$('#action-submit');submit.disabled=true;try{const run=actionSubmit;await run();$('#action-dialog').close();}catch(e){$('#action-error').textContent=e.message;}finally{submit.disabled=false;}};
 $('#close-action').onclick=$('#cancel-action').onclick=()=>$('#action-dialog').close();
 $('#close-order').onclick=()=>$('#order-drawer').close();$('#order-drawer').addEventListener('close',()=>{currentOrderId=null;});
-document.querySelectorAll('[data-workspace],[data-section]').forEach(node=>node.onclick=()=>navigate(node.dataset.workspace||node.dataset.section));
+document.querySelectorAll('[data-workspace],[data-section]').forEach(node=>node.onclick=()=>{if(node.dataset.section==='services')content.clearServiceFilter();navigate(node.dataset.workspace||node.dataset.section);});
 $('#open-connection').onclick=$('#connect-banner').onclick=()=>navigate('connection');
 $('#refresh-all').onclick=()=>{notify('');refresh().catch(()=>{});};
 $('#ops-menu').onclick=()=>setMenu(!$('.ops-sidebar').classList.contains('open'));

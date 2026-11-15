@@ -71,3 +71,18 @@
 - 查明的关键 bug：地形章 scan 着色器平面未加入 planes 数组，导致 fade 恒为 1 覆盖全屏；已改为按章节显隐。
 
 当前状态：首屏、行动方式、小队（4 卡 2×2）、部署已达到较完整效果；地形章地图亮度/构图、小队卡片与移动端逐章布局仍在精修。演示与截图见 `work/delta-check/`。
+
+
+## 追加：KPR 规格落地与「干员档案」章节（2026-11-16 晚）
+
+依据新完成的 KPR 深度规格（`work/kpr-shader-study/spec/kpr-implementation-spec.md`、`camera-timeline.json`、`section-blueprint.md`）做了第二轮对齐：
+
+- 章节节奏：把 tableau 章节按 KPR 的 270vh 屏数放大（hero 226svh、operators 268svh、maps 238svh、deploy 204svh），进入/停留/退出窗口更接近「每章约三屏」。
+- 相机：把指针平移改为球面 orbit（yaw/pitch 绕 look 点旋转），并加入按章节的 FOV 推拉（22.3–24.2，桌面基准 24 / 手机 34），对应 KPR 的 `camera.zoom` 主推轨。
+- 转场：新增顶部/底部双 band 擦场（0.64s，CSS keyframes），模仿 KPR 的 maskTop/maskBottom 章节切换；减少动态时禁用。
+- 排版：hero 标题收紧到 line-height .9、letter-spacing -.082em，并按 KPR 的大标题 token 调整；新增等宽文件 ticker 与装载进度段。
+- post：增加 24fps 轻微曝光 flicker；保留颗粒/扫描线/暗角。
+- 新章节「02 干员档案」：使用 6 张官方公开透明角色美术（`op-01`…`op-06`），Three.js 横向排布，滚动驱动 group 平移、当前干员提亮/上浮，DOM 同步代号、定位、语录与页码；桌面/手机均可用，点击干员标签滚动到对应干员。
+- 首屏：换用官方狙击位透明立绘作大型前景（`hero-operator-main.webp`），移除过大的副干员遮挡，加入干员档案小标与左侧 scrim，更接近 KPR 的「大字 + 大角色」。
+- 素材：新增 7 张官方角色透明立绘，来源、SHA 与用途写入 `assets-manifest.json`；同时核对了本机安装的《三角洲行动》客户端（E:\WeGameApps\rail_apps\DeltaForce），其 `.pak` 为加密包、角色展示 `.bin` 为带腾讯封装头的 Bink2 视频，RAD BinkConv/BinkPlay 均无法直接解码；因此改用官方公开角色美术与视频，未对游戏包做破解。
+- 验收：桌面 1440×900 / 手机 390×844 截图与 Playwright 控制台检查；移动端 3D 场景可用；未做真机帧率验收。

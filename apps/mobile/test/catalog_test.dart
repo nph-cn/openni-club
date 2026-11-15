@@ -83,7 +83,7 @@ void main() {
       await tester.tap(find.byTooltip('返回'));
       await tester.pumpAndSettle();
       final selector = find.byWidgetPredicate(
-        (w) => w is GameSelector && w.service['game'] == '无畏契约',
+        (w) => w is GameSelector && w.game['name'] == '无畏契约',
       );
       await tester.ensureVisible(selector);
       await tester.tap(selector);

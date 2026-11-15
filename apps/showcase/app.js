@@ -75,14 +75,200 @@ function screenImage(screen) {
   img.src = screen.image;
   return img;
 }
+
+/* ------------------------------------------------------------------ *
+ * 首页叙事区：真实统计、三个客户端概览、俱乐部能力清单（全部来自构建数据）
+ * ------------------------------------------------------------------ */
+let statsAnimated = false, statsInView = false, screensReady = false, overviewBuilt = false, statsFallback = 0, capPlatform = '';
+const statIds = {total: 'stat-screens', flows: 'stat-flows', clients: 'stat-clients', interactions: 'stat-interactions'};
+
+function setStatTargets(stats) {
+  const values = {total: stats.total, flows: stats.flows, clients: stats.clients, interactions: stats.interactions};
+  for (const [key, id] of Object.entries(statIds)) {
+    const el = document.getElementById(id);
+    if (el) el.dataset.target = String(values[key]);
+  }
+}
+function paintStats() {
+  document.querySelectorAll('.stat-value[data-target]').forEach(el => { el.textContent = el.dataset.target; });
+}
+function animateStats() {
+  if (statsAnimated) { paintStats(); return; }
+  const elements = [...document.querySelectorAll('.stat-value[data-target]')];
+  if (!elements.length) return;
+  statsAnimated = true;
+  if (reduceMotion.matches) { paintStats(); return; }
+  const started = performance.now(), duration = 1100;
+  const tick = now => {
+    const progress = Math.min(1, (now - started) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    for (const el of elements) el.textContent = String(Math.round(Number(el.dataset.target || 0) * eased));
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function representativeScreens(platformKey, limit) {
+  const pool = screens.filter(screen => screen.platform === platformKey);
+  const byFlow = new Map();
+  for (const screen of pool) {
+    if (screen.stateGroup === 'ready' && !byFlow.has(screen.flow)) byFlow.set(screen.flow, screen);
+  }
+  const picks = [...byFlow.values()].slice(0, limit);
+  for (const screen of pool) {
+    if (picks.length >= limit) break;
+    if (!picks.includes(screen)) picks.push(screen);
+  }
+  return picks;
+}
+function scrollToGallery() {
+  document.querySelector('#gallery-region')?.scrollIntoView({behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start'});
+}
+const clientMeta = {
+  flutter: {title: 'iOS / Android', badge: 'APP', note: 'iPhone 预览壳 · 2×', link: '只看 App 界面'},
+  mini: {title: '微信小程序', badge: 'MINI', note: '微信开发者工具', link: '只看小程序界面'},
+  admin: {title: '运营后台', badge: 'OPS', note: '1266×712 · 浏览器', link: '只看后台界面'}
+};
+function buildClients(stats) {
+  const grid = $('#client-cards');
+  if (!grid) return;
+  grid.replaceChildren();
+  let index = 0;
+  for (const tab of platformTabs) {
+    const count = stats.platforms[tab.key] || 0;
+    if (!count) continue;
+    const meta = clientMeta[tab.key] || {title: tab.label, badge: 'CLIENT', note: '', link: '只看本端'};
+    const flows = new Set(screens.filter(screen => screen.platform === tab.key).map(screen => screen.flow)).size;
+    const card = node('article', undefined, 'client-card');
+    card.dataset.reveal = '';
+    card.style.setProperty('--reveal-delay', `${index * 80}ms`);
+    const head = node('div', undefined, 'client-card-head');
+    head.append(node('span', `${String(index + 1).padStart(2, '0')} / ${meta.badge}`), node('span', `${flows} 条流程`));
+    const title = node('h3');
+    title.append(node('span', meta.title), node('em', tab.key === 'flutter' ? 'FLUTTER' : tab.key === 'mini' ? 'NATIVE' : 'DESKTOP'));
+    const countRow = node('div', undefined, 'client-count');
+    countRow.append(node('strong', String(count)), node('span', '张真实截图'));
+    const desc = node('p', tab.hint || tab.label, 'client-desc');
+    const shots = node('div', undefined, 'client-shots' + (tab.key === 'admin' ? ' is-landscape' : ''));
+    for (const screen of representativeScreens(tab.key, tab.key === 'admin' ? 2 : 3)) {
+      const img = screenImage(screen);
+      img.alt = `${meta.title} · ${screen.title}`;
+      img.loading = 'lazy';
+      shots.append(img);
+    }
+    const foot = node('div', undefined, 'client-foot');
+    foot.append(node('span', meta.note));
+    const action = node('button', `${meta.link} ${count} 张 `);
+    action.type = 'button';
+    action.className = 'client-link';
+    action.setAttribute('aria-label', `在界面图库中只看${meta.title}，共 ${count} 张截图`);
+    action.append(node('span', '→'));
+    action.onclick = () => { platform = tab.key; flow = 'all'; role = 'all'; state = 'all'; query = ''; favoriteOnly = false; view = 'flows'; render(); scrollToGallery(); };
+    foot.append(action);
+    card.append(head, title, countRow, desc, shots, foot);
+    grid.append(card);
+    index += 1;
+  }
+}
+function filterToFlow(group) {
+  if (!screens.some(screen => screen.platform === platform && screen.flow === group.key)) {
+    const alt = ['flutter', 'mini', 'admin'].find(key => screens.some(screen => screen.platform === key && screen.flow === group.key));
+    if (alt) platform = alt;
+  }
+  flow = group.key; role = 'all'; state = 'all'; query = ''; favoriteOnly = false; view = 'flows';
+  render();
+  scrollToGallery();
+}
+function filterToPlatform(key) {
+  platform = key; flow = 'all'; role = 'all'; state = 'all'; query = ''; favoriteOnly = false; view = 'flows';
+  render();
+  scrollToGallery();
+}
+function capRow(reveal = true) {
+  const li = node('li', undefined, 'cap-row');
+  if (reveal) li.dataset.reveal = '';
+  return li;
+}
+function buildCapabilities(stats, {reveal = true} = {}) {
+  const list = $('#capability-list');
+  if (!list) return;
+  list.replaceChildren();
+  const platformScreens = screens.filter(screen => screen.platform === platform);
+  const groups = groupFlows(platformScreens);
+  const scope = $('#cap-scope');
+  if (scope) scope.textContent = `${names.platform[platform] || '全部客户端'} · ${groups.length} 条业务流程`;
+  let index = 0;
+  for (const group of groups) {
+    const li = capRow(reveal);
+    const button = node('button');
+    button.type = 'button';
+    button.className = 'cap-button';
+    button.setAttribute('aria-label', `按「${group.name}」筛选图库，共 ${group.screens.length} 个界面`);
+    button.append(node('span', String(index + 1).padStart(2, '0'), 'cap-num'));
+    const body = node('span', undefined, 'cap-body');
+    body.append(node('span', group.name, 'cap-title'), node('span', group.intro || '', 'cap-desc'));
+    const count = node('span', undefined, 'cap-count');
+    count.append(node('b', String(group.screens.length)), node('span', '个界面'));
+    button.append(body, count, node('span', '→', 'cap-arrow'));
+    button.onclick = () => filterToFlow(group);
+    li.append(button);
+    list.append(li);
+    index += 1;
+  }
+  const adminCount = stats.platforms.admin || 0;
+  if (adminCount && platform !== 'admin') {
+    const li = capRow(reveal);
+    const button = node('button');
+    button.type = 'button';
+    button.className = 'cap-button';
+    button.setAttribute('aria-label', `只看运营后台界面，共 ${adminCount} 张`);
+    button.append(node('span', String(index + 1).padStart(2, '0'), 'cap-num'));
+    const body = node('span', undefined, 'cap-body');
+    body.append(node('span', '运营后台', 'cap-title'), node('span', '派单工作台、订单、服务目录、结算与公告，桌面端运营工作台。', 'cap-desc'));
+    const count = node('span', undefined, 'cap-count');
+    count.append(node('b', String(adminCount)), node('span', '张界面'));
+    button.append(body, count, node('span', '→', 'cap-arrow'));
+    button.onclick = () => filterToPlatform('admin');
+    li.append(button);
+    list.append(li);
+    index += 1;
+  }
+  const li = capRow(reveal);
+  li.classList.add('cap-row-static');
+  const link = node('a');
+  link.className = 'cap-button';
+  link.href = '/guide/';
+  link.setAttribute('aria-label', '打开文档：开源许可、品牌配置与部署说明');
+  link.append(node('span', String(index + 1).padStart(2, '0'), 'cap-num'));
+  const body = node('span', undefined, 'cap-body');
+  body.append(node('span', '开源与白标', 'cap-title'), node('span', 'MIT License；单配置文件生成三端品牌；文档与脚本随仓库提供。', 'cap-desc'));
+  const count = node('span', undefined, 'cap-count');
+  count.append(node('b', 'MIT'), node('span', '许可'));
+  link.append(body, count, node('span', '↗', 'cap-arrow'));
+  li.append(link);
+  list.append(li);
+}
+function buildOverview(stats) {
+  buildClients(stats);
+  buildCapabilities(stats);
+}
+
 function updateHeroStats() {
   const stats = galleryStats(screens);
-  $('#stat-screens').textContent = stats.total;
-  $('#stat-flows').textContent = stats.flows;
-  $('#stat-clients').textContent = stats.clients;
-  $('#stat-interactions').textContent = stats.interactions;
+  screensReady = true;
+  setStatTargets(stats);
+  // 数据到达即开始计分（页面上方不可见时动画也已完成，避免出现占位符）。
+  animateStats();
+  if (!statsFallback) statsFallback = setTimeout(() => {
+    if (!statsAnimated) paintStats();
+  }, 2400);
+  document.querySelectorAll('.js-screen-total').forEach(el => { el.textContent = String(stats.total); });
   $('#platform-summary').textContent = `${platformSummary(stats).join(' · ')} · 共 ${stats.total} 张运行截图`;
+  if (!overviewBuilt) { buildOverview(stats); overviewBuilt = true; capPlatform = platform; }
+  else if (capPlatform !== platform) { buildCapabilities(stats, {reveal: false}); capPlatform = platform; }
+  observeReveals();
 }
+
 function render({sync = true} = {}) {
   const shown = matched(), counts = galleryCounts(screens, shown, favorites);
   syncControls();
@@ -98,7 +284,7 @@ function render({sync = true} = {}) {
   }
   const heading = favoriteOnly ? '我的收藏' : view === 'flows' ? '界面图库' : '全部界面';
   $('#view-heading .heading-text').textContent = heading;
-  $('#total-count').textContent = `${counts.shown} 个界面`;
+  $('#total-count').textContent = counts.shown;
   const platformFlowCount = new Set(screens.filter(screen => screen.platform === platform).map(screen => screen.flow)).size;
   $('#hero-screen-count').textContent = `${names.platform[platform] || '全部客户端'} · ${platformFlowCount} 条业务流程`;
   const active = [
@@ -134,8 +320,10 @@ function renderFlows(shown) {
     const head = node('header', undefined, 'flow-block-head');
     const title = node('div', undefined, 'flow-block-title');
     title.append(node('span', String(index + 1).padStart(2, '0'), 'flow-number'), node('h3', group.name), node('span', `${group.screens.length} 个界面`, 'flow-count'));
-    const start = node('button', '顺序浏览 →', 'flow-play');
+    const start = node('button');
     start.type = 'button';
+    start.className = 'flow-play';
+    start.append(node('span', '顺序浏览'), node('span', '→'));
     start.setAttribute('aria-label', `按顺序浏览${group.name}，共 ${group.screens.length} 屏`);
     start.onclick = () => show(group.screens[0], {scope: 'flow'});
     head.append(title, start);
@@ -161,7 +349,8 @@ function screenCard(screen, {showFlow = false} = {}) {
   text.append(node('p', screen.title, 'screen-name'));
   const tags = node('p', undefined, 'screen-tags');
   const group = stateGroup(screen);
-  tags.append(node('span', names.state[group], `state-pill state-${group}`));
+  // 正常状态不占标签位，异常/加载/空状态才值得在卡片上强调。
+  if (group !== 'ready') tags.append(node('span', names.state[group], `state-pill state-${group}`));
   if (screen.captureKind === 'interaction') tags.append(node('span', '交互状态', 'kind-pill'));
   if (screen.capturePlatform === 'android') tags.append(node('span', 'Android', 'kind-pill'));
   if (screen.role === 'member') tags.append(node('span', '成员端', 'role-pill'));
@@ -241,6 +430,9 @@ function show(screen, {scope = detailScope} = {}) {
   const list = detailList(), index = list.findIndex(item => item.id === screen.id);
   $('#detail-window').textContent = `${detailScope === 'flow' ? '当前流程' : '筛选结果'} · ${list.length} 张`;
   $('#detail-position').textContent = `${detailScope === 'flow' ? '本流程' : '筛选结果'} ${index + 1} / ${list.length}`;
+  $('#detail-index').textContent = String(index + 1).padStart(2, '0');
+  const stageIndex = $('#detail-stage-index');
+  if (stageIndex) stageIndex.textContent = `${String(index + 1).padStart(2, '0')} / ${String(list.length).padStart(2, '0')} — ${names.flow[screen.flow] || ''}`;
   $('#previous-screen').disabled = index <= 0;
   $('#next-screen').disabled = index >= list.length - 1;
   browseMode.querySelectorAll('button').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.browseScope === detailScope)));
@@ -489,9 +681,65 @@ document.querySelectorAll('[data-explore-role]').forEach(link => {
   };
 });
 
+/* ---------------- 页面级动效与装饰（尊重减少动态偏好） ---------------- */
+let revealObserver = null;
+function observeReveals() {
+  const nodes = [...document.querySelectorAll('[data-reveal]:not(.is-visible)')];
+  if (!nodes.length) return;
+  if (reduceMotion.matches || !('IntersectionObserver' in window)) {
+    nodes.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    }, {threshold: .12, rootMargin: '0px 0px -8% 0px'});
+  }
+  nodes.forEach(el => revealObserver.observe(el));
+}
+
+const progressBar = $('#scroll-progress');
+let scrollTicking = false;
+function paintScroll() {
+  const y = window.scrollY || document.documentElement.scrollTop;
+  document.body.classList.toggle('is-scrolled', y > 8);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  if (progressBar) progressBar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+  scrollTicking = false;
+}
+function requestScrollPaint() {
+  if (scrollTicking) return;
+  scrollTicking = true;
+  requestAnimationFrame(paintScroll);
+}
+addEventListener('scroll', requestScrollPaint, {passive: true});
+addEventListener('resize', requestScrollPaint, {passive: true});
+
+const statsBand = document.querySelector('.stats-band');
+if (statsBand) {
+  if (reduceMotion.matches || !('IntersectionObserver' in window)) {
+    statsInView = true;
+    if (screensReady) animateStats();
+  } else {
+    const statsObserver = new IntersectionObserver(entries => {
+      if (!entries.some(entry => entry.isIntersecting)) return;
+      statsInView = true;
+      if (screensReady) animateStats();
+      statsObserver.disconnect();
+    }, {threshold: .3});
+    statsObserver.observe(statsBand);
+  }
+}
+const backToTop = $('#back-to-top');
+if (backToTop) backToTop.onclick = () => window.scrollTo({top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth'});
+
 syncControls();
+paintScroll();
+observeReveals();
 await loadScreens();
 await setStage('customer');
-if (!reduceMotion.matches) {
-  $('#hero-title').animate([{opacity: 0, transform: 'translateY(10px)'}, {opacity: 1, transform: 'translateY(0)'}], {duration: 440, easing: 'ease-out'});
-}
+observeReveals();

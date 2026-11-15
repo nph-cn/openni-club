@@ -12,6 +12,8 @@ enum SkeletonKind {
   slots,
   notifications,
   availability,
+  tiers,
+  clubFeatures,
 }
 
 /// A decorative placeholder. Animation belongs to its shared [SkeletonPulse].
@@ -33,13 +35,33 @@ class SkeletonBlock extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Color.alphaBlend(
-          ink.withValues(
-            alpha: MediaQuery.maybeOf(context)?.highContrast == true ? .2 : .08,
-          ),
-          canvas,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color.alphaBlend(
+              ink.withValues(
+                alpha: MediaQuery.maybeOf(context)?.highContrast == true
+                    ? .2
+                    : .075,
+              ),
+              canvas,
+            ),
+            Color.alphaBlend(
+              ink.withValues(
+                alpha: MediaQuery.maybeOf(context)?.highContrast == true
+                    ? .16
+                    : .045,
+              ),
+              canvas,
+            ),
+          ],
         ),
         borderRadius: BorderRadius.circular(radius),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .55),
+          width: .5,
+        ),
       ),
     ),
   );
@@ -353,6 +375,48 @@ class ClubSkeleton extends StatelessWidget {
       ],
       const SizedBox(height: 8),
       const SkeletonBlock(height: 42, radius: 13),
+    ],
+    SkeletonKind.tiers => [
+      const SkeletonBlock(height: 132, radius: 18),
+      const SizedBox(height: 10),
+      const Row(
+        children: [
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+          SizedBox(width: 8),
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+          SizedBox(width: 8),
+          Expanded(child: SkeletonBlock(height: 30, radius: 8)),
+        ],
+      ),
+      _homeSection(),
+      for (var i = 0; i < 3; i++) ...[
+        Row(
+          children: [
+            const SkeletonBlock(width: 3, height: 44, radius: 2),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _line(92, height: 14),
+                  const SizedBox(height: 5),
+                  _line(188, height: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+      ],
+    ],
+    SkeletonKind.clubFeatures => [
+      const SkeletonBlock(height: 138, radius: 18),
+      const SizedBox(height: 14),
+      _homeSection(),
+      for (var i = 0; i < 4; i++) ...[
+        _row(imageWidth: 30, imageHeight: 30),
+        const SizedBox(height: 4),
+      ],
     ],
     SkeletonKind.slots => [],
   };

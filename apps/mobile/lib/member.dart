@@ -1,4 +1,4 @@
-import 'package:go_router/go_router.dart';
+﻿import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 
@@ -236,12 +236,42 @@ class _MemberPageState extends State<MemberPage> {
                                 ),
                               ),
                               const SizedBox(height: 1),
-                              const Text(
-                                '俱乐部成员 · 服务队列',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xB3FFFFFF),
-                                ),
+                              Row(
+                                children: [
+                                  const Text(
+                                    '俱乐部成员 · 服务队列',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Color(0xB3FFFFFF),
+                                    ),
+                                  ),
+                                  if (repo.tierFor(player ?? Json.from(<String, dynamic>{})) !=
+                                      null) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 5,
+                                        vertical: 1.5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(alpha: .14),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: TierBadge(
+                                        tier: repo.tierFor(player ?? Json.from(<String, dynamic>{})),
+                                        compact: true,
+                                      ),
+                                    ),
+                                  ],
+                                  if (player?['certified'] == true) ...[
+                                    const SizedBox(width: 5),
+                                    const Icon(
+                                      Icons.verified_rounded,
+                                      size: 12,
+                                      color: Color(0xFFE7C777),
+                                    ),
+                                  ],
+                                ],
                               ),
                             ],
                           ),
@@ -325,6 +355,26 @@ class _MemberPageState extends State<MemberPage> {
               icon: Icons.assignment_outlined,
               label: '我的服务',
               onTap: () => context.go('/member/orders'),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      Row(
+        children: [
+          Expanded(
+            child: _memberShortcut(
+              icon: Icons.military_tech_outlined,
+              label: '分级与认证',
+              onTap: () => context.push('/club/tiers'),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _memberShortcut(
+              icon: Icons.tune_rounded,
+              label: '俱乐部能力',
+              onTap: () => context.push('/club/features'),
             ),
           ),
         ],
@@ -1351,3 +1401,4 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
           ),
   );
 }
+

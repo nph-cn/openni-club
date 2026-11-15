@@ -44,9 +44,19 @@ const maps = {
   valley: { name: '长弓溪谷', subtitle: 'LAYALI GROVE', code: 'SCN-02', plate: PLATES.valley, description: '穿行山地与建筑之间，观察视野变化，和队友一起安排下一段路线。' },
 };
 
+const operators = [
+  { code: 'OP-01 / RECON', name: '骇爪', role: '侦察 · 信息获取', line: '先看到，才有得选。' },
+  { code: 'OP-02 / ASSAULT', name: '露娜', role: '突击 · 中近距离突破', line: '把缺口撕开，剩下的交给队友。' },
+  { code: 'OP-03 / ANCHOR', name: '牧羊人', role: '重装 · 正面压制', line: '我站在前面，你们放心走。' },
+  { code: 'OP-04 / MARKSMAN', name: '猎隼', role: '狙击 · 远程架点', line: '让对面先动。' },
+  { code: 'OP-05 / SUPPORT', name: '无名', role: '支援 · 道具与救护', line: '活下来，才有的打。' },
+  { code: 'OP-06 / FLEX', name: '银翼', role: '自由人 · 侧翼与残局', line: '哪边缺人，我就去哪边。' },
+];
+
 const chapters = [
   { id: 'entry', key: 'hero', code: 'ENTRY', light: false, paper: false, plate: PLATES.hero },
   { id: 'modes', key: 'modes', code: 'MODES', light: true, paper: true, plate: PLATES.operations },
+  { id: 'operators', key: 'operators', code: 'OPERATORS', light: false, paper: false, plate: PLATES.operations },
   { id: 'maps', key: 'terrain', code: 'TERRAIN', light: false, paper: false, plate: PLATES.spaceport },
   { id: 'squad', key: 'squad', code: 'SQUAD', light: true, paper: true, plate: PLATES.squad },
   { id: 'deploy', key: 'deploy', code: 'DEPLOY', light: false, paper: false, plate: PLATES.deploy },
@@ -57,6 +67,8 @@ const noWebglFallback = PLATES.hero;
 const loader = $('loader');
 const loaderProgress = $('loader-progress');
 const loaderFill = $('loader-fill');
+const loaderFile = $('loader-file');
+const chapterWipe = $('chapter-wipe');
 const enterSound = $('enter-sound');
 const enterSilent = $('enter-silent');
 const canvas = $('scene');
@@ -75,6 +87,13 @@ const railProgress = $('rail-progress');
 const filmDialog = $('film-dialog');
 const filmVideo = $('film-video');
 const menuDialog = $('menu-dialog');
+const opCode = $('op-code');
+const opName = $('op-name');
+const opRole = $('op-role');
+const opLine = $('op-line');
+const operatorTabs = [...document.querySelectorAll('[data-op]')];
+const operatorMeter = [...document.querySelectorAll('.op-meter i')];
+let operatorIndex = -1;
 const soundToggle = $('sound-toggle');
 const motionToggle = $('motion-toggle');
 
@@ -248,11 +267,22 @@ class Ambience {
 const ambience = new Ambience();
 
 /* ───── 场景初始化 ───── */
+const loaderFiles = [
+  'OPS_SCENE.TEX', 'MODE_OPERATIONS.TEX', 'MODE_WARFARE.TEX', 'SPACEPORT.TEX',
+  'VALLEY.TEX', 'SMOKE_LAYER.TEX', 'HERO_OPERATOR.TEX', 'HERO_SUPPORT.TEX',
+  'OPERATOR_01.TEX', 'OPERATOR_02.TEX', 'OPERATOR_03.TEX', 'OPERATOR_04.TEX',
+  'OPERATOR_05.TEX', 'OPERATOR_06.TEX', 'SQUAD_AYU.TEX', 'SQUAD_ECHO.TEX',
+  'SQUAD_XIAOMAN.TEX', 'SQUAD_NORTH.TEX', 'DEPLOY_BG.TEX', 'SERVICE_UI.TEX',
+];
 function updateLoader(progress) {
   loadProgress = clamp(progress, 0, 1);
   const value = Math.round(loadProgress * 100);
   loaderProgress.textContent = String(value).padStart(3, '0');
   loaderFill.style.transform = `scaleX(${loadProgress.toFixed(3)})`;
+  if (loaderFile) {
+    const file = loaderFiles[Math.min(loaderFiles.length - 1, Math.floor(loadProgress * loaderFiles.length))];
+    if (loaderFile.textContent !== file) loaderFile.textContent = file;
+  }
 }
 
 function setFallbackFor(plate, showOperator) {
@@ -374,8 +404,56 @@ function updateChapter(index, section) {
     scene.whoosh?.();
   }
   if (key === 'terrain') startScan();
+  if (entered && !reduceMedia.matches && chapterWipe) {
+    chapterWipe.classList.remove('run');
+    void chapterWipe.offsetWidth;
+    chapterWipe.classList.add('run');
+    window.setTimeout(() => chapterWipe.classList.remove('run'), 700);
+  }
   ambience.whoosh(0.7);
 }
+
+/* ───── 交互：干员档案 ───── */
+function setOperator(index) {
+  index = clamp(Math.round(index), 0, operators.length - 1);
+  if (index === operatorIndex) return;
+  operatorIndex = index;
+  const data = operators[index];
+  if (opCode) opCode.textContent = data.code;
+  if (opName) opName.textContent = data.name;
+  if (opRole) opRole.textContent = data.role;
+  if (opLine) opLine.textContent = data.line;
+  operatorTabs.forEach((button, i) => {
+    button.setAttribute('aria-selected', String(i === index));
+    button.tabIndex = i === index ? 0 : -1;
+  });
+  operatorMeter.forEach((bar, i) => bar.classList.toggle('is-active', i <= index));
+}
+
+function focusOperator(index) {
+  const section = sections.find((s) => s.key === 'operators');
+  if (!section) return;
+  const ratio = index / Math.max(1, operators.length - 1);
+  const target = section.el.offsetTop + ratio * section.el.offsetHeight - window.innerHeight * 0.5;
+  const behavior = reduceMedia.matches ? 'auto' : 'smooth';
+  window.scrollTo({ top: clamp(target, 0, document.documentElement.scrollHeight - window.innerHeight), behavior });
+}
+
+operatorTabs.forEach((button, index) => {
+  button.addEventListener('click', () => focusOperator(index));
+  button.addEventListener('keydown', (event) => {
+    let next;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % operators.length;
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + operators.length) % operators.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = operators.length - 1;
+    if (next !== undefined) {
+      event.preventDefault();
+      focusOperator(next);
+      operatorTabs[next].focus();
+    }
+  });
+});
 
 /* ───── 交互：模式 / 地图 ───── */
 function setMode(key, { immediate = false } = {}) {
@@ -644,6 +722,11 @@ function frame(now) {
   if (scene) {
     sections.forEach((s) => scene.setProgress(s.key, s.key === metrics.section.key ? metrics.progress : 0));
     if (mapDrag.active) scene.setMapDrag(mapDrag.value);
+    if (metrics.section.key === 'operators') {
+      const operatorFocus = Math.round(clamp(metrics.progress * (operators.length - 1), 0, operators.length - 1));
+      setOperator(operatorFocus);
+      scene.setOperatorFocus?.(operatorFocus);
+    }
   }
   // 首屏文字随滚动轻微位移
   const heroSticky = sections[0]?.el.querySelector('.hero-sticky');

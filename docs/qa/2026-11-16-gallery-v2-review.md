@@ -82,5 +82,13 @@
 ## 补记（App 截图扩充后）
 
 - Flutter 截图由 64 张扩到 101 张：新增 `test/page_sections_test.dart` 覆盖 23 个真实页面的下半屏/后续内容段，共 37 张；`apps/mobile/screenshots/manifest.json` 与 `catalog.json` 已补充元数据，构建 0 warning。
-- 图库真实数量：Flutter 101 + 小程序 24 + 运营后台 12 = **137 张**；页面统计由构建产物计算。
+- 图库真实数量：Flutter 107 + 小程序 24 + 运营后台 15 = **146 张**；页面统计由构建产物计算。
 - App UI 重排（类型比例、首页模块、图片密度）与截图流程验证见 `2026-11-16-app-ui-v2-review.md`。
+
+
+## 主站 v3 视觉升级（2026-11-16 晚）
+
+- 首页重排为编辑式版式：骨白纸纹底 + 墨黑 + 信号绿，超大中文 hero、编号页头、细线栅格、真实截图暗色舞台、统计带、marquee、客户端卡片、俱乐部能力清单、图库档案区、暗色专题入口与巨型描边页脚。
+- 图库区：粘性筛选条、流程大编号、截图卡片悬停斜切与硬阴影、骨架屏、详情查看器网格展台与原图下载。
+- 数据驱动：146 张截图 / 6 流程 / 3 客户端数字全部来自 `/screens.json`；能力清单来自真实功能；无外部 CDN，字体本地。
+- 验证：`node scripts/build.mjs` 0 warning；`work/site-design/check404.mjs` 0 failed/broken image/console error；`interact.mjs` 搜索/筛选/收藏/详情/角色切换/能力筛选全通过；桌面 1440、手机 390、320 窄屏均无横向溢出，减少动态无报错。截图见 `wo/work/site-design/`。

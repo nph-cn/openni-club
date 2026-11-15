@@ -25,3 +25,14 @@
 - 截图设备壳与灵动岛为预览模拟，不是 iOS 真机截图；玻璃为 Flutter/CSS 绘制，不宣称原生 Liquid Glass。
 - 示例成员与订单为虚构演示数据；未做真实微信/支付/签名与真机验收。
 - 本轮只验证 Chromium/Edge 与 Flutter widget/golden 环境，未做 iOS/Android 真机测试。
+
+
+## 追加：打手分级、游戏类目、俱乐部能力与骨架加载（2026-11-16）
+
+- 数据模型：`assets/catalog.json` 新增 `games`（8 个游戏类目）、`tiers`（新锐/进阶/精英/王牌）、`clubFeatures`（8 项可开通能力）；新增 4 位带分级/认证/评分/接单量的演示打手（p5–p8）与 5 个新游戏服务（CS2、永劫无间、绝地求生、Apex、守望先锋）。
+- 客户端：首页游戏类目改为读取俱乐部真实启用游戏，横向展示 8 个类目；新增「打手分级」概览条；陪练目录新增分级筛选；陪练卡与主页展示分级徽章、认证、评分与单量；成员工作台展示我的分级与「分级与认证 / 俱乐部能力」入口；「我的」页新增分级与能力入口。
+- 新页面：`lib/club_programs.dart` 的「打手分级」（等级标准、分成、权益、成员分布、认证流程、我的分级）与「俱乐部能力」（可开通模块、已开通数量、分组说明）；均使用示例配置并明确标注。
+- 骨架加载：`lib/loading.dart` 增加分级/俱乐部能力骨架、渐变占位与描边，补 `/states/loading-tiers`、`/states/loading-features` 状态页；截图覆盖加载状态。
+- 截图：Flutter 107 张（新增 tiers、club_features、两张 loading、2 张后续内容段）；运营后台图库新增打手管理/游戏类目/能力开通 3 张；当前图库总数 146 张（Flutter 107 + 小程序 24 + 后台 15）。
+- 验证：`flutter analyze` 无问题；CI 测试列表全部通过；截图无 overflow；`node scripts/build.mjs` 0 warning。
+- 后台：运营示例后台新增打手管理、分级/认证、游戏类目与能力开通视图（见 `docs/product/01-club-operations.md` 与 `apps/admin/README.md`）。

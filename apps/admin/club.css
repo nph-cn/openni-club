@@ -1,0 +1,131 @@
+/* 运营后台扩展：打手管理、游戏类目、能力开通。
+   沿用 operations/refinement 的表面与间距，仅补充新的卡片、分段控件、开关与徽章。 */
+
+.page-heading{display:flex;flex-direction:column;gap:6px;min-width:0}
+.page-kicker{font-size:12px;font-weight:600;letter-spacing:.08em;color:#6c7684}
+.header-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+
+.demo-note{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid #e3e7ed;border-radius:13px;background:#fff;color:#5f6875;font-size:13px;line-height:1.65;margin-bottom:22px;flex-wrap:wrap;box-shadow:var(--panel-shadow)}
+.demo-note .status-dot{flex:0 0 6px}
+.demo-note strong{background:#eef1f5;color:#3b434f;border-radius:7px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.demo-note p{flex:1;min-width:220px;margin:0}
+
+.tier-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 9px 3px 4px;font-size:11px;font-weight:600;line-height:1.5;border:1px solid transparent;white-space:nowrap}
+.tier-badge b{display:grid;place-items:center;min-width:20px;height:20px;border-radius:6px;font-size:12px;font-weight:700;background:#ffffffb8}
+.tier-badge span{font-size:11px;letter-spacing:.02em}
+.tier-S{background:#f7eddb;color:#7d5a1a;border-color:#eeddc0}
+.tier-A{background:#e8eefb;color:#35598f;border-color:#d9e3f7}
+.tier-B{background:#e6f1ea;color:#34624b;border-color:#d5e8dd}
+.tier-C{background:#eef0f4;color:#5b6472;border-color:#e2e6ec}
+.tier-none{background:#f5f6f8;color:#7a828f;border-color:#eceef2;padding:3px 9px}
+.cert-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:8px;background:#eaf2ed;color:#35624d;font-size:11px;font-weight:600}
+.cert-badge .ui-icon{width:13px;height:13px}
+
+.roster-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.roster-toolbar .ops-search{max-width:300px;margin-left:auto}
+.segmented{display:inline-flex;gap:3px;padding:4px;background:#e9ecf1;border:1px solid #e0e5ed;border-radius:12px;max-width:100%;overflow-x:auto;scrollbar-width:thin}
+.segmented button{flex:0 0 auto;min-height:36px;padding:7px 13px;border-radius:8px;font-size:13px;color:#5f6875;white-space:nowrap}
+.segmented button.selected{background:#fff;color:#232a34;font-weight:600;box-shadow:0 1px 4px #17233412}
+.segmented button:hover:not(.selected){background:#f4f6f9;color:#283443}
+
+.roster-grid,.game-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.roster-grid>.empty-state,.game-grid>.empty-state{grid-column:1/-1}
+.roster-card{display:flex;flex-direction:column;gap:15px;padding:22px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--panel-shadow);min-width:0;transition:border-color .16s,box-shadow .16s}
+.roster-card:hover{border-color:#ccd4de;box-shadow:0 6px 20px #16223408}
+.roster-card.is-paused{background:linear-gradient(180deg,#fbfbfc,#fff);border-style:dashed}
+.roster-card.is-archived{opacity:.72}
+.roster-head{display:flex;gap:13px;align-items:flex-start;min-width:0}
+.roster-identity{flex:1;min-width:0}
+.roster-name{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.roster-name h2{font-size:17px;line-height:1.4}
+.roster-role{font-size:13px;color:var(--muted);margin-top:3px}
+.roster-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.roster-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:13px 0;border-top:1px solid #eef1f5;border-bottom:1px solid #eef1f5}
+.roster-stats div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.roster-stats strong{font-size:16px;font-weight:650;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.roster-stats span{font-size:11px;color:#7a828f}
+.roster-card .member-games{margin-top:0;gap:6px}
+.badge.game-badge{background:#f4f6f9;color:#4c5665}
+.roster-specialties{font-size:13px;color:#606a78;line-height:1.6}
+.roster-foot{display:flex;flex-direction:column;gap:12px;margin-top:auto;padding-top:15px;border-top:1px solid #eef1f5}
+.roster-meta{font-size:12px;color:#7a828f}
+.roster-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.roster-actions .action{min-height:36px;padding:7px 11px;font-size:13px}
+
+.game-card{display:flex;flex-direction:column;gap:15px;padding:22px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--panel-shadow);min-width:0;transition:border-color .16s,box-shadow .16s}
+.game-card:hover{border-color:#ccd4de;box-shadow:0 6px 20px #16223408}
+.game-card.is-off{background:#fafbfc;border-style:dashed}
+.game-head{display:flex;gap:13px;align-items:center;min-width:0}
+.game-tile{display:grid;place-items:center;width:50px;height:50px;flex:0 0 50px;border-radius:15px;background:var(--game-soft,#eef1f5);color:var(--game-accent,#4c5665);border:1px solid var(--game-line,#e3e8ee);font-size:15px;font-weight:650;letter-spacing:-.02em;text-align:center;line-height:1.15;padding:2px}
+.game-title{flex:1;min-width:0}
+.game-name-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.game-name-row h2{font-size:16px;line-height:1.4}
+.game-title p{font-size:12px;color:#77808d;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:13px 0;border-top:1px solid #eef1f5;border-bottom:1px solid #eef1f5}
+.game-stats div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.game-stats strong{font-size:15px;font-weight:650;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-stats span{font-size:11px;color:#7a828f}
+.game-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto;padding-top:15px;border-top:1px solid #eef1f5;flex-wrap:wrap}
+
+.switch-line{display:inline-flex;align-items:center;gap:9px;font-size:12px;color:#6a7380}
+.switch{position:relative;width:42px;height:24px;flex:0 0 42px;border-radius:999px;background:#dfe4ea;border:1px solid #d5dbe3;padding:0;transition:background-color .16s,border-color .16s}
+.switch .switch-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #1a243012;transition:transform .16s}
+.switch.on{background:#2c333c;border-color:#2c333c}
+.switch.on .switch-knob{transform:translateX(18px)}
+.switch:disabled{cursor:not-allowed;opacity:.55}
+
+.feature-group{margin-bottom:26px}
+.feature-group:last-child{margin-bottom:0}
+.feature-group-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 2px 12px;border-bottom:1px solid #e7ebf0;margin-bottom:16px}
+.feature-group-head h2{font-size:15px}
+.feature-group-head span{font-size:12px;color:#7a828f;font-variant-numeric:tabular-nums}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.feature-card{display:flex;flex-direction:column;gap:13px;padding:20px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--panel-shadow);min-width:0}
+.feature-card.is-on{border-color:#dfe6ee;background:linear-gradient(180deg,#fff,#fbfcfe)}
+.feature-head{display:flex;gap:12px;align-items:flex-start}
+.feature-icon{display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:11px;background:#f0f3f7;color:#5b6674}
+.feature-icon .ui-icon{width:19px;height:19px}
+.feature-title{flex:1;min-width:0}
+.feature-name{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.feature-name h3{font-size:15px;line-height:1.4}
+.feature-category{font-size:11px;color:#7a828f;margin-top:3px}
+.badge.reco{background:#f6eddd;color:#7c5c1e}
+.feature-desc{flex:1;font-size:13px;color:#5f6875;line-height:1.7}
+.feature-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:13px;border-top:1px solid #eef1f5;flex-wrap:wrap}
+
+.service-filter{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:2px 0 18px}
+.service-filter-label{font-size:12px;font-weight:600;color:#7a828f;letter-spacing:.03em}
+.service-filter .ops-chips{flex-wrap:wrap}
+.service-filter .ops-chips button{font-size:13px}
+
+.action-dialog{overflow:auto}
+.action-dialog .check-field{display:flex;flex-direction:row;align-items:center;gap:10px;font-weight:550;cursor:pointer;padding:4px 0}
+.action-dialog .check-field input{flex:0 0 18px}
+
+@media(max-width:1250px){
+ .roster-grid,.game-grid,.feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px){
+ .roster-toolbar{align-items:stretch}
+ .roster-toolbar .ops-search{max-width:none;margin-left:0;width:100%}
+ .roster-toolbar .ops-chips{width:100%}
+}
+@media(max-width:700px){
+ .roster-grid,.game-grid,.feature-grid{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+ .ops-page-header{align-items:flex-start;flex-wrap:wrap}
+ .header-actions{width:100%;justify-content:flex-end}
+ .segmented{width:100%}
+ .segmented button{flex:1 0 auto;text-align:center}
+ .roster-card,.game-card,.feature-card{padding:18px}
+ .roster-stats strong,.game-stats strong{font-size:15px}
+ .demo-note{padding:12px 14px}
+ .demo-note p{min-width:0}
+ .roster-actions .action{flex:1 0 auto}
+ .feature-group-head{flex-wrap:wrap}
+ .game-name-row h2{font-size:15px}
+ .service-filter{gap:9px}
+ .service-filter .ops-chips{flex-wrap:nowrap;overflow-x:auto;width:100%}
+ .roster-toolbar .ops-chips{flex-wrap:wrap;overflow:visible;width:auto}
+}

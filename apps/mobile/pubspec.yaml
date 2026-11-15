@@ -30,3 +30,4 @@ flutter:
     - assets/brand.json
     - assets/catalog.json
     - assets/brand/
+    - assets/games/

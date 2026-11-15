@@ -61,7 +61,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
-    final games = repo.services.map((s) => '${s['game']}').toSet().toList();
+    final catalogGames = repo.enabledGames;
+    final games = catalogGames.isNotEmpty
+        ? catalogGames.map((g) => '${g['name']}').toList()
+        : repo.services.map((s) => '${s['game']}').toSet().toList();
     selectedGame ??= games.firstOrNull;
     final services = repo.services
         .where((s) => s['game'] == selectedGame)
@@ -142,7 +145,15 @@ class _HomePageState extends State<HomePage> {
               children: [
                 for (final game in games) ...[
                   GameSelector(
-                    service: repo.services.firstWhere((s) => s['game'] == game),
+                    game:
+                        repo.gameByName(game) ??
+                        Json.from({
+                          'name': game,
+                          'coverUrl': repo.services.firstWhere(
+                            (s) => s['game'] == game,
+                          )['coverUrl'],
+                          'category': '',
+                        }),
                     selected: selectedGame == game,
                     onTap: () => setState(() => selectedGame = game),
                   ),
@@ -151,6 +162,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          _TierStrip(repo),
           SectionTitle(
             '精选服务',
             caption: selectedGame == null ? null : '$selectedGame · 官方目录',
@@ -181,7 +193,7 @@ class _HomePageState extends State<HomePage> {
             const Text('暂无陪练', style: typeSecondary)
           else
             SizedBox(
-              height: 220,
+              height: 238,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 clipBehavior: Clip.none,
@@ -747,108 +759,203 @@ class _HomeBannersState extends State<HomeBanners> {
 class GameSelector extends StatelessWidget {
   const GameSelector({
     super.key,
-    required this.service,
+    required this.game,
     required this.selected,
     required this.onTap,
   });
-  final Json service;
+  final Json game;
   final bool selected;
   final VoidCallback onTap;
+  String get name => '${game['name'] ?? '游戏'}';
+  String get category => '${game['category'] ?? ''}';
   @override
-  Widget build(BuildContext context) => Semantics(
-    button: true,
-    selected: selected,
-    label: '${service['game']}',
-    excludeSemantics: true,
-    onTap: onTap,
-    child: InkWell(
+  Widget build(BuildContext context) {
+    final accent = colorFromHex('${game['accent']}', fallback: positive);
+    final cover = '${game['coverUrl'] ?? ''}';
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: category.isEmpty ? name : '$name · $category',
+      excludeSemantics: true,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: SizedBox(
-        width: 92,
-        child: Column(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 160),
-              padding: const EdgeInsets.all(2.5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: selected ? ink : Colors.transparent,
-                  width: 1.5,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 96,
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding: const EdgeInsets.all(2.5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: selected ? accent : Colors.transparent,
+                    width: 1.5,
+                  ),
                 ),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: 84,
-                  height: 56,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ServiceArt(service, radius: 0),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              ink.withValues(alpha: selected ? .55 : .35),
-                            ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 88,
+                    height: 60,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CatalogImage(
+                          cover,
+                          fallback: _ArtFallback(
+                            game: name,
+                            icon: false,
+                            radius: 0,
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: 5,
-                        right: 4,
-                        bottom: 4,
-                        child: Text(
-                          '${service['game']}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            height: 1.2,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w600,
-                            color: Colors.white,
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                ink.withValues(alpha: selected ? .62 : .45),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      if (selected)
-                        const Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Icon(
-                            Icons.check_circle_rounded,
-                            size: 13,
-                            color: Colors.white,
+                        Positioned(
+                          left: 6,
+                          right: 5,
+                          bottom: 5,
+                          child: Text(
+                            name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 10.5,
+                              height: 1.2,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
-                    ],
+                        if (selected)
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: accent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check_rounded,
+                                size: 9,
+                                color: ink,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '${service['game']}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                height: 1.2,
-                color: selected ? ink : muted,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              const SizedBox(height: 5),
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.2,
+                  color: selected ? ink : muted,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
+}
+
+/// 首页分级概览：分级来自俱乐部配置，点击进入分级说明页。
+class _TierStrip extends StatelessWidget {
+  const _TierStrip(this.repo);
+  final ClubRepository repo;
+  @override
+  Widget build(BuildContext context) {
+    if (repo.tiers.isEmpty) return const SizedBox.shrink();
+    final counts = <String, int>{for (final t in repo.tiers) '${t['id']}': 0};
+    for (final player in repo.players) {
+      final id = '${player['tier'] ?? ''}';
+      if (counts.containsKey(id)) counts[id] = counts[id]! + 1;
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.push('/club/tiers'),
+        child: Surface(
+          padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+          border: true,
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: ink,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.military_tech_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          '打手分级',
+                          style: typeLabel.copyWith(fontSize: 13),
+                        ),
+                        const SizedBox(width: 6),
+                        Text('${repo.players.length} 位成员', style: typeCaption),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Wrap(
+                      spacing: 4,
+                      runSpacing: 3,
+                      children: [
+                        for (final tier in repo.tiers)
+                          TierBadge(tier: tier, compact: true),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                CupertinoIcons.chevron_forward,
+                size: 13,
+                color: faint,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 /// Compact photo card used by the home recommendation rail.
@@ -904,6 +1011,28 @@ class PlayerRailCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    Positioned(
+                      left: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(1),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: .94),
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                        child: TierBadge(tier: repo.tierFor(player), compact: true),
+                      ),
+                    ),
+                    if (player['certified'] == true)
+                      const Positioned(
+                        right: 8,
+                        top: 8,
+                        child: Icon(
+                          Icons.verified_rounded,
+                          size: 15,
+                          color: Color(0xFFE7C777),
+                        ),
+                      ),
                     Positioned(
                       left: 9,
                       right: 9,
@@ -967,6 +1096,33 @@ class PlayerRailCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 12,
+                          color: Color(0xFFC6A15B),
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          '${player['rating'] ?? '—'}',
+                          style: typeCaption.copyWith(
+                            color: ink,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: Text(
+                            '${player['completedOrders'] ?? 0} 单',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typeCaption,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
                     Text(
                       (player['tags'] as List? ?? []).take(2).join(' · '),
                       maxLines: 1,
@@ -1367,6 +1523,21 @@ class RosterRow extends StatelessWidget {
                               ),
                             ),
                           ),
+                          if (repo.tierFor(player) != null) ...[
+                            TierBadge(
+                              tier: repo.tierFor(player),
+                              compact: true,
+                            ),
+                            const SizedBox(width: 4),
+                          ],
+                          if (player['certified'] == true) ...[
+                            const Icon(
+                              Icons.verified_rounded,
+                              size: 13,
+                              color: Color(0xFFC6A15B),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
                           IconButton(
                             tooltip: followed
                                 ? '取消关注 ${player['name']}'
@@ -1390,11 +1561,37 @@ class RosterRow extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Text(
-                        '${player['role']}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: typeSecondary,
+                      Row(
+                        children: [
+                          Text(
+                            '${player['role']}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: typeSecondary,
+                          ),
+                          if (player['rating'] != null) ...[
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 11,
+                              color: Color(0xFFC6A15B),
+                            ),
+                            Text(
+                              '${player['rating']}',
+                              style: typeCaption.copyWith(
+                                color: muted,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                          if (player['completedOrders'] != null) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              '${player['completedOrders']} 单',
+                              style: typeCaption,
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 5),
                       Row(
@@ -1665,6 +1862,7 @@ class _PlayerDirectoryState extends State<PlayerDirectory> {
   late String game = widget.initialGame;
   late bool following = widget.onlyFollowing;
   String query = '';
+  String tier = '全部';
   @override
   void dispose() {
     search.dispose();
@@ -1685,6 +1883,7 @@ class _PlayerDirectoryState extends State<PlayerDirectory> {
     setState(() {
       query = '';
       game = '全部';
+      tier = '全部';
       following = false;
     });
   }
@@ -1706,10 +1905,12 @@ class _PlayerDirectoryState extends State<PlayerDirectory> {
             '${p['name'] ?? ''} ${p['role'] ?? ''} ${playerGames.join(' ')}'
                 .toLowerCase();
         return (game == '全部' || playerGames.contains(game)) &&
+            (tier == '全部' || p['tier'] == tier) &&
             (!following || repo.following.contains('${p['id']}')) &&
             searchable.contains(term);
       }).toList();
-      final hasFiltered = following || game != '全部' || term.isNotEmpty;
+      final hasFiltered =
+          following || game != '全部' || tier != '全部' || term.isNotEmpty;
       return PageList(
         children: [
           if (widget.header != null) ...[
@@ -1751,6 +1952,40 @@ class _PlayerDirectoryState extends State<PlayerDirectory> {
               onSelected: (v) => setState(() => following = v),
             ),
           ),
+          if (repo.tiers.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (final t in repo.tiers)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: ChoiceChip(
+                        selected: tier == t['id'],
+                        avatar: Icon(
+                          Icons.military_tech_rounded,
+                          size: 14,
+                          color: colorFromHex('${t['color']}', fallback: warning),
+                        ),
+                        label: Text(
+                          '${t['label']}',
+                          style: const TextStyle(fontSize: 12.5),
+                        ),
+                        onSelected: (v) => setState(
+                          () => tier = v ? '${t['id']}' : '全部',
+                        ),
+                      ),
+                    ),
+                  if (tier != '全部')
+                    TextButton(
+                      onPressed: () => setState(() => tier = '全部'),
+                      child: const Text('清除分级', style: TextStyle(fontSize: 12)),
+                    ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
           if (items.isNotEmpty)
             Padding(
@@ -2626,6 +2861,66 @@ class _PlayerPageState extends State<PlayerPage> {
             ),
           ),
           const SizedBox(height: 12),
+          if (repo.tierFor(p) != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () => context.push('/club/tiers'),
+                child: Surface(
+                  border: true,
+                  padding: const EdgeInsets.fromLTRB(12, 11, 12, 11),
+                  child: Row(
+                    children: [
+                      TierBadge(
+                        tier: repo.tierFor(p),
+                        showLevel: true,
+                      ),
+                      const SizedBox(width: 8),
+                      if (p['certified'] == true) ...[
+                        const Tag(
+                          '认证打手',
+                          color: positive,
+                          fill: Color(0xFFE7F2EC),
+                          icon: Icons.verified_rounded,
+                        ),
+                        const SizedBox(width: 6),
+                      ],
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            const Icon(
+                              Icons.star_rounded,
+                              size: 13,
+                              color: Color(0xFFC6A15B),
+                            ),
+                            Text(
+                              '${p['rating'] ?? '—'}',
+                              style: typeCaption.copyWith(
+                                color: ink,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 7),
+                            Text(
+                              '${p['completedOrders'] ?? 0} 单',
+                              style: typeCaption,
+                            ),
+                            const SizedBox(width: 3),
+                            const Icon(
+                              CupertinoIcons.chevron_forward,
+                              size: 12,
+                              color: faint,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           Surface(
             border: true,
             child: Row(

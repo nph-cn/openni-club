@@ -33,6 +33,8 @@ const sections = <String, List<(String, double)>>{
   'delivery': [('delivery_sections_more', -520)],
   'member_notifications': [('member_notifications_sections_more', -400)],
   'home_android': [('home_android_sections_more', -560)],
+  'tiers': [('tiers_sections_grading', -620)],
+  'club_features': [('club_features_sections_more', -520)],
 };
 
 void main() {
