@@ -6,14 +6,14 @@
 
 ## 原生编译验证记录
 
-2026-11-15，[原生 CI 运行 43649484983](https://github.com/nph-cn/openni-club/actions/runs/43649484983) 已完整通过，验证提交为 [`198cb97`](https://github.com/nph-cn/openni-club/commit/198cb9725500ac9d4005baa68d1fdc8ce86e4b4c)。使用 Flutter 3.50.0 stable / Dart 3.14.0；两个独立 runner 均执行了配置生成、包名与配置指纹检查，再进行实际原生编译。
+2026-11-15，[原生 CI 运行 43697206190](https://github.com/nph-cn/openni-club/actions/runs/43697206190) 已完整通过，验证提交为 [`d17e317`](https://github.com/nph-cn/openni-club/commit/d17e3175684004ab5ac975d562a7c66bc747c67f)。使用 Flutter 3.50.0 stable / Dart 3.14.0；两个独立 runner 均执行了配置生成、包名与配置指纹检查，再进行实际原生编译。
 
 | 平台 | Runner / 命令 | 结果与 CI 产物 |
 | --- | --- | --- |
 | Android | Ubuntu 24.04；`flutter build apk --debug --dart-define=APP_MODE=demo` | 通过；调试 APK、编译日志、工具链和配置身份记录 |
-| iOS | macOS 26、Xcode 26.6；`flutter build ios --release --no-codesign --dart-define=APP_MODE=demo` | 通过；未签名 `Runner.app` 压缩包、编译日志、工具链和配置身份记录 |
+| iOS | macOS 26；`flutter build ios --release --no-codesign --dart-define=APP_MODE=demo` | 通过；未签名 `Runner.app` 压缩包、编译日志、工具链和配置身份记录 |
 
-本次配置使用虚构北岸电竞，双端应用标识为 `club.openni.c5ccdaffc95`，版本 `0.2.0`、构建号 `2`，模式为 demo、API 地址为空。生成器配置指纹为 `e08f5c8bc37108bfcc0ec4445662e5530a12c5e33afb72215b00733d1ae9d980`。产物只保存在上述运行的 Actions Artifacts，保留 7 天；可手动运行 [Compile native apps](https://github.com/nph-cn/openni-club/actions/workflows/native.yml) 重新编译。
+本次配置使用虚构北岸电竞，双端应用标识为 `club.openni.c5ccdaffc95`，版本 `0.2.0`、构建号 `2`，模式为 demo、API 地址为空。生成器配置指纹为 `3398608fe8d5ddf8ee3be096b8af4dd9875471bfa3db57d2811e3e1590648d3f`。产物只保存在上述运行的 Actions Artifacts，保留 7 天；可手动运行 [Compile native apps](https://github.com/nph-cn/openni-club/actions/workflows/native.yml) 重新编译。
 
 这次验证证明原生工程能够编译，**不代表真机验收、经营者签名、真实微信收退款或商店审核通过**。CI 不读取商户/开发者密钥，不上传商店，不创建原生发布版本。iOS 未签名产物不能直接交付安装；Android 调试包也不是商店发行包。
 
@@ -28,7 +28,7 @@
 ```sh
 flutter pub get
 flutter analyze
-flutter test test/flows_test.dart
+flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart
 flutter build appbundle --release --dart-define=APP_MODE=production --dart-define=API_BASE_URL=https://api.example.com/api/v1
 ```
 
