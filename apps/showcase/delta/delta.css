@@ -336,15 +336,15 @@ dialog::backdrop{background:rgba(3,6,4,.88);backdrop-filter:blur(10px)}
   .chapter-nav{display:none}
   .icon-button{width:32px;height:32px;font-size:9px}
   .topbar .pill{min-height:36px;padding:8px 12px;font-size:10.5px;gap:14px}
-  .hud{left:20px;bottom:calc(var(--inset) + 14px);font-size:8px;gap:9px}
-  .hud-sep{height:7px}
+  .hud{display:none}
   .hero-meta{top:calc(var(--inset) + 82px);font-size:8.5px;flex-direction:column;gap:5px}
   .chapter-hero{height:176svh;min-height:820px}
   .hero-title{top:29%;font-size:clamp(62px,18.5vw,116px)}
   .hero-title .line-bottom{padding-left:15vw}
   .hero-ghost{font-size:40vw;top:14%;left:2%}
   .hero-lead{right:20px;bottom:auto;top:57%;text-align:left;font-size:12px}
-  .hero-bottom{flex-direction:column;align-items:flex-start;gap:14px;bottom:calc(var(--inset) + 24px)}
+  .hero-bottom{flex-direction:column;align-items:flex-start;gap:12px;bottom:calc(var(--inset) + 18px);right:20px}
+  .hero-tags,.hold-button{display:none}
   .hero-note{max-width:none;font-size:9px}
   .hold-button{margin-left:0}
   .chapter-modes{grid-template-columns:1fr;min-height:0}

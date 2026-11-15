@@ -1,67 +1,753 @@
 [
- {"id":"home","title":"俱乐部首页","role":"customer","flow":"discover","description":"游戏横幅、服务与陪练入口，进行中订单快捷查看。"},
- {"id":"services","title":"服务目录","role":"customer","flow":"discover","description":"游戏筛选和关键词搜索。"},
- {"id":"service","title":"60分钟服务","role":"customer","flow":"discover","description":"PC小时陪规格、地图、服务规则与固定预约栏。"},
- {"id":"service_120","title":"120分钟套餐","role":"customer","flow":"booking","description":"同一服务的120分钟规格，合计72元；金额和时长均来自配置。"},
- {"id":"players","title":"陪练目录","role":"customer","flow":"discover","description":"陪练资料、擅长游戏和服务价格。"},
- {"id":"player","title":"陪练主页","role":"customer","flow":"discover","description":"人物资料、服务与可约时段。"},
- {"id":"booking","title":"选择预约","role":"customer","flow":"booking","description":"选择规格、陪练、日期和可约时段。"},
- {"id":"checkout","title":"预约核对","role":"customer","flow":"booking","description":"根据可约时段生成核对页面，服务费用和条款确认。"},
- {"id":"orders","title":"我的订单","role":"customer","flow":"fulfillment","description":"订单筛选和真实预约状态。"},
- {"id":"order","title":"订单进度","role":"customer","flow":"fulfillment","description":"实际API创建、派单、接单和开始服务事件，未改写业务状态。"},
- {"id":"support","title":"申请售后","role":"customer","flow":"fulfillment","description":"选择售后原因并提交说明；实际写入需连接API。"},
- {"id":"profile","title":"个人中心","role":"customer","flow":"account","description":"订单、关注、政策和设置。"},
- {"id":"announcements","title":"俱乐部公告","role":"customer","flow":"account","description":"预约须知、改期售后与服务规则。"},
- {"id":"settings","title":"设置","role":"customer","flow":"account","description":"昵称、隐私条款、客服、应用信息与账号注销。"},
- {"id":"notifications","title":"客户通知","role":"customer","flow":"account","description":"无新通知的真实空状态。"},
- {"id":"member","title":"成员工作台","role":"member","flow":"member","description":"API实际导出的待接单、进行中服务和账本；离线只读。"},
- {"id":"member_orders","title":"成员订单","role":"member","flow":"member","description":"本人已指派服务与当前履约状态。"},
- {"id":"member_order","title":"接单核对","role":"member","flow":"member","description":"实际待接单内容、服务时段、客户需求和冻结分成。"},
- {"id":"delivery","title":"提交履约记录","role":"member","flow":"member","description":"进行中订单的服务内容与HTTPS凭证表单；离线不提交。"},
- {"id":"member_notifications","title":"成员通知","role":"member","flow":"member","description":"真实API流程产生的本人订单通知。"},
- {"id":"availability","title":"可接时段","role":"member","flow":"member","description":"实际通过API设置的18:00–23:30晚间排班。"},
- {"id":"earnings","title":"收入账本","role":"member","flow":"member","description":"服务分成、待确认金额与已登记结算账目。"},
- {"id":"welcome","title":"欢迎","role":"customer","flow":"auth","description":"欢迎入口与游客浏览，不强制每次启动出现。"},
- {"id":"login","title":"登录方式","role":"customer","flow":"auth","description":"按实际可用能力选择手机号或微信。"},
- {"id":"phone","title":"手机号登录","role":"customer","flow":"auth","description":"手机号输入、协议入口与获取验证码。"},
- {"id":"code","title":"验证码","role":"customer","flow":"auth","description":"验证码粘贴、自动填充和倒计时；本地验证码明确未发送短信。"},
- {"id":"code_error","title":"验证码错误","role":"customer","flow":"auth","description":"实际无效验证码产生的错误与剩余尝试次数。"},
- {"id":"code_verifying","title":"验证中","role":"customer","flow":"auth","description":"同一验证控件等待异步验证完成时的状态。"},
- {"id":"home_loading","title":"首页加载","role":"customer","flow":"discover","description":"启动等待读取时的骨架，减少动态效果时保持静态。"},
- {"id":"home_error","title":"连接失败","role":"customer","flow":"discover","description":"连接失败组件及重新加载入口。"},
- {"id":"orders_empty","title":"没有订单","role":"customer","flow":"fulfillment","description":"空订单集合下的实际列表与发现服务入口。"},
- {"id":"orders_guest","title":"订单登录入口","role":"customer","flow":"auth","description":"与正式未登录订单共用组件，登录后回到订单页。"},
- {"id":"privacy","title":"隐私政策","role":"customer","flow":"account","description":"俱乐部配置的隐私文本；示例不能作为正式运营政策。"},
- {"id":"terms","title":"服务协议","role":"customer","flow":"account","description":"与登录授权共用的服务协议页面。"},
- {"id":"home_android","title":"Android 首页","role":"customer","flow":"discover","description":"相同业务代码的 Android 实体导航与内容布局。"},
- {"id":"following","title":"本机关注","role":"customer","flow":"account","description":"从个人中心打开本机关注，可查看全部陪练或清除筛选。"},
- {"id":"services_search","title":"搜索复盘服务","role":"customer","flow":"discover","description":"输入“复盘”后仅显示匹配服务。"},
- {"id":"services_search_empty","title":"服务搜索无结果","role":"customer","flow":"discover","description":"输入不存在关键词后的真实空状态，可清除筛选。"},
- {"id":"services_game_filter","title":"按游戏筛选服务","role":"customer","flow":"discover","description":"选择无畏契约，仅显示该游戏的服务。"},
- {"id":"players_search","title":"搜索俱乐部陪练","role":"customer","flow":"discover","description":"从服务切换陪练目录并搜索阿屿。"},
- {"id":"players_following_empty","title":"本机关注为空","role":"customer","flow":"discover","description":"点击本机关注筛选后的真实空状态。"},
- {"id":"player_followed","title":"已关注陪练","role":"customer","flow":"discover","description":"点击人物主页爱心后更新本机关注状态。"},
- {"id":"booking_player_sheet","title":"选择预约陪练","role":"customer","flow":"booking","description":"点击选择意向队友后显示可选成员弹层。"},
- {"id":"booking_selected_variant","title":"预约120分钟规格","role":"customer","flow":"booking","description":"选择阿屿及120分钟规格，合计72元。"},
- {"id":"booking_today_slot","title":"选择今天的时段","role":"customer","flow":"booking","description":"读取当日可约排班并选择14:00，过滤过期时段。"},
- {"id":"booking_contact_filled","title":"填写预约联系方式","role":"customer","flow":"booking","description":"填写演示联系方式及预约备注后的状态。"},
- {"id":"booking_review_ready","title":"核对真实预约选择","role":"customer","flow":"booking","description":"经选人、规格、时间和联系信息进入核对页，尚未提交。"},
- {"id":"booking_consent_needed","title":"预约协议校验","role":"customer","flow":"booking","description":"未勾选协议提交时保留预约输入并显示校验提示。"},
- {"id":"order_created","title":"提交本地演示预约","role":"customer","flow":"fulfillment","description":"同意协议并提交本地演示预约，待俱乐部安排，不声称付款。"},
- {"id":"order_cancel_confirm","title":"取消预约确认","role":"customer","flow":"fulfillment","description":"点击取消预约后显示真实确认弹窗。"},
- {"id":"orders_finished","title":"筛选已结束订单","role":"customer","flow":"fulfillment","description":"确认取消演示预约后，在已结束筛选中查看该订单。"},
- {"id":"player_booking_sheet","title":"选择陪练的服务规格","role":"customer","flow":"booking","description":"从人物主页点击预约TA后主动选择游戏服务与规格，不静默选取第一项。"},
- {"id":"member_orders_active","title":"成员服务中","role":"member","flow":"member","description":"按实际状态筛选服务，显示冻结规格与预计收入。"},
- {"id":"member_orders_finished","title":"成员已结束","role":"member","flow":"member","description":"完成订单单独归档，不混入待接单任务。"},
- {"id":"delivery_filled","title":"填写交付记录","role":"member","flow":"member","description":"输入服务说明与凭证链接，并核对实际提交请求。"},
- {"id":"order_awaiting_confirmation","title":"核对服务交付","role":"customer","flow":"fulfillment","description":"真实API提交后的订单，客户可核对服务记录。"},
- {"id":"order_rating","title":"评价与确认完成","role":"customer","flow":"fulfillment","description":"填写评价后确认，等待服务端返回完成状态。"},
- {"id":"order_completed","title":"服务完成与评价","role":"customer","flow":"fulfillment","description":"显示服务端返回的评价内容和完成结果。"},
- {"id":"order_disputed","title":"售后处理中","role":"customer","flow":"fulfillment","description":"提交后保留问题类型和说明，状态由API返回。"},
- {"id":"profile_signed_in","title":"已登录个人中心","role":"customer","flow":"account","description":"展示账号身份与已有预约，不假设头像上传能力。"},
- {"id":"profile_edit_name","title":"修改账号昵称","role":"customer","flow":"account","description":"实际昵称编辑弹层，保留当前账号值。"},
- {"id":"notifications_inbox","title":"客户通知收件箱","role":"customer","flow":"account","description":"按日期分组，展示时间和未读状态，可进入关联订单。"},
- {"id":"support_validation","title":"售后说明校验","role":"customer","flow":"fulfillment","description":"说明不完整时阻止提交，在表单内提示补充。"},
- {"id":"orders_retry","title":"订单加载失败与重试","role":"customer","flow":"fulfillment","description":"网络响应失败后提供重新加载，测试验证恢复真实订单。"},
- {"id":"booking_submit","title":"预约信息确认","role":"customer","flow":"booking","description":"小程序提交前的预约信息确认页。"}
+ {
+  "id": "home",
+  "title": "俱乐部首页",
+  "role": "customer",
+  "flow": "discover",
+  "description": "游戏横幅、服务与陪练入口，进行中订单快捷查看。"
+ },
+ {
+  "id": "services",
+  "title": "服务目录",
+  "role": "customer",
+  "flow": "discover",
+  "description": "游戏筛选和关键词搜索。"
+ },
+ {
+  "id": "service",
+  "title": "60分钟服务",
+  "role": "customer",
+  "flow": "discover",
+  "description": "PC小时陪规格、地图、服务规则与固定预约栏。"
+ },
+ {
+  "id": "service_120",
+  "title": "120分钟套餐",
+  "role": "customer",
+  "flow": "booking",
+  "description": "同一服务的120分钟规格，合计72元；金额和时长均来自配置。"
+ },
+ {
+  "id": "players",
+  "title": "陪练目录",
+  "role": "customer",
+  "flow": "discover",
+  "description": "陪练资料、擅长游戏和服务价格。"
+ },
+ {
+  "id": "player",
+  "title": "陪练主页",
+  "role": "customer",
+  "flow": "discover",
+  "description": "人物资料、服务与可约时段。"
+ },
+ {
+  "id": "booking",
+  "title": "选择预约",
+  "role": "customer",
+  "flow": "booking",
+  "description": "选择规格、陪练、日期和可约时段。"
+ },
+ {
+  "id": "checkout",
+  "title": "预约核对",
+  "role": "customer",
+  "flow": "booking",
+  "description": "根据可约时段生成核对页面，服务费用和条款确认。"
+ },
+ {
+  "id": "orders",
+  "title": "我的订单",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "订单筛选和真实预约状态。"
+ },
+ {
+  "id": "order",
+  "title": "订单进度",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "实际API创建、派单、接单和开始服务事件，未改写业务状态。"
+ },
+ {
+  "id": "support",
+  "title": "申请售后",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "选择售后原因并提交说明；实际写入需连接API。"
+ },
+ {
+  "id": "profile",
+  "title": "个人中心",
+  "role": "customer",
+  "flow": "account",
+  "description": "订单、关注、政策和设置。"
+ },
+ {
+  "id": "announcements",
+  "title": "俱乐部公告",
+  "role": "customer",
+  "flow": "account",
+  "description": "预约须知、改期售后与服务规则。"
+ },
+ {
+  "id": "settings",
+  "title": "设置",
+  "role": "customer",
+  "flow": "account",
+  "description": "昵称、隐私条款、客服、应用信息与账号注销。"
+ },
+ {
+  "id": "notifications",
+  "title": "客户通知",
+  "role": "customer",
+  "flow": "account",
+  "description": "无新通知的真实空状态。"
+ },
+ {
+  "id": "member",
+  "title": "成员工作台",
+  "role": "member",
+  "flow": "member",
+  "description": "API实际导出的待接单、进行中服务和账本；离线只读。"
+ },
+ {
+  "id": "member_orders",
+  "title": "成员订单",
+  "role": "member",
+  "flow": "member",
+  "description": "本人已指派服务与当前履约状态。"
+ },
+ {
+  "id": "member_order",
+  "title": "接单核对",
+  "role": "member",
+  "flow": "member",
+  "description": "实际待接单内容、服务时段、客户需求和冻结分成。"
+ },
+ {
+  "id": "delivery",
+  "title": "提交履约记录",
+  "role": "member",
+  "flow": "member",
+  "description": "进行中订单的服务内容与HTTPS凭证表单；离线不提交。"
+ },
+ {
+  "id": "member_notifications",
+  "title": "成员通知",
+  "role": "member",
+  "flow": "member",
+  "description": "真实API流程产生的本人订单通知。"
+ },
+ {
+  "id": "availability",
+  "title": "可接时段",
+  "role": "member",
+  "flow": "member",
+  "description": "实际通过API设置的18:00–23:30晚间排班。"
+ },
+ {
+  "id": "earnings",
+  "title": "收入账本",
+  "role": "member",
+  "flow": "member",
+  "description": "服务分成、待确认金额与已登记结算账目。"
+ },
+ {
+  "id": "welcome",
+  "title": "欢迎",
+  "role": "customer",
+  "flow": "auth",
+  "description": "欢迎入口与游客浏览，不强制每次启动出现。"
+ },
+ {
+  "id": "login",
+  "title": "登录方式",
+  "role": "customer",
+  "flow": "auth",
+  "description": "按实际可用能力选择手机号或微信。"
+ },
+ {
+  "id": "phone",
+  "title": "手机号登录",
+  "role": "customer",
+  "flow": "auth",
+  "description": "手机号输入、协议入口与获取验证码。"
+ },
+ {
+  "id": "code",
+  "title": "验证码",
+  "role": "customer",
+  "flow": "auth",
+  "description": "验证码粘贴、自动填充和倒计时；本地验证码明确未发送短信。"
+ },
+ {
+  "id": "code_error",
+  "title": "验证码错误",
+  "role": "customer",
+  "flow": "auth",
+  "description": "实际无效验证码产生的错误与剩余尝试次数。"
+ },
+ {
+  "id": "code_verifying",
+  "title": "验证中",
+  "role": "customer",
+  "flow": "auth",
+  "description": "同一验证控件等待异步验证完成时的状态。"
+ },
+ {
+  "id": "home_loading",
+  "title": "首页加载",
+  "role": "customer",
+  "flow": "discover",
+  "description": "启动等待读取时的骨架，减少动态效果时保持静态。"
+ },
+ {
+  "id": "home_error",
+  "title": "连接失败",
+  "role": "customer",
+  "flow": "discover",
+  "description": "连接失败组件及重新加载入口。"
+ },
+ {
+  "id": "orders_empty",
+  "title": "没有订单",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "空订单集合下的实际列表与发现服务入口。"
+ },
+ {
+  "id": "orders_guest",
+  "title": "订单登录入口",
+  "role": "customer",
+  "flow": "auth",
+  "description": "与正式未登录订单共用组件，登录后回到订单页。"
+ },
+ {
+  "id": "privacy",
+  "title": "隐私政策",
+  "role": "customer",
+  "flow": "account",
+  "description": "俱乐部配置的隐私文本；示例不能作为正式运营政策。"
+ },
+ {
+  "id": "terms",
+  "title": "服务协议",
+  "role": "customer",
+  "flow": "account",
+  "description": "与登录授权共用的服务协议页面。"
+ },
+ {
+  "id": "home_android",
+  "title": "Android 首页",
+  "role": "customer",
+  "flow": "discover",
+  "description": "相同业务代码的 Android 实体导航与内容布局。"
+ },
+ {
+  "id": "following",
+  "title": "本机关注",
+  "role": "customer",
+  "flow": "account",
+  "description": "从个人中心打开本机关注，可查看全部陪练或清除筛选。"
+ },
+ {
+  "id": "services_search",
+  "title": "搜索复盘服务",
+  "role": "customer",
+  "flow": "discover",
+  "description": "输入“复盘”后仅显示匹配服务。"
+ },
+ {
+  "id": "services_search_empty",
+  "title": "服务搜索无结果",
+  "role": "customer",
+  "flow": "discover",
+  "description": "输入不存在关键词后的真实空状态，可清除筛选。"
+ },
+ {
+  "id": "services_game_filter",
+  "title": "按游戏筛选服务",
+  "role": "customer",
+  "flow": "discover",
+  "description": "选择无畏契约，仅显示该游戏的服务。"
+ },
+ {
+  "id": "players_search",
+  "title": "搜索俱乐部陪练",
+  "role": "customer",
+  "flow": "discover",
+  "description": "从服务切换陪练目录并搜索阿屿。"
+ },
+ {
+  "id": "players_following_empty",
+  "title": "本机关注为空",
+  "role": "customer",
+  "flow": "discover",
+  "description": "点击本机关注筛选后的真实空状态。"
+ },
+ {
+  "id": "player_followed",
+  "title": "已关注陪练",
+  "role": "customer",
+  "flow": "discover",
+  "description": "点击人物主页爱心后更新本机关注状态。"
+ },
+ {
+  "id": "booking_player_sheet",
+  "title": "选择预约陪练",
+  "role": "customer",
+  "flow": "booking",
+  "description": "点击选择意向队友后显示可选成员弹层。"
+ },
+ {
+  "id": "booking_selected_variant",
+  "title": "预约120分钟规格",
+  "role": "customer",
+  "flow": "booking",
+  "description": "选择阿屿及120分钟规格，合计72元。"
+ },
+ {
+  "id": "booking_today_slot",
+  "title": "选择今天的时段",
+  "role": "customer",
+  "flow": "booking",
+  "description": "读取当日可约排班并选择14:00，过滤过期时段。"
+ },
+ {
+  "id": "booking_contact_filled",
+  "title": "填写预约联系方式",
+  "role": "customer",
+  "flow": "booking",
+  "description": "填写演示联系方式及预约备注后的状态。"
+ },
+ {
+  "id": "booking_review_ready",
+  "title": "核对真实预约选择",
+  "role": "customer",
+  "flow": "booking",
+  "description": "经选人、规格、时间和联系信息进入核对页，尚未提交。"
+ },
+ {
+  "id": "booking_consent_needed",
+  "title": "预约协议校验",
+  "role": "customer",
+  "flow": "booking",
+  "description": "未勾选协议提交时保留预约输入并显示校验提示。"
+ },
+ {
+  "id": "order_created",
+  "title": "提交本地演示预约",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "同意协议并提交本地演示预约，待俱乐部安排，不声称付款。"
+ },
+ {
+  "id": "order_cancel_confirm",
+  "title": "取消预约确认",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "点击取消预约后显示真实确认弹窗。"
+ },
+ {
+  "id": "orders_finished",
+  "title": "筛选已结束订单",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "确认取消演示预约后，在已结束筛选中查看该订单。"
+ },
+ {
+  "id": "player_booking_sheet",
+  "title": "选择陪练的服务规格",
+  "role": "customer",
+  "flow": "booking",
+  "description": "从人物主页点击预约TA后主动选择游戏服务与规格，不静默选取第一项。"
+ },
+ {
+  "id": "member_orders_active",
+  "title": "成员服务中",
+  "role": "member",
+  "flow": "member",
+  "description": "按实际状态筛选服务，显示冻结规格与预计收入。"
+ },
+ {
+  "id": "member_orders_finished",
+  "title": "成员已结束",
+  "role": "member",
+  "flow": "member",
+  "description": "完成订单单独归档，不混入待接单任务。"
+ },
+ {
+  "id": "delivery_filled",
+  "title": "填写交付记录",
+  "role": "member",
+  "flow": "member",
+  "description": "输入服务说明与凭证链接，并核对实际提交请求。"
+ },
+ {
+  "id": "order_awaiting_confirmation",
+  "title": "核对服务交付",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "真实API提交后的订单，客户可核对服务记录。"
+ },
+ {
+  "id": "order_rating",
+  "title": "评价与确认完成",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "填写评价后确认，等待服务端返回完成状态。"
+ },
+ {
+  "id": "order_completed",
+  "title": "服务完成与评价",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "显示服务端返回的评价内容和完成结果。"
+ },
+ {
+  "id": "order_disputed",
+  "title": "售后处理中",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "提交后保留问题类型和说明，状态由API返回。"
+ },
+ {
+  "id": "profile_signed_in",
+  "title": "已登录个人中心",
+  "role": "customer",
+  "flow": "account",
+  "description": "展示账号身份与已有预约，不假设头像上传能力。"
+ },
+ {
+  "id": "profile_edit_name",
+  "title": "修改账号昵称",
+  "role": "customer",
+  "flow": "account",
+  "description": "实际昵称编辑弹层，保留当前账号值。"
+ },
+ {
+  "id": "notifications_inbox",
+  "title": "客户通知收件箱",
+  "role": "customer",
+  "flow": "account",
+  "description": "按日期分组，展示时间和未读状态，可进入关联订单。"
+ },
+ {
+  "id": "support_validation",
+  "title": "售后说明校验",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "说明不完整时阻止提交，在表单内提示补充。"
+ },
+ {
+  "id": "orders_retry",
+  "title": "订单加载失败与重试",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "网络响应失败后提供重新加载，测试验证恢复真实订单。"
+ },
+ {
+  "id": "booking_submit",
+  "title": "预约信息确认",
+  "role": "customer",
+  "flow": "booking",
+  "description": "小程序提交前的预约信息确认页。"
+ },
+ {
+  "id": "home_sections_services",
+  "title": "首页·内容段",
+  "role": "customer",
+  "flow": "discover",
+  "description": "首页下半屏的精选服务、推荐陪练与公告。",
+  "flowOrder": 15
+ },
+ {
+  "id": "home_sections_more",
+  "title": "首页·内容段",
+  "role": "customer",
+  "flow": "discover",
+  "description": "首页下半屏的精选服务、推荐陪练与公告。",
+  "flowOrder": 16
+ },
+ {
+  "id": "services_sections_more",
+  "title": "服务目录·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "服务目录的筛选区与后续服务卡片。",
+  "flowOrder": 17
+ },
+ {
+  "id": "service_sections_rules",
+  "title": "服务详情·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "服务详情中的履约规则与更多说明。",
+  "flowOrder": 18
+ },
+ {
+  "id": "players_sections_more",
+  "title": "陪练目录·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "陪练目录的后续成员卡片。",
+  "flowOrder": 19
+ },
+ {
+  "id": "player_sections_booking",
+  "title": "陪练主页·可约与评价",
+  "role": "customer",
+  "flow": "discover",
+  "description": "陪练主页的预约入口与后续内容。",
+  "flowOrder": 20
+ },
+ {
+  "id": "booking_sections_time",
+  "title": "预约·后续步骤",
+  "role": "customer",
+  "flow": "booking",
+  "description": "预约流程中的时间与核对部分。",
+  "flowOrder": 12
+ },
+ {
+  "id": "checkout_sections_terms",
+  "title": "预约核对·明细",
+  "role": "customer",
+  "flow": "booking",
+  "description": "核对页的费用与条款部分。",
+  "flowOrder": 13
+ },
+ {
+  "id": "orders_sections_more",
+  "title": "订单·更多",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "订单列表后续的订单与状态。",
+  "flowOrder": 14
+ },
+ {
+  "id": "order_sections_events",
+  "title": "订单详情·进度",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "订单详情的后续事件与记录。",
+  "flowOrder": 15
+ },
+ {
+  "id": "support_sections_more",
+  "title": "售后·更多",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "售后申请后续说明。",
+  "flowOrder": 16
+ },
+ {
+  "id": "profile_sections_more",
+  "title": "个人中心·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "个人中心下半屏的入口。",
+  "flowOrder": 11
+ },
+ {
+  "id": "announcements_sections_more",
+  "title": "公告·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "俱乐部公告的后续条目。",
+  "flowOrder": 12
+ },
+ {
+  "id": "settings_sections_more",
+  "title": "设置·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "设置页后续的账号与应用信息。",
+  "flowOrder": 13
+ },
+ {
+  "id": "notifications_sections_more",
+  "title": "通知·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "通知收件箱的后续内容。",
+  "flowOrder": 14
+ },
+ {
+  "id": "following_sections_more",
+  "title": "本机关注·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "本机关注列表的后续成员。",
+  "flowOrder": 15
+ },
+ {
+  "id": "member_sections_work",
+  "title": "成员工作台·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "成员工作台的后续服务与账本区块。",
+  "flowOrder": 11
+ },
+ {
+  "id": "member_sections_more",
+  "title": "成员工作台·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "成员工作台的后续服务与账本区块。",
+  "flowOrder": 12
+ },
+ {
+  "id": "member_orders_sections_more",
+  "title": "成员订单·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "成员订单的后续卡片。",
+  "flowOrder": 13
+ },
+ {
+  "id": "member_order_sections_more",
+  "title": "接单核对·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "接单核对的后续信息。",
+  "flowOrder": 14
+ },
+ {
+  "id": "earnings_sections_more",
+  "title": "收入账本·明细",
+  "role": "member",
+  "flow": "member",
+  "description": "收入账本的后续结算条目。",
+  "flowOrder": 15
+ },
+ {
+  "id": "availability_sections_more",
+  "title": "可接时段·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "可接时段设置的后续内容。",
+  "flowOrder": 16
+ },
+ {
+  "id": "delivery_sections_more",
+  "title": "交付记录·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "交付记录的后续表单与说明。",
+  "flowOrder": 17
+ },
+ {
+  "id": "member_notifications_sections_more",
+  "title": "成员通知·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "成员通知的后续消息。",
+  "flowOrder": 18
+ },
+ {
+  "id": "home_android_sections_more",
+  "title": "Android 首页·下半屏",
+  "role": "customer",
+  "flow": "discover",
+  "description": "Android 实体导航下的首页后续内容。",
+  "flowOrder": 21
+ },
+ {
+  "id": "services_sections_filters",
+  "title": "服务目录·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "服务目录的筛选区与后续服务卡片。",
+  "flowOrder": 22
+ },
+ {
+  "id": "service_sections_reviews",
+  "title": "服务详情·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "服务详情中的履约规则与更多说明。",
+  "flowOrder": 23
+ },
+ {
+  "id": "players_sections_profiles",
+  "title": "陪练目录·更多",
+  "role": "customer",
+  "flow": "discover",
+  "description": "陪练目录的后续成员卡片。",
+  "flowOrder": 24
+ },
+ {
+  "id": "player_sections_reviews",
+  "title": "陪练主页·可约与评价",
+  "role": "customer",
+  "flow": "discover",
+  "description": "陪练主页的预约入口与后续内容。",
+  "flowOrder": 25
+ },
+ {
+  "id": "booking_sections_confirm",
+  "title": "预约·后续步骤",
+  "role": "customer",
+  "flow": "booking",
+  "description": "预约流程中的时间与核对部分。",
+  "flowOrder": 14
+ },
+ {
+  "id": "checkout_sections_summary",
+  "title": "预约核对·明细",
+  "role": "customer",
+  "flow": "booking",
+  "description": "核对页的费用与条款部分。",
+  "flowOrder": 15
+ },
+ {
+  "id": "orders_sections_finished",
+  "title": "订单·更多",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "订单列表后续的订单与状态。",
+  "flowOrder": 17
+ },
+ {
+  "id": "order_sections_timeline",
+  "title": "订单详情·进度",
+  "role": "customer",
+  "flow": "fulfillment",
+  "description": "订单详情的后续事件与记录。",
+  "flowOrder": 18
+ },
+ {
+  "id": "profile_sections_settings",
+  "title": "个人中心·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "个人中心下半屏的入口。",
+  "flowOrder": 16
+ },
+ {
+  "id": "settings_sections_account",
+  "title": "设置·更多",
+  "role": "customer",
+  "flow": "account",
+  "description": "设置页后续的账号与应用信息。",
+  "flowOrder": 17
+ },
+ {
+  "id": "member_sections_earnings",
+  "title": "成员工作台·更多",
+  "role": "member",
+  "flow": "member",
+  "description": "成员工作台的后续服务与账本区块。",
+  "flowOrder": 19
+ },
+ {
+  "id": "earnings_sections_settlement",
+  "title": "收入账本·明细",
+  "role": "member",
+  "flow": "member",
+  "description": "收入账本的后续结算条目。",
+  "flowOrder": 20
+ }
 ]

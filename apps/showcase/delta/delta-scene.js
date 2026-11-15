@@ -15,8 +15,8 @@ const smoothstep = (a, b, x) => {
 const CAMERA_KEYS = {
   hero: { a: { pos: [0.1, 0.22, 8.9], look: [0, 0.05, -3.0] }, b: { pos: [0.22, 0.12, 8.1], look: [0, 0.0, -3.4] } },
   modes: { a: { pos: [0.55, 0.04, 7.9], look: [0, 0, -4.2] }, b: { pos: [0.2, 0.02, 7.4], look: [0, 0, -4.35] } },
-  terrain: { a: { pos: [-0.1, 2.4, 6.9], look: [0, -0.6, -2.2] }, b: { pos: [0.7, 2.2, 7.0], look: [0.1, -0.5, -2.2] } },
-  squad: { a: { pos: [-0.8, 0.3, 7.3], look: [-0.7, 0.05, -0.3] }, b: { pos: [0.8, 0.24, 7.1], look: [0.7, 0.03, -0.3] } },
+  terrain: { a: { pos: [0, 3.2, 8.4], look: [0, -1.0, -2.2] }, b: { pos: [0.5, 3.0, 8.6], look: [0.1, -0.9, -2.2] } },
+  squad: { a: { pos: [0, 0.34, 7.2], look: [0, 0.08, -0.4] }, b: { pos: [0.18, 0.28, 7.0], look: [0.1, 0.05, -0.4] } },
   deploy: { a: { pos: [0.45, 0.16, 8.4], look: [0, 0, -3.2] }, b: { pos: [0.12, 0.08, 7.6], look: [0, -0.05, -3.3] } },
 };
 
@@ -405,25 +405,26 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
 
   // ── 地形情报 ──
   const terrain = buildChapter('terrain');
-  addPlane(terrain, t.terrainBg, { width: 14, height: 8.2, position: [0, 0, -6.2], opacity: 0.96, exposure: 1.0, tint: [0.97, 1, 0.99] });
+  addPlane(terrain, t.terrainBg, { width: 14, height: 8.2, position: [0, 0, -6.2], opacity: 0.9, exposure: 1.06, tint: [0.98, 1, 0.99] });
   const mapGroup = new THREE.Group();
   mapGroup.rotation.x = -0.6;
   terrain.add(mapGroup);
-  const mapActive = addPlane(mapGroup, t.spaceport, { width: 10.6, height: 6.1, opacity: 0.98, exposure: 1.0, tint: [0.98, 1.0, 0.97] });
-  const mapAlt = addPlane(mapGroup, t.valley, { width: 10.6, height: 6.1, position: [0, 0, 0.02], opacity: 0, exposure: 1.0, tint: [0.98, 1.0, 0.97] });
-  const scanUniforms = { uMap: { value: t.spaceport }, uOpacity: { value: 0.9 }, uFade: { value: 1 }, uTime: { value: 0 }, uReveal: { value: 1 }, uScan: { value: 0.3 } };
-  const scanMesh = addShaderPlane(mapGroup, scanUniforms, SCAN_FRAG, { width: 10.6, height: 6.1, position: [0, 0, 0.06] });
+  const mapActive = addPlane(mapGroup, t.spaceport, { width: 7.4, height: 4.25, opacity: 0.99, exposure: 1.28, tint: [1.0, 1.0, 0.98] });
+  const mapAlt = addPlane(mapGroup, t.valley, { width: 7.4, height: 4.25, position: [0, 0, 0.02], opacity: 0, exposure: 1.28, tint: [1.0, 1.0, 0.98] });
+  const scanUniforms = { uMap: { value: t.spaceport }, uOpacity: { value: 0.55 }, uFade: { value: 1 }, uTime: { value: 0 }, uReveal: { value: 1 }, uScan: { value: 0.3 } };
+  const scanMesh = addShaderPlane(mapGroup, scanUniforms, SCAN_FRAG, { width: 7.4, height: 4.25, position: [0, 0, 0.06] });
 
   // ── 小队集结 ──
   const squad = buildChapter('squad');
   addPlane(squad, t.squadBackdrop, { width: 13.5, height: 7.9, position: [0, 0, -3.6], opacity: 0.3, exposure: 0.72, tint: [0.94, 0.98, 0.92] });
   const memberTextures = [t.ayu, t.echo, t.xiaoman, t.north];
   const memberMeshes = memberTextures.map((tex, i) => {
-    const x = -1.9 + i * 1.27;
+    const col = i % 2 === 0 ? -0.47 : 0.47;
+    const row = i < 2 ? 0.36 : -0.52;
     const mesh = addPlane(squad, tex, {
-      width: 0.92, height: 1.16,
-      position: [x, i % 2 === 0 ? 0.16 : -0.04, 0.2 + (i % 2) * 0.22],
-      rotation: [0, -x * 0.1, 0],
+      width: 0.66, height: 0.84,
+      position: [col, row, 0.2 + (i % 2) * 0.18],
+      rotation: [0, -col * 0.16, 0],
       opacity: 0.98, exposure: 1.0, tint: [1, 0.99, 0.96],
       rounded: 0.055, border: 0.012, borderGlow: 0.75,
     });
@@ -513,8 +514,8 @@ export async function createDeltaScene(canvas, { onProgress, onFallback } = {}) 
     if (portrait) {
       if (key === 'hero') { camTarget.pos.set(0.1, 0.25, 11.4); camTarget.look.set(0, 0.05, -3.2); }
       if (key === 'modes') { camTarget.pos.set(0.2, 0.05, 10.2); camTarget.look.set(0, 0, -4.3); }
-      if (key === 'terrain') { camTarget.pos.set(0.1, 3.2, 8.6); camTarget.look.set(0, -0.9, -2.2); }
-      if (key === 'squad') { const pan = lerp(-1.4, 1.4, p); camTarget.pos.set(pan, 0.4, 7.4); camTarget.look.set(pan, 0.02, -0.3); }
+      if (key === 'terrain') { camTarget.pos.set(0.1, 3.6, 10.4); camTarget.look.set(0, -1.0, -2.2); }
+      if (key === 'squad') { const pan = lerp(-0.9, 0.9, p); camTarget.pos.set(pan, 0.42, 8.4); camTarget.look.set(pan, 0.02, -0.3); }
       if (key === 'deploy') { camTarget.pos.set(0.3, 0.2, 10.4); camTarget.look.set(0, 0, -3.3); }
     }
     if (!state.reduced) {
