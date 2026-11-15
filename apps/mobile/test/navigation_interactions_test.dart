@@ -19,10 +19,10 @@ void main() {
       await tester.pumpWidget(OpenNIApp(repository: repo));
       await tester.pumpAndSettle();
       final rect = tester.getRect(find.byType(ClubTabBar));
-      expect(rect.width, (width > 620 ? 620 : width) - 32);
+      expect(rect.width, (width > 640 ? 640 : width) - 32);
       expect(rect.center.dx, width / 2);
       expect(tester.takeException(), isNull);
-      final inset = width > 620 ? (width - 620) / 2 : 0.0;
+      final inset = width > 640 ? (width - 640) / 2 : 0.0;
       await tester.pumpWidget(
         OpenNIApp(
           key: ValueKey('services-$width'),
@@ -31,7 +31,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(tester.getTopLeft(find.text('找陪练').first).dx, inset + 22);
+      expect(tester.getTopLeft(find.text('找陪练').first).dx, inset + 20);
       await tester.pumpWidget(
         OpenNIApp(
           key: ValueKey('service-$width'),
@@ -44,7 +44,7 @@ void main() {
         of: find.text('立即预约'),
         matching: find.byType(GlassSurface),
       );
-      expect(tester.getSize(actionBar).width, (width > 620 ? 620 : width) - 32);
+      expect(tester.getSize(actionBar).width, (width > 640 ? 640 : width) - 32);
       expect(tester.getCenter(actionBar).dx, width / 2);
       expect(
         tester.getTopLeft(find.byTooltip('返回')).dx,

@@ -41,6 +41,20 @@ const screenNames = [
   ...stateScreenNames,
 ];
 
+/// 长页面的后续内容段（真实滚动后截图），不作为直接页面路由。
+const sectionScreenNames = [
+  'home_sections_services', 'home_sections_more', 'services_sections_more', 'services_sections_filters',
+  'service_sections_rules', 'service_sections_reviews', 'players_sections_more', 'players_sections_profiles',
+  'player_sections_booking', 'player_sections_reviews', 'booking_sections_time', 'booking_sections_confirm',
+  'checkout_sections_terms', 'checkout_sections_summary', 'orders_sections_more', 'orders_sections_finished',
+  'order_sections_events', 'order_sections_timeline', 'support_sections_more', 'profile_sections_more',
+  'profile_sections_settings', 'announcements_sections_more', 'settings_sections_more', 'settings_sections_account',
+  'notifications_sections_more', 'following_sections_more', 'member_sections_work', 'member_sections_more',
+  'member_sections_earnings', 'member_orders_sections_more', 'member_order_sections_more', 'earnings_sections_more',
+  'earnings_sections_settlement', 'availability_sections_more', 'delivery_sections_more',
+  'member_notifications_sections_more', 'home_android_sections_more',
+];
+
 /// 通过真实交互捕获的状态，不作为直接页面路由。
 const interactionScreenNames = [
   "services_search",

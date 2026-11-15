@@ -269,7 +269,7 @@ class _BookingPageState extends State<BookingPage> {
     children: [
       for (final step in const [
         (1, '选择队友与时间'),
-        (2, '核对预约'),
+        (2, '核对信息'),
       ])
         Expanded(
           child: Row(

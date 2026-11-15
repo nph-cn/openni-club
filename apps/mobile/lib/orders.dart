@@ -494,15 +494,19 @@ class _OrderPageState extends State<OrderPage> {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              '订单 ${o['id']}',
-                              style: const TextStyle(
-                                fontSize: 10.5,
-                                letterSpacing: .3,
-                                color: Color(0xB3FFFFFF),
+                            Expanded(
+                              child: Text(
+                                '订单 ${o['id']}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 10.5,
+                                  letterSpacing: .3,
+                                  color: Color(0xB3FFFFFF),
+                                ),
                               ),
                             ),
-                            const Spacer(),
+                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 7,

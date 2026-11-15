@@ -17,7 +17,7 @@ void main() {
         File('screenshots/manifest.json').readAsStringSync(),
       ) as List;
       final ids = manifest.map((row) => row['id'] as String).toList();
-      expect(ids.toSet(), {...screenNames, ...interactionScreenNames});
+      expect(ids.toSet(), {...screenNames, ...interactionScreenNames, ...sectionScreenNames});
       expect(ids.length, ids.toSet().length);
       for (final row in manifest) {
         expect(screenNames, contains(row['previewScreen']));
