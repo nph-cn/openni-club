@@ -374,37 +374,44 @@ class GameSelector extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
   @override
-  Widget build(BuildContext context) => InkWell(
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    selected: selected,
+    label: '${service['game']}',
+    excludeSemantics: true,
     onTap: onTap,
-    borderRadius: BorderRadius.circular(12),
-    child: Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            color: selected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(21),
-            border: Border.all(
-              color: selected ? rule : Colors.transparent,
-              width: 1,
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: selected ? Colors.white : Colors.transparent,
+              borderRadius: BorderRadius.circular(21),
+              border: Border.all(
+                color: selected ? rule : Colors.transparent,
+                width: 1,
+              ),
+            ),
+            child: SizedBox(
+              width: 44,
+              height: 44,
+              child: ServiceArt(service, radius: 12, icon: true),
             ),
           ),
-          child: SizedBox(
-            width: 44,
-            height: 44,
-            child: ServiceArt(service, radius: 12, icon: true),
+          const SizedBox(height: 6),
+          Text(
+            '${service['game']}',
+            style: TextStyle(
+              fontSize: 14,
+              color: selected ? ink : muted,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            ),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          '${service['game']}',
-          style: TextStyle(
-            fontSize: 14,
-            color: selected ? ink : muted,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }
@@ -416,17 +423,23 @@ class ServiceFeature extends StatelessWidget {
     required this.service,
     this.embedded = false,
     this.poster = false,
+    this.playerId,
+    this.variantId,
   });
   final ClubRepository repo;
   final Json service;
   final bool embedded, poster;
+  final String? playerId, variantId;
   @override
   Widget build(BuildContext context) {
     final variants = serviceVariants(service);
     final lowest = variants.isEmpty
         ? service
         : variants.reduce((a, b) => a['priceCents'] < b['priceCents'] ? a : b);
-    final quote = {...service, ...lowest};
+    final requestedVariant = variants
+        .where((v) => v['id'] == variantId)
+        .firstOrNull;
+    final quote = {...service, ...(requestedVariant ?? lowest)};
     final title = Text(
       poster
           ? '${quote['platform'] == 'mobile' ? '手游' : quote['platform'] ?? ''} ${serviceKind(quote)}'
@@ -441,22 +454,30 @@ class ServiceFeature extends StatelessWidget {
       ),
     );
     final price = RichText(
+      textScaler: MediaQuery.textScalerOf(context),
       text: TextSpan(
-        style: const TextStyle(fontFamily: 'NotoSansSC', color: ink),
+        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: ink),
         children: [
           TextSpan(
             text: '¥${money(quote)}',
             style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
           ),
           TextSpan(
-            text: variants.length > 1 ? ' 起' : '/${priceUnit(quote)}',
+            text: requestedVariant == null && variants.length > 1
+                ? ' 起'
+                : '/${priceUnit(quote)}',
             style: const TextStyle(fontSize: 13, color: muted),
           ),
         ],
       ),
     );
     return InkWell(
-      onTap: () => context.push('/services/${service['id']}'),
+      onTap: () => context.push(
+        Uri(
+          path: '/services/${service['id']}',
+          queryParameters: {'player': ?playerId, 'variant': ?variantId},
+        ).toString(),
+      ),
       borderRadius: BorderRadius.circular(22),
       child: Container(
         decoration: embedded
@@ -703,7 +724,7 @@ class ServicesPage extends StatefulWidget {
 
 class _ServicesPageState extends State<ServicesPage> {
   late String game = widget.initialGame;
-  String query = '';
+  String query = '', section = '游戏服务';
   final search = TextEditingController();
   @override
   void dispose() {
@@ -712,83 +733,104 @@ class _ServicesPageState extends State<ServicesPage> {
   }
 
   @override
+  void didUpdateWidget(covariant ServicesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialGame != widget.initialGame) game = widget.initialGame;
+  }
+
+  Widget sectionPicker() => ClubSegmentedControl(
+    values: const ['游戏服务', '俱乐部陪练'],
+    value: section,
+    onChanged: (next) {
+      FocusScope.of(context).unfocus();
+      setState(() => section = next);
+    },
+  );
+
+  @override
   Widget build(BuildContext context) {
-    final repo = widget.repo;
+    final repo = widget.repo, term = query.trim().toLowerCase();
     final items = repo.services
         .where(
           (s) =>
               (game == '全部' || s['game'] == game) &&
-              '${s['title']} ${s['game']} ${s['description']}'.contains(query),
+              '${s['title']} ${s['game']} ${s['description']}'
+                  .toLowerCase()
+                  .contains(term),
         )
         .toList();
     return ClubPage(
       repo: repo,
-      title: '找服务',
+      title: '找陪练',
       tab: 1,
-      child: PageList(
+      // 离屏目录保留搜索与滚动状态，同时退出焦点和辅助功能遍历。
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          TextField(
-            controller: search,
-            textInputAction: TextInputAction.search,
-            onSubmitted: (_) => FocusScope.of(context).unfocus(),
-            decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.search_rounded),
-              hintText: '搜索游戏或服务',
-              suffixIcon: query.isEmpty
-                  ? null
-                  : IconButton(
-                      tooltip: '清除搜索',
-                      icon: const Icon(Icons.cancel_rounded, size: 20),
-                      onPressed: () {
-                        search.clear();
-                        setState(() => query = '');
-                      },
+          Offstage(
+            offstage: section != '游戏服务',
+            child: TickerMode(
+              enabled: section == '游戏服务',
+              child: PageList(
+                key: const PageStorageKey('service-directory'),
+                children: [
+                  sectionPicker(),
+                  const SizedBox(height: 18),
+                  ClubSearchField(
+                    controller: search,
+                    hintText: '搜索游戏或服务',
+                    onChanged: (v) => setState(() => query = v),
+                    onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                    onClear: () {
+                      search.clear();
+                      setState(() => query = '');
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _DirectoryGames(
+                    games: repo.services
+                        .map((s) => '${s['game']}')
+                        .toSet()
+                        .toList(),
+                    selected: game,
+                    onSelected: (v) => setState(() => game = v),
+                  ),
+                  const SizedBox(height: 18),
+                  if (items.isEmpty)
+                    EmptyState(
+                      '没有匹配的服务',
+                      '试试其他游戏或关键词。',
+                      action: OutlinedButton(
+                        onPressed: () {
+                          search.clear();
+                          setState(() {
+                            query = '';
+                            game = '全部';
+                          });
+                        },
+                        child: const Text('清除筛选'),
+                      ),
                     ),
-            ),
-            onChanged: (v) => setState(() => query = v),
-          ),
-          const SizedBox(height: 14),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children:
-                  ['全部', ...repo.services.map((s) => '${s['game']}').toSet()]
-                      .map(
-                        (v) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: ChoiceChip(
-                            selected: game == v,
-                            label: Text(
-                              v,
-                              style: const TextStyle(fontSize: 15),
-                            ),
-                            onSelected: (_) => setState(() => game = v),
-                          ),
-                        ),
-                      )
-                      .toList(),
-            ),
-          ),
-          const SizedBox(height: 20),
-          if (items.isEmpty)
-            EmptyState(
-              '没有匹配的服务',
-              '试试其他游戏或关键词。',
-              action: OutlinedButton(
-                onPressed: () {
-                  search.clear();
-                  setState(() {
-                    query = '';
-                    game = '全部';
-                  });
-                },
-                child: const Text('清除筛选'),
+                  ...items.map(
+                    (s) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: ServiceFeature(repo: repo, service: s),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ...items.map(
-            (s) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: ServiceFeature(repo: repo, service: s),
+          ),
+          Offstage(
+            offstage: section != '俱乐部陪练',
+            child: TickerMode(
+              enabled: section == '俱乐部陪练',
+              child: PlayerDirectory(
+                repo,
+                key: const PageStorageKey('player-directory'),
+                initialGame: widget.initialGame,
+                header: sectionPicker(),
+              ),
             ),
           ),
         ],
@@ -797,11 +839,186 @@ class _ServicesPageState extends State<ServicesPage> {
   }
 }
 
+class _DirectoryGames extends StatelessWidget {
+  const _DirectoryGames({
+    required this.games,
+    required this.selected,
+    required this.onSelected,
+    this.leading,
+  });
+  final List<String> games;
+  final String selected;
+  final ValueChanged<String> onSelected;
+  final Widget? leading;
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: [
+        if (leading != null) ...[
+          leading!,
+          const SizedBox(width: 12),
+          Container(width: 1, height: 20, color: rule),
+          const SizedBox(width: 12),
+        ],
+        for (final v in ['全部', ...games.where((v) => v.trim().isNotEmpty)])
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              selected: selected == v,
+              label: Text(
+                v == '全部' ? '全部游戏' : v,
+                style: const TextStyle(fontSize: 14),
+              ),
+              onSelected: (_) => onSelected(v),
+            ),
+          ),
+      ],
+    ),
+  );
+}
+
+/// 陪练目录仅筛选服务端目录和本机关注，不推断在线状态或排序业绩。
+class PlayerDirectory extends StatefulWidget {
+  const PlayerDirectory(
+    this.repo, {
+    super.key,
+    this.initialGame = '全部',
+    this.onlyFollowing = false,
+    this.header,
+  });
+  final ClubRepository repo;
+  final String initialGame;
+  final bool onlyFollowing;
+  final Widget? header;
+  @override
+  State<PlayerDirectory> createState() => _PlayerDirectoryState();
+}
+
+class _PlayerDirectoryState extends State<PlayerDirectory> {
+  final search = TextEditingController();
+  late String game = widget.initialGame;
+  late bool following = widget.onlyFollowing;
+  String query = '';
+  @override
+  void dispose() {
+    search.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant PlayerDirectory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialGame != widget.initialGame) game = widget.initialGame;
+    if (oldWidget.onlyFollowing != widget.onlyFollowing) {
+      following = widget.onlyFollowing;
+    }
+  }
+
+  void clearFilters() {
+    search.clear();
+    setState(() {
+      query = '';
+      game = '全部';
+      following = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: widget.repo,
+    builder: (context, _) {
+      final repo = widget.repo, term = query.trim().toLowerCase();
+      final games = repo.players
+          .expand((p) => (p['games'] as List? ?? []).map((v) => '$v'))
+          .toSet()
+          .toList();
+      final items = repo.players.where((p) {
+        final playerGames = (p['games'] as List? ?? [])
+            .map((v) => '$v')
+            .toList();
+        final searchable =
+            '${p['name'] ?? ''} ${p['role'] ?? ''} ${playerGames.join(' ')}'
+                .toLowerCase();
+        return (game == '全部' || playerGames.contains(game)) &&
+            (!following || repo.following.contains('${p['id']}')) &&
+            searchable.contains(term);
+      }).toList();
+      final hasFiltered = following || game != '全部' || term.isNotEmpty;
+      return PageList(
+        children: [
+          if (widget.header != null) ...[
+            widget.header!,
+            const SizedBox(height: 18),
+          ],
+          ClubSearchField(
+            controller: search,
+            hintText: '搜索姓名、角色或游戏',
+            onChanged: (v) => setState(() => query = v),
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+            onClear: () {
+              search.clear();
+              setState(() => query = '');
+            },
+          ),
+          const SizedBox(height: 12),
+          _DirectoryGames(
+            games: games,
+            selected: game,
+            onSelected: (v) => setState(() => game = v),
+            leading: FilterChip(
+              selected: following,
+              showCheckmark: false,
+              avatar: Icon(
+                following
+                    ? Icons.favorite_rounded
+                    : Icons.favorite_outline_rounded,
+                size: 17,
+                color: following ? onBrand(repo) : muted,
+              ),
+              label: const Text('本机关注', style: TextStyle(fontSize: 14)),
+              onSelected: (v) => setState(() => following = v),
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (items.isEmpty)
+            EmptyState(
+              following && term.isEmpty && game == '全部'
+                  ? '还没有本机关注'
+                  : hasFiltered
+                  ? '没有匹配的陪练'
+                  : '暂无陪练',
+              following && term.isEmpty && game == '全部'
+                  ? '在陪练主页点击爱心，即可在这里找到。'
+                  : hasFiltered
+                  ? '试试其他游戏或关键词。'
+                  : '俱乐部发布的陪练会显示在这里。',
+              action: hasFiltered
+                  ? OutlinedButton(
+                      onPressed: clearFilters,
+                      child: Text(following ? '查看全部陪练' : '清除筛选'),
+                    )
+                  : null,
+            ),
+          ...items.map((p) => RosterRow(repo: repo, player: p)),
+        ],
+      );
+    },
+  );
+}
+
 class ServicePage extends StatefulWidget {
-  const ServicePage(this.repo, this.id, {super.key, this.initialVariant});
+  const ServicePage(
+    this.repo,
+    this.id, {
+    super.key,
+    this.initialVariant,
+    this.playerId,
+  });
   final ClubRepository repo;
   final String id;
   final String? initialVariant;
+  final String? playerId;
   @override
   State<ServicePage> createState() => _ServicePageState();
 }
@@ -839,11 +1056,10 @@ class _ServicePageState extends State<ServicePage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 RichText(
+                  textScaler: MediaQuery.textScalerOf(context),
                   text: TextSpan(
-                    style: const TextStyle(
-                      fontFamily: 'NotoSansSC',
-                      color: ink,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium!
+                        .copyWith(color: ink),
                     children: [
                       TextSpan(
                         text: '¥${money(s)}',
@@ -871,7 +1087,16 @@ class _ServicePageState extends State<ServicePage> {
               onPressed: multiple
                   ? null
                   : () => context.push(
-                      '/book?service=${service['id']}${variantId == null ? '' : '&variant=$variantId'}',
+                      Uri(
+                        path: '/book',
+                        queryParameters: {
+                          'service': '${service['id']}',
+                          'variant': ?variantId,
+                          if (widget.playerId != null &&
+                              players.any((p) => p['id'] == widget.playerId))
+                            'player': widget.playerId!,
+                        },
+                      ).toString(),
                     ),
               child: Text(multiple ? '暂不支持多人单' : '立即预约'),
             ),
@@ -981,7 +1206,16 @@ class _ServicePageState extends State<ServicePage> {
           if (players.isEmpty)
             const Text('暂无陪练', style: TextStyle(color: muted))
           else
-            ...players.take(2).map((p) => MemberRow(repo: repo, player: p)),
+            ...players
+                .take(2)
+                .map(
+                  (p) => MemberRow(
+                    repo: repo,
+                    player: p,
+                    serviceId: '${service['id']}',
+                    variantId: variantId,
+                  ),
+                ),
           if (rules.isNotEmpty || requirements.isNotEmpty) ...[
             const Divider(),
             const Text(
@@ -1011,13 +1245,21 @@ class MemberRow extends StatelessWidget {
     required this.repo,
     required this.player,
     this.trailing,
+    this.serviceId,
+    this.variantId,
   });
   final ClubRepository repo;
   final Json player;
   final Widget? trailing;
+  final String? serviceId, variantId;
   @override
   Widget build(BuildContext context) => InkWell(
-    onTap: () => context.push('/players/${player['id']}'),
+    onTap: () => context.push(
+      Uri(
+        path: '/players/${player['id']}',
+        queryParameters: {'service': ?serviceId, 'variant': ?variantId},
+      ).toString(),
+    ),
     child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -1058,26 +1300,38 @@ class MemberRow extends StatelessWidget {
 }
 
 class PlayersPage extends StatelessWidget {
-  const PlayersPage(this.repo, {super.key});
+  const PlayersPage(
+    this.repo, {
+    super.key,
+    this.initialGame = '全部',
+    this.onlyFollowing = false,
+  });
   final ClubRepository repo;
+  final String initialGame;
+  final bool onlyFollowing;
   @override
   Widget build(BuildContext context) => ClubPage(
     repo: repo,
     title: '俱乐部陪练',
-    child: PageList(
-      children: [
-        if (repo.players.isEmpty)
-          const Text('暂无陪练', style: TextStyle(color: muted)),
-        ...repo.players.map((p) => RosterRow(repo: repo, player: p)),
-      ],
+    child: PlayerDirectory(
+      repo,
+      initialGame: initialGame,
+      onlyFollowing: onlyFollowing,
     ),
   );
 }
 
 class PlayerPage extends StatefulWidget {
-  const PlayerPage(this.repo, this.id, {super.key});
+  const PlayerPage(
+    this.repo,
+    this.id, {
+    super.key,
+    this.serviceId,
+    this.variantId,
+  });
   final ClubRepository repo;
   final String id;
+  final String? serviceId, variantId;
   @override
   State<PlayerPage> createState() => _PlayerPageState();
 }
@@ -1085,13 +1339,122 @@ class PlayerPage extends StatefulWidget {
 class _PlayerPageState extends State<PlayerPage> {
   List<Json>? slots;
   String? failure;
+  int slotRequest = 0;
+
+  Json? get contextService {
+    final service = widget.repo.findService(widget.serviceId ?? '');
+    final player = widget.repo.findPlayer(widget.id);
+    if (service == null ||
+        !(player?['games'] as List? ?? []).contains(service['game'])) {
+      return null;
+    }
+    if (widget.variantId != null &&
+        !serviceVariants(service).any((v) => v['id'] == widget.variantId)) {
+      return null;
+    }
+    return service;
+  }
+
+  Json? get contextQuote {
+    final service = contextService;
+    if (service == null) return null;
+    return selectedService(
+      service,
+      widget.variantId ?? serviceVariants(service).firstOrNull?['id'],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     loadSlots();
   }
 
+  @override
+  void didUpdateWidget(covariant PlayerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.id != widget.id ||
+        oldWidget.serviceId != widget.serviceId ||
+        oldWidget.variantId != widget.variantId) {
+      loadSlots();
+    }
+  }
+
+  Future<void> bookPlayer(List<Json> services) async {
+    final quote = contextQuote;
+    Json? selection = quote == null
+        ? null
+        : {
+            'service': '${quote['id']}',
+            if (quote['variantId'] != null) 'variant': '${quote['variantId']}',
+          };
+    // 未从服务页选择具体规格时，由用户选择，不能静默预约第一项。
+    selection ??= await showClubSheet<Json>(
+      context: context,
+      builder: (ctx) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(ctx).height * .7,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          children: [
+            const Text(
+              '选择游戏服务',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 14),
+            for (final service in services)
+              for (final variant
+                  in serviceVariants(service).isEmpty
+                      ? [service]
+                      : serviceVariants(service))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: ListTile(
+                    enabled:
+                        (variant['teamSize'] as num? ??
+                            service['teamSize'] as num? ??
+                            1) <=
+                        1,
+                    title: Text(
+                      '${service['title']}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${variant['id'] == service['id'] ? '${variant['durationMinutes']}分钟' : variant['title']} · ¥${money(variant)} / ${priceUnit({...service, ...variant})}',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.pop(ctx, <String, dynamic>{
+                      'service': '${service['id']}',
+                      if (variant['id'] != service['id'])
+                        'variant': '${variant['id']}',
+                    }),
+                  ),
+                ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted || selection == null) return;
+    context.push(
+      Uri(
+        path: '/book',
+        queryParameters: {
+          'service': '${selection['service']}',
+          if (selection['variant'] != null)
+            'variant': '${selection['variant']}',
+          'player': widget.id,
+        },
+      ).toString(),
+    );
+  }
+
   Future<void> loadSlots() async {
+    final request = ++slotRequest;
     setState(() {
       failure = null;
       slots = null;
@@ -1101,16 +1464,16 @@ class _PlayerPageState extends State<PlayerPage> {
       final value = await widget.repo.getAvailability(
         widget.id,
         DateTime(today.year, today.month, today.day + 1),
-        60,
+        (contextQuote?['durationMinutes'] as num?)?.toInt() ?? 60,
       );
-      if (mounted) {
+      if (mounted && request == slotRequest) {
         setState(() {
           slots = value;
           failure = null;
         });
       }
     } catch (e) {
-      if (mounted) setState(() => failure = '$e');
+      if (mounted && request == slotRequest) setState(() => failure = '$e');
     }
   }
 
@@ -1138,6 +1501,8 @@ class _PlayerPageState extends State<PlayerPage> {
                 (a['priceCents'] as int).compareTo(b['priceCents'] as int),
           );
     final available = slots?.where((s) => s['available'] == true).toList();
+    final quote = contextQuote;
+    final selectedPrice = quote ?? prices.firstOrNull;
     return ClubPage(
       repo: repo,
       title: '陪练主页',
@@ -1155,22 +1520,24 @@ class _PlayerPageState extends State<PlayerPage> {
       ],
       bottom: Row(
         children: [
-          if (prices.isNotEmpty)
+          if (selectedPrice != null)
             Expanded(
               child: RichText(
+                textScaler: MediaQuery.textScalerOf(context),
                 text: TextSpan(
-                  style: const TextStyle(fontFamily: 'NotoSansSC', color: ink),
+                  style: Theme.of(context).textTheme.bodyMedium!
+                      .copyWith(color: ink),
                   children: [
                     TextSpan(
-                      text: '¥${money(prices.first)}',
+                      text: '¥${money(selectedPrice)}',
                       style: const TextStyle(
                         fontSize: 27,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const TextSpan(
-                      text: ' 起',
-                      style: TextStyle(fontSize: 13, color: muted),
+                    TextSpan(
+                      text: quote == null ? ' 起' : '/${priceUnit(quote)}',
+                      style: const TextStyle(fontSize: 13, color: muted),
                     ),
                   ],
                 ),
@@ -1178,11 +1545,10 @@ class _PlayerPageState extends State<PlayerPage> {
             ),
           Expanded(
             child: FilledButton(
-              onPressed: services.isEmpty
+              onPressed:
+                  services.isEmpty || (quote?['teamSize'] as num? ?? 1) > 1
                   ? null
-                  : () => context.push(
-                      '/book?service=${services.first['id']}&player=${p['id']}',
-                    ),
+                  : () => bookPlayer(services),
               child: const Text('预约 TA'),
             ),
           ),
@@ -1195,7 +1561,8 @@ class _PlayerPageState extends State<PlayerPage> {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                if (services.isNotEmpty) ServiceArt(services.first, radius: 18),
+                if (services.isNotEmpty)
+                  ServiceArt(contextService ?? services.first, radius: 18),
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
@@ -1268,17 +1635,43 @@ class _PlayerPageState extends State<PlayerPage> {
             style: const TextStyle(fontSize: 16, height: 1.65, color: muted),
           ),
           const SizedBox(height: 10),
+          if (quote != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                '已选 ${quote['title']} · ${quote['variantTitle'] ?? '${quote['durationMinutes']}分钟'}',
+                style: const TextStyle(fontSize: 14, color: muted),
+              ),
+            ),
+          if (widget.serviceId != null && quote == null)
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                '原服务或规格已不可用，请重新选择。',
+                style: TextStyle(fontSize: 14, color: muted),
+              ),
+            ),
           SectionTitle('服务'),
           if (services.isEmpty)
             const Text('暂无服务', style: TextStyle(color: muted)),
           ...services.map(
             (s) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: ServiceFeature(repo: repo, service: s),
+              child: ServiceFeature(
+                repo: repo,
+                service: s,
+                playerId: widget.id,
+                variantId: quote != null && s['id'] == quote['id']
+                    ? quote['variantId'] as String?
+                    : null,
+              ),
             ),
           ),
           const SizedBox(height: 5),
-          SectionTitle('明日可约时段'),
+          SectionTitle(
+            '明日可约时段',
+            caption: '按 ${quote?['durationMinutes'] ?? 60} 分钟查看',
+          ),
           if (failure != null)
             TextButton(onPressed: loadSlots, child: const Text('排班加载失败，重试'))
           else if (slots == null)

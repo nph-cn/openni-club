@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 
 import 'repository.dart';
 import 'ui.dart';
@@ -13,6 +14,7 @@ import 'member.dart';
 import 'accessibility.dart';
 import 'auth.dart';
 import 'loading.dart';
+import 'device_preview.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,6 +77,8 @@ class _ClubBootstrapState extends State<ClubBootstrap> {
         return OpenNIApp(
           repository: widget.repository,
           initialScreen: widget.initialScreen,
+          previewDevice:
+              kIsWeb && Uri.base.queryParameters['device'] == 'iphone',
         );
       }
       return MaterialApp(
@@ -151,9 +155,11 @@ class OpenNIApp extends StatefulWidget {
     super.key,
     required this.repository,
     this.initialScreen = 'home',
+    this.previewDevice = false,
   });
   final ClubRepository repository;
   final String initialScreen;
+  final bool previewDevice;
   @override
   State<OpenNIApp> createState() => _OpenNIAppState();
 }
@@ -211,6 +217,7 @@ class _OpenNIAppState extends State<OpenNIApp> {
           'service_120':
               '/services/$serviceId?variant=${serviceVariants(repo.services.firstOrNull ?? {}).lastOrNull?['id'] ?? ''}',
           'players': '/players',
+          'following': '/players?following=1',
           'player': '/players/$playerId',
           'booking': '/book?service=$serviceId',
           'checkout': '/book?service=$serviceId&preview=checkout',
@@ -338,17 +345,30 @@ class _OpenNIAppState extends State<OpenNIApp> {
               repo,
               s.pathParameters['id']!,
               initialVariant: s.uri.queryParameters['variant'],
+              playerId: s.uri.queryParameters['player'],
             ),
           ),
         ),
         GoRoute(
           path: '/players',
-          builder: (_, _) => live(() => PlayersPage(repo)),
+          builder: (_, s) => live(
+            () => PlayersPage(
+              repo,
+              initialGame: s.uri.queryParameters['game'] ?? '全部',
+              onlyFollowing: s.uri.queryParameters['following'] == '1',
+            ),
+          ),
         ),
         GoRoute(
           path: '/players/:id',
-          builder: (_, s) =>
-              live(() => PlayerPage(repo, s.pathParameters['id']!)),
+          builder: (_, s) => live(
+            () => PlayerPage(
+              repo,
+              s.pathParameters['id']!,
+              serviceId: s.uri.queryParameters['service'],
+              variantId: s.uri.queryParameters['variant'],
+            ),
+          ),
         ),
         GoRoute(
           path: '/book',
@@ -447,8 +467,17 @@ class _OpenNIAppState extends State<OpenNIApp> {
       title: repo.clubName,
       debugShowCheckedModeBanner: false,
       theme: widget.initialScreen == 'home_android' && !repo.isProduction
-          ? clubTheme(repo).copyWith(platform: TargetPlatform.android)
-          : clubTheme(repo),
+          ? clubTheme(
+              repo,
+              previewFonts: widget.previewDevice,
+            ).copyWith(platform: TargetPlatform.android)
+          : clubTheme(repo, previewFonts: widget.previewDevice),
+      builder: (context, child) =>
+          widget.previewDevice &&
+              !repo.isProduction &&
+              widget.initialScreen != 'home_android'
+          ? IPhonePreview(child: child!)
+          : child!,
       routerConfig: router,
     ),
   );
@@ -585,7 +614,7 @@ class _AccountPageState extends State<AccountPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            repo.token == null ? '未登录' : repo.memberName,
+                            repo.token == null ? '欢迎来到俱乐部' : repo.memberName,
                             style: const TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.w600,
@@ -595,7 +624,7 @@ class _AccountPageState extends State<AccountPage> {
                             repo.role == 'member'
                                 ? '俱乐部成员'
                                 : repo.token == null
-                                ? '未登录'
+                                ? '登录后管理你的预约'
                                 : '俱乐部客户',
                             style: const TextStyle(color: muted, fontSize: 14),
                           ),
@@ -605,46 +634,26 @@ class _AccountPageState extends State<AccountPage> {
                   ],
                 ),
                 const SizedBox(height: 24),
-                Surface(
-                  color: sage,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              '${repo.orders.length}',
-                              style: const TextStyle(
-                                fontSize: 27,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Text(
-                              '我的预约',
-                              style: TextStyle(fontSize: 14, color: muted),
-                            ),
-                          ],
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _AccountMetric(
+                        title: '我的预约',
+                        count: repo.orders.length,
+                        icon: CupertinoIcons.calendar,
+                        onTap: () => context.go('/orders'),
                       ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              '${repo.following.length}',
-                              style: const TextStyle(
-                                fontSize: 27,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Text(
-                              '本机关注',
-                              style: TextStyle(fontSize: 14, color: muted),
-                            ),
-                          ],
-                        ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _AccountMetric(
+                        title: '本机关注',
+                        count: repo.following.length,
+                        icon: CupertinoIcons.heart,
+                        onTap: () => context.push('/players?following=1'),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
               ],
@@ -654,69 +663,114 @@ class _AccountPageState extends State<AccountPage> {
                   onPressed: busy ? null : login,
                   child: const Text('登录 / 注册'),
                 ),
+                const SizedBox(height: 18),
               ],
-              if (settings && (repo.isLocal || repo.token != null)) ...[
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.edit_outlined),
-                  title: const Text('修改昵称'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: busy
-                      ? null
-                      : () => edit('修改昵称', repo.memberName, repo.rename),
-                ),
-                if (!repo.isLocal && repo.role != 'member')
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.badge_outlined),
-                    title: const Text('接受成员邀请'),
-                    trailing: const Icon(Icons.chevron_right_rounded),
-                    onTap: busy
-                        ? null
-                        : () => edit('输入俱乐部邀请码', '', repo.acceptInvitation),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Material(
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      if (settings && (repo.isLocal || repo.token != null)) ...[
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          shape: const RoundedRectangleBorder(),
+                          leading: const Icon(CupertinoIcons.pencil),
+                          title: const Text('修改昵称'),
+                          trailing: const Icon(CupertinoIcons.chevron_forward),
+                          onTap: busy
+                              ? null
+                              : () =>
+                                    edit('修改昵称', repo.memberName, repo.rename),
+                        ),
+                        if (!repo.isLocal && repo.role != 'member')
+                          ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                            ),
+                            shape: const RoundedRectangleBorder(),
+                            leading: const Icon(
+                              CupertinoIcons.person_badge_plus,
+                            ),
+                            title: const Text('接受成员邀请'),
+                            trailing: const Icon(
+                              CupertinoIcons.chevron_forward,
+                            ),
+                            onTap: busy
+                                ? null
+                                : () => edit(
+                                    '输入俱乐部邀请码',
+                                    '',
+                                    repo.acceptInvitation,
+                                  ),
+                          ),
+                      ],
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        shape: const RoundedRectangleBorder(),
+                        leading: const Icon(CupertinoIcons.lock_shield),
+                        title: const Text('隐私政策'),
+                        trailing: const Icon(CupertinoIcons.chevron_forward),
+                        onTap: () => context.push('/legal/privacy'),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 54),
+                        child: Divider(height: .5, thickness: .5),
+                      ),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        shape: const RoundedRectangleBorder(),
+                        leading: const Icon(CupertinoIcons.doc_text),
+                        title: const Text('服务与退款说明'),
+                        trailing: const Icon(CupertinoIcons.chevron_forward),
+                        onTap: () => context.push('/legal/terms'),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 54),
+                        child: Divider(height: .5, thickness: .5),
+                      ),
+                      ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        shape: const RoundedRectangleBorder(),
+                        leading: const Icon(
+                          CupertinoIcons.bubble_left_bubble_right,
+                        ),
+                        title: const Text('联系俱乐部'),
+                        trailing: const Icon(CupertinoIcons.chevron_forward),
+                        onTap: () => textSheet(
+                          context,
+                          '联系俱乐部',
+                          '${repo.club['supportContact'] ?? '请通过运营方公示渠道联系。'}',
+                        ),
+                      ),
+                      if (!settings) ...[
+                        const Padding(
+                          padding: EdgeInsets.only(left: 54),
+                          child: Divider(height: .5, thickness: .5),
+                        ),
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          shape: const RoundedRectangleBorder(),
+                          leading: const Icon(CupertinoIcons.gear),
+                          title: const Text('设置与关于'),
+                          trailing: const Icon(CupertinoIcons.chevron_forward),
+                          onTap: () => context.push('/settings'),
+                        ),
+                      ],
+                    ],
                   ),
-              ],
-              if (!settings)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.receipt_long_outlined),
-                  title: const Text('我的预约'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => context.go('/orders'),
-                ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.shield_outlined),
-                title: const Text('隐私政策'),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.push('/legal/privacy'),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.description_outlined),
-                title: const Text('服务与退款说明'),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.push('/legal/terms'),
-              ),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.headset_mic_outlined),
-                title: const Text('联系俱乐部'),
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => textSheet(
-                  context,
-                  '联系俱乐部',
-                  '${repo.club['supportContact'] ?? '请通过运营方公示渠道联系。'}',
                 ),
               ),
-              if (!settings)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.settings_outlined),
-                  title: const Text('设置与关于'),
-                  trailing: const Icon(Icons.chevron_right_rounded),
-                  onTap: () => context.push('/settings'),
-                ),
               if (settings && !repo.isProduction) ...[
                 const Divider(),
                 const Text(
@@ -746,9 +800,23 @@ class _AccountPageState extends State<AccountPage> {
               ],
               if (settings) ...[
                 const Divider(),
+                if (repo.token != null)
+                  ListTile(
+                    leading: const Icon(CupertinoIcons.square_arrow_right),
+                    title: const Text('退出登录'),
+                    onTap: busy
+                        ? null
+                        : () => run(() async {
+                            await repo.signOut();
+                            if (context.mounted) context.go('/profile');
+                          }),
+                  ),
                 ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.person_remove_outlined),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  shape: const RoundedRectangleBorder(),
+                  leading: const Icon(
+                    CupertinoIcons.person_crop_circle_badge_minus,
+                  ),
                   title: Text(repo.isLocal ? '清除本地数据' : '注销账号'),
                   onTap: !repo.isLocal && repo.token == null
                       ? null
@@ -790,6 +858,58 @@ class _AccountPageState extends State<AccountPage> {
               ],
             ],
           ),
+  );
+}
+
+class _AccountMetric extends StatelessWidget {
+  const _AccountMetric({
+    required this.title,
+    required this.count,
+    required this.icon,
+    required this.onTap,
+  });
+  final String title;
+  final int count;
+  final IconData icon;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) => Material(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(22),
+    clipBehavior: Clip.antiAlias,
+    child: InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(17),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, size: 22, color: muted),
+                const Spacer(),
+                const Icon(
+                  CupertinoIcons.chevron_forward,
+                  size: 13,
+                  color: muted,
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              '$count',
+              style: const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w600,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(title, style: const TextStyle(fontSize: 14, color: muted)),
+          ],
+        ),
+      ),
+    ),
   );
 }
 

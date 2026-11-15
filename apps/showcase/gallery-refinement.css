@@ -15,3 +15,15 @@
 @media(prefers-reduced-transparency:reduce){.site-header,.detail-top{background:#1c1d21;backdrop-filter:none;-webkit-backdrop-filter:none}#detail::backdrop{background:#101114;backdrop-filter:none}}
 @media(prefers-contrast:more){.screen-mat,.select-filter select,.library-search,.detail-info,.detail-top{border-color:#a7aab3}.library-sidebar button,.screen-caption p,.result-count{color:#e2e3e7}}
 @media(prefers-reduced-motion:reduce){.screen-mat{transition:none}}
+
+/* 原图已含设备外观：容器提供留白，不再切掉截图四角。 */
+#gallery .screen-mat img,#flow-gallery .flow-screen img,#detail .detail-stage img,#detail .detail-sequence img{border-radius:0;border:0;object-fit:contain}
+.product-stage:not([data-role=operator]) .stage-visual{mask-image:none}
+.product-stage:not([data-role=operator]) .stage-visual img{width:auto;height:100%;max-height:100%;object-fit:contain;border:0;border-radius:0;box-shadow:none}
+.flow-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.flow-actions>span{font-size:12px;color:#a3a5ac}.flow-actions button{border:1px solid #ffffff21;border-radius:10px;background:#ffffff06;color:#e2e3e7;padding:8px 13px;min-height:44px;font-size:13px}.flow-actions button:hover{background:#ffffff10}
+.detail-browse-mode{display:flex;gap:4px;padding:4px;background:#111216;border:1px solid #ffffff10;border-radius:12px;margin-top:24px}.detail-browse-mode button{flex:1;min-width:0;min-height:44px;border:0;border-radius:8px;background:transparent;color:#a4a6af;font-size:13px;padding:8px}.detail-browse-mode button[aria-pressed=true]{background:#35373e;color:#fff}.detail-browse-mode+.detail-sequence{margin-top:14px}
+#detail .detail-sequence{position:relative;scroll-padding:4px;padding:4px 2px 12px}#detail .detail-sequence button{display:flex;flex-direction:column;gap:6px;align-items:center;width:70px;height:auto;min-height:120px;padding:5px;border-radius:9px}#detail .detail-sequence img{height:96px;width:100%;flex:none}#detail .detail-sequence button>span{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;line-height:1.5;color:#d0d2d9}#detail.wide-detail .detail-sequence button{width:104px;min-height:80px}#detail.wide-detail .detail-sequence img{height:56px}
+.detail-nav{gap:10px}.detail-nav>span{font-size:12px;color:#b1b3bb;font-variant-numeric:tabular-nums;text-align:center}.detail-nav>button{min-height:44px;white-space:nowrap}.result-count{font-variant-numeric:tabular-nums}
+.detail-capture{margin:-12px 0 22px;font-size:12px;line-height:1.7;color:#a3a5ae}
+@media(max-width:760px){.flow-item header{align-items:flex-start;gap:10px;flex-wrap:wrap}.flow-actions{gap:10px}.detail-browse-mode{max-width:320px}.detail-nav{padding:0 12px}.detail-nav>button{font-size:12px;padding:8px 4px}.detail-nav>span{font-size:11px}.flow-actions button{font-size:12px}}
+@media(prefers-contrast:more){.detail-browse-mode,.flow-actions button{border-color:#a7aab3}.flow-actions>span,.detail-browse-mode button,.detail-nav>span{color:#e2e3e7}}

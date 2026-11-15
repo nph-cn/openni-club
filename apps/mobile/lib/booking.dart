@@ -50,7 +50,7 @@ class _BookingPageState extends State<BookingPage> {
   void initState() {
     super.initState();
     final now = repo.now.toUtc().add(const Duration(hours: 8));
-    day = DateTime(now.year, now.month, now.day + 1);
+    day = DateTime(now.year, now.month, now.day);
     playerId = widget.playerId;
     variantId =
         widget.variantId ??
@@ -69,9 +69,13 @@ class _BookingPageState extends State<BookingPage> {
     playerId = eligible.firstOrNull?['id'];
     if (playerId == null) return;
     await loadSlots();
-    if (!mounted || slots == null || slots!.isEmpty) return;
+    if (!mounted || slots == null) return;
+    final firstAvailable = slots!
+        .where((s) => s['available'] == true)
+        .firstOrNull;
+    if (firstAvailable == null) return;
     setState(() {
-      selectedSlot = slots!.firstWhere((s) => s['available'] == true);
+      selectedSlot = firstAvailable;
       contact.text = 'demo-player';
       reviewing = true;
     });
@@ -101,7 +105,9 @@ class _BookingPageState extends State<BookingPage> {
         day,
         service!['durationMinutes'],
       );
-      if (mounted && revision == fetchId) setState(() => slots = result);
+      if (mounted && revision == fetchId) {
+        setState(() => slots = result.where(isFutureSlot).toList());
+      }
     } catch (e) {
       if (mounted && revision == fetchId) {
         setState(() => slotFailure = '$e'.replaceFirst('Exception: ', ''));
@@ -109,6 +115,13 @@ class _BookingPageState extends State<BookingPage> {
     } finally {
       if (mounted && revision == fetchId) setState(() => checking = false);
     }
+  }
+
+  // 排班返回后也可能经过等待；显示与提交均遵守服务端的一分钟提前量。
+  bool isFutureSlot(Json slot) {
+    final start = DateTime.tryParse('${slot['startAt']}');
+    return start != null &&
+        !start.isBefore(repo.now.toUtc().add(const Duration(minutes: 1)));
   }
 
   Future<void> choosePlayer() async {
@@ -179,6 +192,11 @@ class _BookingPageState extends State<BookingPage> {
       setState(() => failure = '请选择队友和一个可约时段。');
       return;
     }
+    if (!isFutureSlot(selectedSlot!)) {
+      await loadSlots();
+      if (mounted) setState(() => failure = '该时段已过期，请重新选择。');
+      return;
+    }
     setState(() {
       reviewing = true;
       failure = null;
@@ -207,7 +225,9 @@ class _BookingPageState extends State<BookingPage> {
       );
       if (!latest.any(
         (s) =>
-            s['startAt'] == selectedSlot!['startAt'] && s['available'] == true,
+            s['startAt'] == selectedSlot!['startAt'] &&
+            s['available'] == true &&
+            isFutureSlot(s),
       )) {
         throw Exception('该时段已不可约，请返回重新选择。');
       }
@@ -415,7 +435,7 @@ class _BookingPageState extends State<BookingPage> {
                     itemCount: 7,
                     separatorBuilder: (_, _) => const SizedBox(width: 8),
                     itemBuilder: (_, i) {
-                      final d = DateTime(now.year, now.month, now.day + i + 1);
+                      final d = DateTime(now.year, now.month, now.day + i);
                       final picked =
                           d.year == day.year &&
                           d.month == day.month &&
@@ -438,6 +458,8 @@ class _BookingPageState extends State<BookingPage> {
                             children: [
                               Text(
                                 i == 0
+                                    ? '今天'
+                                    : i == 1
                                     ? '明天'
                                     : [
                                         '周一',

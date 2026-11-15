@@ -31,7 +31,49 @@ export function matchScreens(screens, filters, favorites = new Set()) {
 // Group every manifest entry, including future flows; a curated ID list silently lost new screens.
 export function groupFlows(screens) {
   const keys = [...Object.keys(labels.flow), ...new Set(screens.map(screen => screen.flow).filter(key => !labels.flow[key]))];
-  return keys.map(key => ({key, name: labels.flow[key] || '其他页面', screens: screens.filter(screen => screen.flow === key)})).filter(group => group.screens.length);
+  return keys.map(key => ({key, name: labels.flow[key] || '其他页面', screens: orderFlowScreens(screens.filter(screen => screen.flow === key))})).filter(group => group.screens.length);
+}
+
+export function orderFlowScreens(screens) {
+  const order = screen => Number.isFinite(screen.flowOrder) ? screen.flowOrder : Infinity;
+  return [...screens].sort((a,b) => order(a) - order(b));
+}
+
+// 浏览范围与缩略图共用同一序列，流程末页不会跳进其他流程。
+export function browseSequence(shown, screenId, scope = 'results') {
+  const current = shown.find(screen => screen.id === screenId);
+  if (!current) return [];
+  return scope === 'flow' ? orderFlowScreens(shown.filter(screen =>
+    screen.platform === current.platform && screen.flow === current.flow)) : shown;
+}
+
+export function galleryCounts(screens, shown, favorites = new Set()) {
+  return {
+    total: screens.length,
+    shown: shown.length,
+    platforms: Object.fromEntries(Object.keys(labels.platform).map(key =>
+      [key, screens.filter(screen => screen.platform === key).length])),
+    favorites: new Set(screens.filter(screen => favorites.has(screen.id)).map(screen => screen.id)).size
+  };
+}
+
+// 只改变本站 App 入口；保留页面参数，后台、小程序文档和外部链接不变。
+export function appPreviewUrl(href) {
+  const url = new URL(href, 'https://openni.local');
+  if (url.origin !== 'https://openni.local' || !/^\/demo\/?$/.test(url.pathname)) return href;
+  url.searchParams.set('device', 'iphone');
+  return url.pathname + url.search + url.hash;
+}
+
+export function screenPreview(screen) {
+  if (screen.platform === 'admin') return {href: screen.demo || '/admin/', label:'打开后台 ↗'};
+  if (screen.platform === 'mini') return {href: screen.demo || '/guide/05-wechat-release.html', label:'查看小程序运行方式 ↗'};
+  const start = screen.previewScreen ?? screen.id;
+  const interaction = screen.captureKind === 'interaction';
+  return {
+    href: appPreviewUrl(interaction || screen.previewScreen ? `/demo/?screen=${encodeURIComponent(start)}` : screen.demo || `/demo/?screen=${encodeURIComponent(start)}`),
+    label: interaction ? '打开流程起点 ↗' : '打开此页 ↗'
+  };
 }
 
 export function parseLocation(search) {

@@ -2,7 +2,20 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// 截图加载应用实际使用的中文字体与两套图标字体。
+Future<void> loadCaptureFonts() async {
+  for (final entry in {
+    'NotoSansSC': 'assets/fonts/NotoSansSC.ttf',
+    'MaterialIcons': 'fonts/MaterialIcons-Regular.otf',
+    'packages/cupertino_icons/CupertinoIcons':
+        'packages/cupertino_icons/assets/CupertinoIcons.ttf',
+  }.entries) {
+    await (FontLoader(entry.key)..addFont(rootBundle.load(entry.value))).load();
+  }
+}
 
 /// Widget 测试默认关闭阴影模糊；视觉截图保留实际应用的阴影绘制。
 void enableCaptureShadows() {

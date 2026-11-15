@@ -102,7 +102,15 @@ class ClubRepository extends ChangeNotifier {
   DateTime? _lastLocalChallenge;
   int _challengeSequence = 0;
   String? error;
-  String? token;
+  int _sessionRevision = 0;
+  String? _token;
+  String? get token => _token;
+  set token(String? value) {
+    if (_token == value) return;
+    _token = value;
+    _sessionRevision++;
+  }
+
   Json club = {};
   List<Json> banners = [];
   List<Json> services = [];
@@ -121,7 +129,18 @@ class ClubRepository extends ChangeNotifier {
   String get shortName =>
       '${club['shortName'] ?? brand['shortName'] ?? clubName}';
 
+  void _requireSession(int revision) {
+    if (revision != _sessionRevision) {
+      throw const ClubApiException('SESSION_CHANGED', '登录状态已改变，请重试。');
+    }
+  }
+
   Future<dynamic> request(String method, String path, [Json? body]) async {
+    final revision = _sessionRevision;
+    final personalRequest =
+        method != 'GET' ||
+        RegExp(r'^/(?:me|orders|member|account|notifications)(?:/|\?|$)')
+            .hasMatch(path);
     final uri = Uri.parse('${baseUrl.replaceFirst(RegExp(r'/$'), '')}$path');
     final headers = {
       'Content-Type': 'application/json',
@@ -150,9 +169,13 @@ class ClubRepository extends ChangeNotifier {
             .get(uri, headers: headers)
             .timeout(const Duration(seconds: 15));
     }
+    // 旧会话的个人资料和操作响应不能写回当前账号；公开目录仍可继续加载。
+    if (personalRequest) _requireSession(revision);
     final data = jsonDecode(response.body);
     if (response.statusCode >= 400) {
-      if (response.statusCode == 401 && !path.startsWith('/auth/')) {
+      if (response.statusCode == 401 &&
+          !path.startsWith('/auth/') &&
+          revision == _sessionRevision) {
         token = null;
       }
       final error = data is Map ? data['error'] : null;
@@ -209,6 +232,10 @@ class ClubRepository extends ChangeNotifier {
         club = {};
         throw Exception('正式模式必须配置 HTTPS API_BASE_URL。');
       }
+      if (persist) {
+        final prefs = await SharedPreferences.getInstance();
+        following.addAll(prefs.getStringList('openni_following') ?? []);
+      }
       if (isLocal) {
         final catalog = Json.from(
           jsonDecode(
@@ -237,7 +264,6 @@ class ClubRepository extends ChangeNotifier {
           }
           memberName = prefs.getString('openni_name') ?? memberName;
           favorite = prefs.getBool('openni_favorite') ?? false;
-          following.addAll(prefs.getStringList('openni_following') ?? []);
         }
       } else {
         services = [];
@@ -333,6 +359,7 @@ class ClubRepository extends ChangeNotifier {
   }
 
   Future<void> verifySms(String challengeId, String code) async {
+    final revision = _sessionRevision;
     if (isLocal && !isProduction) {
       final challenge = _localChallenges[challengeId];
       if (challenge == null) {
@@ -377,11 +404,13 @@ class ClubRepository extends ChangeNotifier {
           'code': code,
         }),
       ),
+      revision: revision,
     );
     await loadAccount();
   }
 
-  void _applySession(Json result) {
+  void _applySession(Json result, {required int revision}) {
+    _requireSession(revision);
     final value = result['token'];
     if (value is! String || value.isEmpty) {
       throw const ClubApiException('AUTH_FAILED', '登录未完成，请重试');
@@ -394,19 +423,22 @@ class ClubRepository extends ChangeNotifier {
   }
 
   Future<void> signInWithWechat() async {
+    final revision = _sessionRevision;
     if (wechatUnavailable case final String reason) throw Exception(reason);
     if (isLocal) throw Exception('微信登录需要连接俱乐部');
     _applySession(
       Json.from(
         await request('POST', '/auth/wechat-app', {
-          'code': await wechat.authenticate(),
+          'code': await _authenticateWechat(revision),
         }),
       ),
+      revision: revision,
     );
     await loadAccount();
   }
 
   Future<void> linkWechatForPayment() async {
+    final revision = _sessionRevision;
     if (token == null || isLocal) throw Exception('请先登录');
     if (wechat.unavailableReason case final String reason) {
       throw Exception(reason);
@@ -414,9 +446,10 @@ class ClubRepository extends ChangeNotifier {
     _applySession(
       Json.from(
         await request('POST', '/auth/wechat-app/link', {
-          'code': await wechat.authenticate(),
+          'code': await _authenticateWechat(revision),
         }),
       ),
+      revision: revision,
     );
     await loadAccount();
   }
@@ -427,14 +460,22 @@ class ClubRepository extends ChangeNotifier {
       throw Exception(reason);
     }
     if (isLocal) return;
+    final revision = _sessionRevision;
     final result = isProduction
         ? await request('POST', '/auth/wechat-app', {
-            'code': await wechat.authenticate(),
+            'code': await _authenticateWechat(revision),
           })
         : await request('POST', '/auth/demo', {'name': memberName});
+    _requireSession(revision);
     token = result['token'];
     if (token == null || token!.isEmpty) throw Exception('登录未完成，请重试。');
     notifyListeners();
+  }
+
+  Future<String> _authenticateWechat(int revision) async {
+    final code = await wechat.authenticate();
+    _requireSession(revision);
+    return code;
   }
 
   Future<void> loadDemoPreview() async {
@@ -454,20 +495,23 @@ class ClubRepository extends ChangeNotifier {
   Future<void> refreshOrders() async {
     if (!isLocal) {
       await signIn();
-      orders = (await request('GET', '/orders') as List)
-          .map((e) => Json.from(e))
-          .toList();
+      final revision = _sessionRevision;
+      final result = await request('GET', '/orders');
+      _requireSession(revision);
+      orders = (result as List).map((e) => Json.from(e)).toList();
       notifyListeners();
     }
   }
 
   Future<void> save() async {
-    if (persist && isLocal) {
+    if (persist) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('openni_demo_orders', jsonEncode(orders));
-      await prefs.setString('openni_name', memberName);
-      await prefs.setBool('openni_favorite', favorite);
       await prefs.setStringList('openni_following', following.toList());
+      if (isLocal) {
+        await prefs.setString('openni_demo_orders', jsonEncode(orders));
+        await prefs.setString('openni_name', memberName);
+        await prefs.setBool('openni_favorite', favorite);
+      }
     }
     notifyListeners();
   }
@@ -574,7 +618,9 @@ class ClubRepository extends ChangeNotifier {
 
   Future<void> refreshOrder(Json order) async {
     if (!isLocal) {
+      final revision = _sessionRevision;
       final updated = Json.from(await request('GET', '/orders/${order['id']}'));
+      _requireSession(revision);
       order.addAll(updated);
       await save();
     }
@@ -601,6 +647,23 @@ class ClubRepository extends ChangeNotifier {
       // Always read the server result, and never assign `paid` on the client.
       await refreshOrder(order);
     }
+  }
+
+  /// 结束本机会话，不调用账号删除接口，也不删除演示预约或本机关注。
+  Future<void> signOut() async {
+    // 即使登录请求还没返回、token 仍为空，也撤销该次会话意图。
+    _sessionRevision++;
+    token = null;
+    role = 'customer';
+    memberPlayerId = null;
+    memberOrders = [];
+    notifications = [];
+    earnings = {};
+    if (!isLocal) {
+      orders = [];
+      memberName = '新朋友';
+    }
+    notifyListeners();
   }
 
   Future<void> deleteAccount() async {
@@ -636,7 +699,7 @@ class ClubRepository extends ChangeNotifier {
     final key = '$playerId/$day/$duration';
     if (isLocal) {
       // Explicit local demo schedule. Remote mode never invents availability.
-      return availability.putIfAbsent(
+      final slots = availability.putIfAbsent(
         key,
         () => [14, 16, 18, 20].map((hour) {
           final start = DateTime.utc(
@@ -656,6 +719,12 @@ class ClubRepository extends ChangeNotifier {
           };
         }).toList(),
       );
+      // 缓存保留完整排班，每次读取按当前时间排除已经错过的开始时段。
+      final earliest = now.toUtc().add(const Duration(minutes: 1));
+      return slots.where((slot) {
+        final start = DateTime.tryParse('${slot['startAt']}');
+        return start != null && start.toUtc().isAfter(earliest);
+      }).toList();
     }
     final result = await request(
       'GET',
@@ -669,7 +738,9 @@ class ClubRepository extends ChangeNotifier {
   Future<void> loadAccount() async {
     if (isLocal) return;
     await signIn();
+    final revision = _sessionRevision;
     final data = await request('GET', '/me');
+    _requireSession(revision);
     role = data['role'];
     memberPlayerId = data['playerId'];
     memberName = data['user']['name'];
@@ -677,12 +748,14 @@ class ClubRepository extends ChangeNotifier {
   }
 
   Future<void> rename(String name) async {
+    final revision = _sessionRevision;
     if (name.trim().isEmpty || name.length > 30) {
       throw Exception('昵称需为 1–30 个字符。');
     }
     if (!isLocal) {
       await request('PATCH', '/me', {'name': name});
     }
+    _requireSession(revision);
     memberName = name;
     await save();
   }
@@ -696,11 +769,13 @@ class ClubRepository extends ChangeNotifier {
   Future<void> switchDemoRole(String value, {String? playerId}) async {
     if (isProduction) throw Exception('成员权限由俱乐部邀请分配。');
     if (!isLocal) {
+      final revision = _sessionRevision;
       final data = await request(
         'POST',
         token == null ? '/auth/demo' : '/auth/demo/role',
         {'name': memberName, 'role': value, 'playerId': ?playerId},
       );
+      _requireSession(revision);
       token = data['token'] ?? token;
       await loadAccount();
     } else {
@@ -726,6 +801,7 @@ class ClubRepository extends ChangeNotifier {
 
   Future<void> loadMemberData() async {
     if (isLocal) {
+      final revision = _sessionRevision;
       if (isProduction) throw Exception('请配置俱乐部 API。');
       final fixture = Json.from(
         jsonDecode(
@@ -735,6 +811,7 @@ class ClubRepository extends ChangeNotifier {
           ),
         ),
       );
+      _requireSession(revision);
       role = 'member';
       memberPlayerId = fixture['me']['playerId'];
       memberName = fixture['me']['user']['name'];
@@ -750,10 +827,12 @@ class ClubRepository extends ChangeNotifier {
     }
     await loadAccount();
     if (role != 'member') throw Exception('此账号尚未绑定俱乐部成员。');
+    final revision = _sessionRevision;
     final data = await Future.wait([
       request('GET', '/member/orders'),
       request('GET', '/member/earnings'),
     ]);
+    _requireSession(revision);
     memberOrders = (data[0] as List).map((e) => Json.from(e)).toList();
     earnings = Json.from(data[1]);
     notifyListeners();

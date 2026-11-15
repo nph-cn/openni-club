@@ -2,7 +2,6 @@ import 'capture_2x.dart';
 import 'catalog_media_cache.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:openni_club/main.dart';
@@ -20,14 +19,7 @@ const memberScreens = [
 ];
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await (FontLoader(
-      'NotoSansSC',
-    )..addFont(rootBundle.load('assets/fonts/NotoSansSC.ttf'))).load();
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-  });
+  setUpAll(loadCaptureFonts);
   for (final screen in screenNames.where(
     (s) => ![
       'home',
@@ -60,7 +52,11 @@ void main() {
       await tester.pumpWidget(
         RepaintBoundary(
           key: key,
-          child: OpenNIApp(repository: repo, initialScreen: screen),
+          child: OpenNIApp(
+            repository: repo,
+            initialScreen: screen,
+            previewDevice: true,
+          ),
         ),
       );
       await tester.pumpAndSettle();

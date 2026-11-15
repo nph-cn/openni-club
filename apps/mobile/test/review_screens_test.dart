@@ -12,14 +12,7 @@ import 'package:openni_club/repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await (FontLoader(
-      'NotoSansSC',
-    )..addFont(rootBundle.load('assets/fonts/NotoSansSC.ttf'))).load();
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-  });
+  setUpAll(loadCaptureFonts);
   for (final screen in ['home', 'service', 'player', 'order']) {
     testWidgets('v2 review: $screen', (tester) async {
       enableCaptureShadows();
@@ -50,7 +43,11 @@ void main() {
       await tester.pumpWidget(
         RepaintBoundary(
           key: key,
-          child: OpenNIApp(repository: repo, initialScreen: screen),
+          child: OpenNIApp(
+            repository: repo,
+            initialScreen: screen,
+            previewDevice: true,
+          ),
         ),
       );
       await tester.pumpAndSettle();

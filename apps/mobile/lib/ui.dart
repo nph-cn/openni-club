@@ -4,7 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
-    show CupertinoSlidingSegmentedControl;
+    show
+        CupertinoIcons,
+        CupertinoSearchTextField,
+        CupertinoSlidingSegmentedControl,
+        OverlayVisibilityMode;
 
 import 'repository.dart';
 import 'accessibility.dart';
@@ -59,153 +63,162 @@ void toast(BuildContext context, Object text) => ScaffoldMessenger.of(context)
       SnackBar(content: Text('$text'.replaceFirst('Exception: ', ''))),
     );
 
-ThemeData clubTheme(ClubRepository repo) => ThemeData(
-  useMaterial3: true,
-  platform: kIsWeb ? TargetPlatform.iOS : defaultTargetPlatform,
-  fontFamily: 'NotoSansSC',
-  splashFactory: NoSplash.splashFactory,
-  scaffoldBackgroundColor: canvas,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: brandColor(repo),
-    primary: brandColor(repo),
-    onPrimary: onBrand(repo),
-    surface: Colors.white,
-  ),
-  textTheme: const TextTheme(
-    headlineLarge: TextStyle(
-      fontSize: 30,
-      height: 1.25,
-      fontWeight: FontWeight.w600,
-      color: ink,
+ThemeData clubTheme(ClubRepository repo, {bool previewFonts = false}) {
+  final fontFamily = kIsWeb || previewFonts ? 'NotoSansSC' : null;
+  return ThemeData(
+    useMaterial3: true,
+    platform: kIsWeb ? TargetPlatform.iOS : defaultTargetPlatform,
+    fontFamily: fontFamily,
+    splashFactory: NoSplash.splashFactory,
+    scaffoldBackgroundColor: canvas,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: brandColor(repo),
+      primary: brandColor(repo),
+      onPrimary: onBrand(repo),
+      surface: Colors.white,
     ),
-    headlineMedium: TextStyle(
-      fontSize: 26,
-      height: 1.3,
-      fontWeight: FontWeight.w600,
-      color: ink,
+    textTheme: const TextTheme(
+      headlineLarge: TextStyle(
+        fontSize: 30,
+        height: 1.25,
+        fontWeight: FontWeight.w600,
+        color: ink,
+      ),
+      headlineMedium: TextStyle(
+        fontSize: 26,
+        height: 1.3,
+        fontWeight: FontWeight.w600,
+        color: ink,
+      ),
+      titleMedium: TextStyle(
+        fontSize: 18,
+        height: 1.4,
+        fontWeight: FontWeight.w600,
+        color: ink,
+      ),
+      titleSmall: TextStyle(
+        fontSize: 16,
+        height: 1.4,
+        fontWeight: FontWeight.w600,
+        color: ink,
+      ),
+      bodySmall: TextStyle(fontSize: 14, height: 1.45, color: muted),
+      labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+      bodyMedium: TextStyle(fontSize: 16, height: 1.5, color: ink),
+      bodyLarge: TextStyle(fontSize: 16, height: 1.5, color: ink),
+      titleLarge: TextStyle(
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+        color: ink,
+      ),
     ),
-    titleMedium: TextStyle(
-      fontSize: 18,
-      height: 1.4,
-      fontWeight: FontWeight.w600,
-      color: ink,
-    ),
-    titleSmall: TextStyle(
-      fontSize: 16,
-      height: 1.4,
-      fontWeight: FontWeight.w600,
-      color: ink,
-    ),
-    bodySmall: TextStyle(fontSize: 14, height: 1.45, color: muted),
-    labelLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-    bodyMedium: TextStyle(fontSize: 16, height: 1.5, color: ink),
-    bodyLarge: TextStyle(fontSize: 16, height: 1.5, color: ink),
-    titleLarge: TextStyle(
-      fontSize: 22,
-      fontWeight: FontWeight.w600,
-      color: ink,
-    ),
-  ),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: canvas,
-    surfaceTintColor: Colors.transparent,
-    elevation: 0,
-    centerTitle: true,
-    titleTextStyle: TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 17,
-      fontWeight: FontWeight.w600,
-      color: ink,
-    ),
-  ),
-  iconTheme: const IconThemeData(color: ink, size: 22),
-  chipTheme: ChipThemeData(
-    backgroundColor: Colors.white,
-    selectedColor: brandColor(repo),
-    checkmarkColor: onBrand(repo),
-    secondaryLabelStyle: TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 16,
-      color: onBrand(repo),
-    ),
-    labelStyle: const TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 16,
-      color: ink,
-    ),
-    side: const BorderSide(color: Colors.transparent),
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-  ),
-  dividerTheme: const DividerThemeData(color: rule, space: 28, thickness: .7),
-  listTileTheme: ListTileThemeData(
-    minTileHeight: 64,
-    tileColor: Colors.white,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-    titleTextStyle: const TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 16,
-      color: ink,
-    ),
-    subtitleTextStyle: const TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 14,
-      color: muted,
-    ),
-  ),
-  snackBarTheme: SnackBarThemeData(
-    behavior: SnackBarBehavior.floating,
-    backgroundColor: ink,
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-    contentTextStyle: const TextStyle(
-      fontFamily: 'NotoSansSC',
-      fontSize: 15,
-      color: Colors.white,
-    ),
-  ),
-  filledButtonTheme: FilledButtonThemeData(
-    style: FilledButton.styleFrom(
-      minimumSize: const Size(48, 52),
+    appBarTheme: AppBarTheme(
+      backgroundColor: canvas,
+      surfaceTintColor: Colors.transparent,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
-      textStyle: const TextStyle(
-        fontFamily: 'NotoSansSC',
-        fontSize: 16,
+      centerTitle: true,
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 17,
         fontWeight: FontWeight.w600,
+        color: ink,
       ),
     ),
-  ),
-  outlinedButtonTheme: OutlinedButtonThemeData(
-    style: OutlinedButton.styleFrom(
-      minimumSize: const Size(48, 52),
-      backgroundColor: Colors.white.withValues(alpha: .65),
-      side: const BorderSide(color: rule),
-      textStyle: const TextStyle(
-        fontFamily: 'NotoSansSC',
+    iconTheme: const IconThemeData(color: ink, size: 22),
+    chipTheme: ChipThemeData(
+      backgroundColor: Colors.white,
+      selectedColor: brandColor(repo),
+      checkmarkColor: onBrand(repo),
+      secondaryLabelStyle: TextStyle(
+        fontFamily: fontFamily,
         fontSize: 16,
-        fontWeight: FontWeight.w600,
+        color: onBrand(repo),
       ),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
+      labelStyle: TextStyle(fontFamily: fontFamily, fontSize: 16, color: ink),
+      side: const BorderSide(color: Colors.transparent),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
     ),
-  ),
-  inputDecorationTheme: InputDecorationTheme(
-    filled: true,
-    fillColor: Colors.white,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(17),
-      borderSide: const BorderSide(color: rule),
+    dividerTheme: const DividerThemeData(color: rule, space: 28, thickness: .7),
+    listTileTheme: ListTileThemeData(
+      minTileHeight: 64,
+      tileColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        color: ink,
+      ),
+      subtitleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 14,
+        color: muted,
+      ),
     ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(17),
-      borderSide: const BorderSide(color: rule),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: ink,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      contentTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 15,
+        color: Colors.white,
+      ),
     ),
-    contentPadding: const EdgeInsets.all(16),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(17),
-      borderSide: BorderSide(color: brandColor(repo), width: 1.5),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        minimumSize: const Size(48, 52),
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
+        textStyle: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     ),
-  ),
-);
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(48, 52),
+        backgroundColor: Colors.white.withValues(alpha: .65),
+        side: const BorderSide(color: rule),
+        textStyle: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        minimumSize: const Size(44, 44),
+        textStyle: TextStyle(
+          fontFamily: fontFamily,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: const BorderSide(color: rule),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: const BorderSide(color: rule),
+      ),
+      contentPadding: const EdgeInsets.all(16),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(17),
+        borderSide: BorderSide(color: brandColor(repo), width: 1.5),
+      ),
+    ),
+  );
+}
 
 bool appleChrome(BuildContext context) =>
     Theme.of(context).platform == TargetPlatform.iOS;
@@ -240,16 +253,16 @@ class GlassSurface extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xEFFFFFFF),
-                    Color(0xBDF8FAFF),
-                    Color(0xD9FFFFFF),
+                    Color(0xC9FFFFFF),
+                    Color(0x99F3F6FC),
+                    Color(0xB8FFFFFF),
                   ],
                   stops: [0, .55, 1],
                 ),
           borderRadius: BorderRadius.circular(radius),
           border: border
               ? Border.all(
-                  color: opaque ? rule : Colors.white.withValues(alpha: .96),
+                  color: opaque ? rule : Colors.white.withValues(alpha: .5),
                   width: 1,
                 )
               : null,
@@ -261,12 +274,42 @@ class GlassSurface extends StatelessWidget {
         child: opaque
             ? surface
             : BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-                child: surface,
+                filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                child: CustomPaint(
+                  foregroundPainter: border ? _GlassEdgePainter(radius) : null,
+                  child: surface,
+                ),
               ),
       );
     },
   );
+}
+
+/// 单次描边增强材质边缘；不会给正文添加模糊或动画。
+class _GlassEdgePainter extends CustomPainter {
+  const _GlassEdgePainter(this.radius);
+  final double radius;
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFFFFFFFF), Color(0x36FFFFFF), Color(0xA8FFFFFF)],
+        stops: [0, .52, 1],
+      ).createShader(rect);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect.deflate(.5), Radius.circular(radius)),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_GlassEdgePainter oldDelegate) =>
+      radius != oldDelegate.radius;
 }
 
 /// 独立浮动导航：选中态覆盖完整触控区域，文字和价格不叠加模糊。
@@ -282,29 +325,29 @@ class ClubTabBar extends StatelessWidget {
         : ['首页', '找陪练', '订单', '我的'];
     final icons = member
         ? [
-            Icons.space_dashboard_outlined,
-            Icons.receipt_long_outlined,
-            Icons.account_balance_wallet_outlined,
-            Icons.person_outline_rounded,
+            CupertinoIcons.square_grid_2x2,
+            CupertinoIcons.doc_text,
+            CupertinoIcons.creditcard,
+            CupertinoIcons.person,
           ]
         : [
-            Icons.home_outlined,
-            Icons.explore_outlined,
-            Icons.receipt_long_outlined,
-            Icons.person_outline_rounded,
+            CupertinoIcons.house,
+            CupertinoIcons.search,
+            CupertinoIcons.doc_text,
+            CupertinoIcons.person,
           ];
     final selectedIcons = member
         ? [
-            Icons.space_dashboard_rounded,
-            Icons.receipt_long_rounded,
-            Icons.account_balance_wallet_rounded,
-            Icons.person_rounded,
+            CupertinoIcons.square_grid_2x2_fill,
+            CupertinoIcons.doc_text_fill,
+            CupertinoIcons.creditcard_fill,
+            CupertinoIcons.person_fill,
           ]
         : [
-            Icons.home_rounded,
-            Icons.explore_rounded,
-            Icons.receipt_long_rounded,
-            Icons.person_rounded,
+            CupertinoIcons.house_fill,
+            CupertinoIcons.search,
+            CupertinoIcons.doc_text_fill,
+            CupertinoIcons.person_fill,
           ];
     final paths = member
         ? ['/member', '/member/orders', '/member/earnings', '/profile']
@@ -325,6 +368,7 @@ class ClubTabBar extends StatelessWidget {
                 label: labels[i],
                 child: Tooltip(
                   message: labels[i],
+                  excludeFromSemantics: true,
                   child: InkWell(
                     onTap: () {
                       if (selected != i) context.go(paths[i]);
@@ -369,6 +413,7 @@ class ClubTabBar extends StatelessWidget {
                             const SizedBox(height: 3),
                             Text(
                               labels[i],
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 12,
                                 height: 1.2,
@@ -390,6 +435,116 @@ class ClubTabBar extends StatelessWidget {
       ),
     );
   }
+}
+
+/// 苹果平台使用搜索控件，清除按钮保留完整触区与键盘焦点。
+class ClubSearchField extends StatelessWidget {
+  const ClubSearchField({
+    super.key,
+    required this.controller,
+    required this.onChanged,
+    this.hintText = '搜索游戏或服务',
+    this.onSubmitted,
+    this.onClear,
+  });
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+  final String hintText;
+  final ValueChanged<String>? onSubmitted;
+  final VoidCallback? onClear;
+
+  @override
+  Widget build(
+    BuildContext context,
+  ) => ValueListenableBuilder<TextEditingValue>(
+    valueListenable: controller,
+    builder: (context, value, _) {
+      void submit(String text) {
+        FocusScope.of(context).unfocus();
+        onSubmitted?.call(text);
+      }
+
+      void clear() {
+        controller.clear();
+        onChanged('');
+        onClear?.call();
+      }
+
+      final hasText = value.text.isNotEmpty;
+      if (!appleChrome(context)) {
+        return TextField(
+          controller: controller,
+          textInputAction: TextInputAction.search,
+          onChanged: onChanged,
+          onSubmitted: submit,
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.search_rounded),
+            hintText: hintText,
+            suffixIcon: hasText
+                ? IconButton(
+                    tooltip: '清除搜索',
+                    onPressed: clear,
+                    icon: const Icon(Icons.cancel_rounded, size: 20),
+                  )
+                : null,
+          ),
+        );
+      }
+      return Stack(
+        alignment: Alignment.centerRight,
+        children: [
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: CupertinoSearchTextField(
+              controller: controller,
+              placeholder: hintText,
+              onChanged: onChanged,
+              onSubmitted: submit,
+              style: TextStyle(
+                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+                fontSize: 16,
+                color: ink,
+              ),
+              placeholderStyle: TextStyle(
+                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
+                fontSize: 16,
+                color: muted,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: rule, width: .7),
+              ),
+              itemColor: muted,
+              itemSize: 20,
+              prefixInsets: const EdgeInsetsDirectional.fromSTEB(14, 0, 8, 0),
+              padding: EdgeInsetsDirectional.fromSTEB(
+                0,
+                13,
+                hasText ? 48 : 14,
+                13,
+              ),
+              suffixMode: OverlayVisibilityMode.never,
+            ),
+          ),
+          if (hasText)
+            PositionedDirectional(
+              end: 2,
+              child: IconButton(
+                tooltip: '清除搜索',
+                constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+                onPressed: clear,
+                icon: const Icon(
+                  CupertinoIcons.xmark_circle_fill,
+                  size: 20,
+                  color: muted,
+                ),
+              ),
+            ),
+        ],
+      );
+    },
+  );
 }
 
 /// 分组切换沿用平台控件的键盘、焦点和辅助功能语义。
@@ -420,8 +575,11 @@ class ClubSegmentedControl extends StatelessWidget {
                 child: Text(
                   option,
                   style: TextStyle(
-                    fontFamily: 'NotoSansSC',
-                    fontSize: 15,
+                    fontFamily: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.fontFamily,
+                    fontSize: 16,
                     fontWeight: value == option
                         ? FontWeight.w600
                         : FontWeight.w400,
@@ -484,6 +642,11 @@ class ClubPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final apple = appleChrome(context), media = MediaQuery.of(context);
+    final toolbarHeight =
+        (media.textScaler.scale(tab != null ? 26 : 17) * 1.3 + 16).clamp(
+          kToolbarHeight,
+          double.infinity,
+        );
     final chromeInset =
         (media.size.width - media.padding.horizontal - 620).clamp(
           0.0,
@@ -506,6 +669,7 @@ class ClubPage extends StatelessWidget {
             indicatorColor: brandColor(repo).withValues(alpha: .07),
             labelTextStyle: WidgetStateProperty.resolveWith(
               (states) => TextStyle(
+                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
                 fontSize: 13,
                 fontWeight: states.contains(WidgetState.selected)
                     ? FontWeight.w600
@@ -567,7 +731,10 @@ class ClubPage extends StatelessWidget {
         backgroundColor: Colors.white.withValues(alpha: .78),
         padding: const EdgeInsets.all(12),
       ),
-      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+      icon: Icon(
+        apple ? CupertinoIcons.chevron_back : Icons.arrow_back_rounded,
+        size: 20,
+      ),
       onPressed:
           onBack ??
           () {
@@ -584,6 +751,7 @@ class ClubPage extends StatelessWidget {
       appBar: !appBar
           ? null
           : AppBar(
+              toolbarHeight: toolbarHeight,
               backgroundColor: apple ? Colors.transparent : canvas,
               scrolledUnderElevation: 0,
               centerTitle: tab == null,
@@ -621,16 +789,21 @@ class ClubPage extends StatelessWidget {
                 if (chromeInset > 0) SizedBox(width: chromeInset),
               ],
             ),
-      body: _PageInsets(
-        top: apple && appBar ? kToolbarHeight + media.padding.top : 0,
-        bottom: apple && showBar ? 102 + media.padding.bottom : 0,
-        child: SafeArea(
-          top: !appBar,
-          bottom: !apple,
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: child,
+      body: Builder(
+        builder: (bodyContext) => _PageInsets(
+          // Scaffold 已提供真实导航高度，放大字号后也不会遮住最后一项。
+          top: apple && appBar ? MediaQuery.paddingOf(bodyContext).top : 0,
+          bottom: apple && showBar
+              ? MediaQuery.paddingOf(bodyContext).bottom + 16
+              : 0,
+          child: SafeArea(
+            top: !appBar,
+            bottom: !apple,
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 620),
+                child: child,
+              ),
             ),
           ),
         ),
@@ -923,13 +1096,13 @@ class BrandMark extends StatelessWidget {
                 (!repo.isProduction && url.startsWith('blob:')))
             ? Image.network(
                 url,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (_, _, _) => fallback,
               )
             : asset.isNotEmpty
             ? Image.asset(
                 asset,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (_, _, _) => fallback,
               )
             : fallback,
@@ -955,11 +1128,16 @@ class EmptyState extends StatelessWidget {
             borderRadius: BorderRadius.circular(25),
             border: Border.all(color: rule, width: .6),
           ),
-          child: const Icon(Icons.inbox_outlined, color: muted, size: 32),
+          child: Icon(
+            appleChrome(context) ? CupertinoIcons.tray : Icons.inbox_outlined,
+            color: muted,
+            size: 32,
+          ),
         ),
         const SizedBox(height: 22),
         Text(
           title,
+          textAlign: TextAlign.center,
           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
@@ -981,22 +1159,37 @@ class PairRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 7),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(color: muted, fontSize: 16)),
-        const SizedBox(width: 24),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
-            ),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final stacked =
+            constraints.maxWidth < 400 &&
+            MediaQuery.textScalerOf(context).scale(16) > 24;
+        final labelWidget = Text(
+          label,
+          style: const TextStyle(color: muted, fontSize: 16),
+        );
+        final valueWidget = Text(
+          value,
+          textAlign: stacked ? TextAlign.left : TextAlign.right,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
           ),
-        ),
-      ],
+        );
+        return stacked
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [labelWidget, const SizedBox(height: 6), valueWidget],
+              )
+            : Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 2, child: labelWidget),
+                  const SizedBox(width: 24),
+                  Expanded(flex: 3, child: valueWidget),
+                ],
+              );
+      },
     ),
   );
 }

@@ -17,9 +17,10 @@ void main() {
         File('screenshots/manifest.json').readAsStringSync(),
       ) as List;
       final ids = manifest.map((row) => row['id'] as String).toList();
-      expect(ids.toSet(), screenNames.toSet());
+      expect(ids.toSet(), {...screenNames, ...interactionScreenNames});
       expect(ids.length, ids.toSet().length);
       for (final row in manifest) {
+        expect(screenNames, contains(row['previewScreen']));
         final image = File('screenshots/${row['id']}.png').readAsBytesSync();
         expect(image.take(8), [137, 80, 78, 71, 13, 10, 26, 10]);
         final header = image.buffer.asByteData();

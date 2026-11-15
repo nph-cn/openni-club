@@ -20,6 +20,7 @@ const screenNames = [
   'service',
   'service_120',
   'players',
+  'following',
   'player',
   'booking',
   'checkout',
@@ -38,4 +39,24 @@ const screenNames = [
   'availability',
   'earnings',
   ...stateScreenNames,
+];
+
+/// 通过真实交互捕获的状态，不作为直接页面路由。
+const interactionScreenNames = [
+  "services_search",
+  "services_search_empty",
+  "services_game_filter",
+  "players_search",
+  "players_following_empty",
+  "player_followed",
+  "booking_player_sheet",
+  "booking_selected_variant",
+  "booking_today_slot",
+  "booking_contact_filled",
+  "booking_review_ready",
+  "booking_consent_needed",
+  "order_created",
+  "order_cancel_confirm",
+  "orders_finished",
+  "player_booking_sheet",
 ];

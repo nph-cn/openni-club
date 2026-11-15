@@ -44,6 +44,9 @@ Finder get authAction => find.descendant(
   of: find.byType(AuthPage),
   matching: find.byType(FilledButton),
 );
+Finder get backAction => find.byWidgetPredicate(
+  (widget) => widget is IconButton && widget.tooltip == '返回',
+);
 
 http.Response jsonResponse(Object data, {int status = 200}) => http.Response(
   jsonEncode(data),
@@ -223,7 +226,7 @@ void main() {
     final welcomeState = tester.state(find.byType(AuthPage));
     await tapAuthAction(tester);
     expect(tester.widget<AuthPage>(find.byType(AuthPage)).kind, 'login');
-    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+    await tester.tap(backAction);
     await tester.pumpAndSettle();
 
     expect(tester.widget<AuthPage>(find.byType(AuthPage)).kind, 'welcome');
@@ -599,7 +602,7 @@ void main() {
       ]);
       expect(tester.widget<FilledButton>(authAction).onPressed, isNull);
 
-      await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+      await tester.tap(backAction);
       await tester.pumpAndSettle();
       expect(find.byType(AuthPage), findsOneWidget);
       expect(phoneField, findsNothing);
@@ -649,7 +652,8 @@ void main() {
                 baseUrl: 'https://club.example/api/v1',
                 appMode: 'production',
                 persist: false,
-                clock: () => DateTime.utc(2030, 1, 1, 12),
+                // 北京时间当天 13:00，接口的 20:00 时段仍在未来。
+                clock: () => DateTime.utc(2030, 1, 2, 5),
                 wechat: sdk,
                 client: MockClient((request) async {
                   requests.add(request);

@@ -12,7 +12,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "home",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
   },
   {
     "id": "services",
@@ -27,7 +32,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
   },
   {
     "id": "service",
@@ -42,7 +52,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "service",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
   },
   {
     "id": "service_120",
@@ -57,7 +72,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "service_120",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
   },
   {
     "id": "players",
@@ -72,7 +92,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "players",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
   },
   {
     "id": "player",
@@ -87,7 +112,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "player",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 10
   },
   {
     "id": "booking",
@@ -102,7 +132,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
   },
   {
     "id": "checkout",
@@ -117,7 +152,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "checkout",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 10
   },
   {
     "id": "orders",
@@ -132,7 +172,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "orders",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
   },
   {
     "id": "order",
@@ -147,7 +192,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "order",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
   },
   {
     "id": "support",
@@ -162,7 +212,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "support",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
   },
   {
     "id": "profile",
@@ -177,7 +232,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "profile",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
   },
   {
     "id": "announcements",
@@ -192,7 +252,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "announcements",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
   },
   {
     "id": "settings",
@@ -207,7 +272,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "settings",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
   },
   {
     "id": "notifications",
@@ -222,7 +292,12 @@
     "stateGroup": "empty",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "notifications",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
   },
   {
     "id": "member",
@@ -237,7 +312,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "member",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
   },
   {
     "id": "member_orders",
@@ -252,7 +332,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "member_orders",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
   },
   {
     "id": "member_order",
@@ -267,7 +352,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "member_order",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
   },
   {
     "id": "delivery",
@@ -282,7 +372,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "delivery",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
   },
   {
     "id": "member_notifications",
@@ -297,7 +392,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "member_notifications",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
   },
   {
     "id": "availability",
@@ -312,7 +412,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "availability",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
   },
   {
     "id": "earnings",
@@ -327,7 +432,12 @@
     "stateGroup": "ready",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "earnings",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
   },
   {
     "id": "welcome",
@@ -342,7 +452,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "welcome",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
   },
   {
     "id": "login",
@@ -357,7 +472,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "login",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
   },
   {
     "id": "phone",
@@ -372,7 +492,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "phone",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
   },
   {
     "id": "code",
@@ -387,7 +512,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "code",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
   },
   {
     "id": "code_error",
@@ -402,7 +532,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "code_error",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
   },
   {
     "id": "code_verifying",
@@ -418,7 +553,12 @@
     "demo": "/demo/?screen=code",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "code_verifying",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
   },
   {
     "id": "home_loading",
@@ -434,7 +574,12 @@
     "demo": "/demo/?screen=home",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "home_loading",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 12
   },
   {
     "id": "home_error",
@@ -449,7 +594,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "home_error",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 13
   },
   {
     "id": "orders_empty",
@@ -464,7 +614,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "orders_empty",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
   },
   {
     "id": "orders_guest",
@@ -479,7 +634,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "orders_guest",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
   },
   {
     "id": "privacy",
@@ -494,7 +654,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "privacy",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
   },
   {
     "id": "terms",
@@ -509,7 +674,12 @@
     "height": 1688,
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "terms",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
   },
   {
     "id": "home_android",
@@ -525,6 +695,351 @@
     "platform": "android",
     "logicalWidth": 390,
     "logicalHeight": 844,
-    "pixelRatio": 2
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "home_android",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。Android主题控件预览。",
+    "device": "Android theme preview",
+    "flowOrder": 14
+  },
+  {
+    "id": "following",
+    "title": "本机关注",
+    "role": "customer",
+    "flow": "account",
+    "description": "从个人中心打开本机关注，可查看全部陪练或清除筛选。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "following-empty",
+    "stateGroup": "empty",
+    "width": 780,
+    "height": 1688,
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "route",
+    "previewScreen": "following",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
+  },
+  {
+    "id": "services_search",
+    "title": "搜索复盘服务",
+    "role": "customer",
+    "flow": "discover",
+    "description": "输入“复盘”后仅显示匹配服务。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "filtered",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 3
+  },
+  {
+    "id": "services_search_empty",
+    "title": "服务搜索无结果",
+    "role": "customer",
+    "flow": "discover",
+    "description": "输入不存在关键词后的真实空状态，可清除筛选。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "search-empty",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "empty",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
+  },
+  {
+    "id": "services_game_filter",
+    "title": "按游戏筛选服务",
+    "role": "customer",
+    "flow": "discover",
+    "description": "选择无畏契约，仅显示该游戏的服务。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "game-filter",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
+  },
+  {
+    "id": "players_search",
+    "title": "搜索俱乐部陪练",
+    "role": "customer",
+    "flow": "discover",
+    "description": "从服务切换陪练目录并搜索阿屿。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "player-search",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 8
+  },
+  {
+    "id": "players_following_empty",
+    "title": "本机关注为空",
+    "role": "customer",
+    "flow": "discover",
+    "description": "点击本机关注筛选后的真实空状态。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "following-empty",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "empty",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "services",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 9
+  },
+  {
+    "id": "player_followed",
+    "title": "已关注陪练",
+    "role": "customer",
+    "flow": "discover",
+    "description": "点击人物主页爱心后更新本机关注状态。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "followed",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "player",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 11
+  },
+  {
+    "id": "booking_player_sheet",
+    "title": "选择预约陪练",
+    "role": "customer",
+    "flow": "booking",
+    "description": "点击选择意向队友后显示可选成员弹层。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "choose-player",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
+  },
+  {
+    "id": "booking_selected_variant",
+    "title": "预约120分钟规格",
+    "role": "customer",
+    "flow": "booking",
+    "description": "选择阿屿及120分钟规格，合计72元。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "selected-variant",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
+  },
+  {
+    "id": "booking_today_slot",
+    "title": "选择今天的时段",
+    "role": "customer",
+    "flow": "booking",
+    "description": "读取当日可约排班并选择14:00，过滤过期时段。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "today-slot",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 6
+  },
+  {
+    "id": "booking_contact_filled",
+    "title": "填写预约联系方式",
+    "role": "customer",
+    "flow": "booking",
+    "description": "填写演示联系方式及预约备注后的状态。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "contact-filled",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 7
+  },
+  {
+    "id": "booking_review_ready",
+    "title": "核对真实预约选择",
+    "role": "customer",
+    "flow": "booking",
+    "description": "经选人、规格、时间和联系信息进入核对页，尚未提交。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "review",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 8
+  },
+  {
+    "id": "booking_consent_needed",
+    "title": "预约协议校验",
+    "role": "customer",
+    "flow": "booking",
+    "description": "未勾选协议提交时保留预约输入并显示校验提示。",
+    "source": "apps/mobile/lib/booking.dart",
+    "state": "consent-required",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "error",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "booking",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 9
+  },
+  {
+    "id": "order_created",
+    "title": "提交本地演示预约",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "同意协议并提交本地演示预约，待俱乐部安排，不声称付款。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "awaiting-assignment",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "orders",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 1
+  },
+  {
+    "id": "order_cancel_confirm",
+    "title": "取消预约确认",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "点击取消预约后显示真实确认弹窗。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "cancel-confirm",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "orders",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 4
+  },
+  {
+    "id": "orders_finished",
+    "title": "筛选已结束订单",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "确认取消演示预约后，在已结束筛选中查看该订单。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "finished-filter",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "orders",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 5
+  },
+  {
+    "id": "player_booking_sheet",
+    "title": "选择陪练的服务规格",
+    "role": "customer",
+    "flow": "booking",
+    "description": "从人物主页点击预约TA后主动选择游戏服务与规格，不静默选取第一项。",
+    "source": "apps/mobile/lib/discover.dart",
+    "state": "service-choice",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "player",
+    "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
+    "device": "iPhone preview",
+    "flowOrder": 2
   }
 ]

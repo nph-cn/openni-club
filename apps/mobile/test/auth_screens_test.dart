@@ -1,7 +1,6 @@
 import 'capture_2x.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:openni_club/main.dart';
@@ -12,14 +11,7 @@ import 'catalog_media_cache.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  setUpAll(() async {
-    await (FontLoader(
-      'NotoSansSC',
-    )..addFont(rootBundle.load('assets/fonts/NotoSansSC.ttf'))).load();
-    await (FontLoader(
-      'MaterialIcons',
-    )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
-  });
+  setUpAll(loadCaptureFonts);
   for (final screen in stateScreenNames) {
     testWidgets('auth state: $screen', (tester) async {
       enableCaptureShadows();
@@ -50,7 +42,11 @@ void main() {
       await tester.pumpWidget(
         RepaintBoundary(
           key: key,
-          child: OpenNIApp(repository: repo, initialScreen: screen),
+          child: OpenNIApp(
+            repository: repo,
+            initialScreen: screen,
+            previewDevice: true,
+          ),
         ),
       );
       if (screen == 'code_verifying') {

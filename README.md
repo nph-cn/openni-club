@@ -8,9 +8,10 @@ Flutter App、微信小程序和运营后台。
 
 ## 最近验收 · 2026-11-16
 
-- Flutter 90 项全量测试、Node 102 项测试通过；本次在 Windows 验证 Web，已完成一轮正式站点构建。历史 Android debug、iOS 未签名 Release 构建不算本次重新验收。
-- 已更新 35 张 Flutter 两倍分辨率截图（780×1688）和 12 张后台 JPG。小程序 16 页 UI 已更新，但图库中的 24 张小程序截图仍为上一版，待重新采集。
-- 玻璃导航由 Flutter 实现，不是原生 Apple Liquid Glass。图库与后台导航已检查；品牌向导四步及配置 ZIP 导出通过，App 已点击验证至预约核对页，未提交订单。桌面顶栏、导航和预约操作栏已居中对齐并经最终构建复查，未进行本轮真机验收。
+- App 预览增加 iPhone 时间、灵动岛和手势条，Cupertino 导航图标、搜索框、分组设置与玻璃弹层统一；设备外观仅用于预览，真机继续使用系统状态栏。玻璃材质由 Flutter 绘制，不是系统原生 Apple Liquid Glass。
+- App 图库从 35 张扩展为 52 张 780×1688 运行截图，包含 16 个实际操作后的搜索、关注、预约及订单状态；可按流程顺序浏览、切换范围、下载原图。另保留 12 张新版后台 JPG 和 24 张上一版小程序图，总计 88 张。小程序截图尚未同步最新 UI。
+- 找服务与找陪练支持独立搜索和筛选；关注入口可点击；预约保留服务、规格和陪练，支持当天未过期的时段；接口订单再次预约保留原规格。当前代码的本机测试与浏览器验收结果详见下方记录。上一提交的 Android debug、iOS 未签名构建已成功，不代表这次代码已完成真机验收。
+- 最终本机检查：Flutter 126/126、Node 108/108 通过，静态分析无问题；最终 Web 编译及 88 图站点构建成功。浏览器已验证搜索陪练、打开服务规格弹层，并保留 120 分钟及 ¥72 进入预约。
 
 详见[功能与上线状态](docs/00-status.md)、[功能回归记录](docs/qa/2026-11-16-api-integration-review.md)和[界面验收记录](docs/qa/2026-11-16-ui-review.md)。
 
@@ -84,7 +85,7 @@ scripts/doctor.mjs   不输出密钥的环境检查
 
 ## 开发与许可
 
-运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart` 和 `flutter build web`。生成页面截图使用 `flutter test test/screenshots_test.dart --update-goldens`。CI 只做检查，不会自动发布应用或使用你的生产密钥。
+运行 API 测试：`node --test services/api/test/*.test.mjs`，支付适配测试：`node --test services/integrations/test/*.test.mjs`。在 `apps/mobile` 运行 `flutter analyze`、`flutter test` 和 `flutter build web --base-href /demo/ --no-web-resources-cdn`。更新完整截图使用 `flutter test test/review_screens_test.dart test/screenshots_test.dart test/auth_screens_test.dart test/journey_screens_test.dart --update-goldens`，逐张检查新图后再提交。CI 只做检查，不会自动发布应用或使用你的生产密钥。
 
 品牌生成与发布状态测试：`node --test scripts/test/*.test.mjs`。仓库展示使用 `config/demo.club.json` 的虚构北岸品牌；`club.example.json` 保留为最简客户模板。自己的公开配置与秘密配置必须分开保存。
 

@@ -1,17 +1,27 @@
-import {labels, stateGroup, matchScreens, groupFlows, parseLocation, gallerySearch} from './gallery-model.js';
+import {labels, stateGroup, matchScreens, groupFlows, parseLocation, gallerySearch, browseSequence, galleryCounts, appPreviewUrl, screenPreview} from './gallery-model.js';
 const $ = selector => document.querySelector(selector);
 const names = labels;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 let screens = [], loadError = false, currentId = '';
+let detailScope = 'results';
 let {platform, role, flow, state, query, view, screenId: initialScreen} = parseLocation(location.search);
 let favoriteOnly = false;
 let favorites;
-try { const stored=JSON.parse(localStorage.getItem('openni:favorites') || '[]'); favorites=new Set(Array.isArray(stored)?stored:[]); }
+try { const stored=JSON.parse(localStorage.getItem('openni:favorites') || '[]'); favorites=new Set(Array.isArray(stored)?stored.filter(id=>typeof id==='string'):[]); }
 catch { favorites = new Set(); }
 const dialog = $('#detail');
 const node = (tag, text, className) => { const item=document.createElement(tag); if(text!==undefined)item.textContent=text; if(className)item.className=className; return item; };
 const filters = () => ({platform, role, flow, state, query, view, favoriteOnly});
 const matched = () => matchScreens(screens, filters(), favorites);
+const detailList = () => browseSequence(matched(), currentId, detailScope);
+for(const link of document.querySelectorAll('a[href^="/demo/"]')) link.href=appPreviewUrl(link.getAttribute('href'));
+const browseMode=node('div',undefined,'detail-browse-mode');browseMode.setAttribute('role','group');browseMode.setAttribute('aria-label','浏览范围');
+for(const [scope,label] of [['flow','当前流程'],['results','筛选结果']]) {
+ const button=node('button',label);button.type='button';button.dataset.browseScope=scope;
+ button.onclick=()=>{detailScope=scope;const current=screens.find(screen=>screen.id===currentId);if(current)show(current);};browseMode.append(button);
+}
+$('#detail-sequence').before(browseMode);
+const captureInfo=node('p',undefined,'detail-capture');captureInfo.hidden=true;$('#detail-title').after(captureInfo);
 function locationFor(screenId='') { return `${location.pathname}${gallerySearch(filters(),screenId)}${location.hash}`; }
 function writeLocation(screenId='') { history.replaceState(null,'',locationFor(screenId)); }
 function buttons(key,value) {
@@ -26,19 +36,19 @@ function screenImage(screen) {
  img.onload=()=>img.dataset.loaded='true'; img.onerror=()=>{img.dataset.loaded='error';img.alt=`${screen.title} · 图片未加载`;}; img.src=screen.image; return img;
 }
 function render({sync=true}={}) {
- const shown=matched(); syncControls();
+ const shown=matched(),counts=galleryCounts(screens,shown,favorites); syncControls();
  renderSidebar();
- $('#result-count').textContent=`${shown.length} 个界面`; $('#favorites span').textContent=favorites.size;
+ $('#result-count').textContent=`本端 ${counts.shown} / ${counts.platforms[platform]} 个界面 · 全站 ${counts.total}`; $('#favorites span').textContent=counts.favorites;
  $('#gallery').replaceChildren(); $('#flow-gallery').replaceChildren(); $('#gallery').hidden=view!=='screens'; $('#flow-gallery').hidden=view!=='flows';
  $('#empty').hidden=shown.length>0; $('#empty h3').textContent='没有找到这个界面'; $('#empty p').textContent='试试其他筛选条件。'; $('#reset-empty').textContent='清除筛选';
  $('#gallery').classList.toggle('desktop',platform==='admin');
- $('#view-heading').replaceChildren(node('span',view==='flows'?'完整流程':favoriteOnly?'我的收藏':'界面图库','heading-text'),Object.assign(node('span',String(favoriteOnly?shown.length:screens.length)),{id:'total-count'}));
+ $('#view-heading').replaceChildren(node('span',view==='flows'?'流程浏览':favoriteOnly?'我的收藏':'界面图库','heading-text'),Object.assign(node('span',String(counts.shown)),{id:'total-count'}));
  const active=[role!=='all'?names.role[role]:null,flow!=='all'?names.flow[flow]:null,state!=='all'?names.state[state]:null,query?`“${query}”`:null,favoriteOnly?'已收藏':null].filter(Boolean);
  $('#active-filters').hidden=!active.length; $('#filter-summary').textContent=active.join(' / ');
  if(view==='flows') renderFlows(shown);
  else for(const screen of shown) {
   const article=node('article',undefined,'screen-card'),open=node('button',undefined,'screen-open'),mat=node('div',undefined,'screen-mat');
-  open.setAttribute('aria-label',`查看${screen.title}截图与详情`); mat.append(screenImage(screen)); open.append(mat); open.onclick=()=>show(screen);
+  open.setAttribute('aria-label',`查看${screen.title}截图与详情`); mat.append(screenImage(screen)); open.append(mat); open.onclick=()=>show(screen,{scope:'results'});
   const caption=node('div',undefined,'screen-caption'),text=node('div'); text.append(node('h3',screen.title));
   const group=stateGroup(screen); text.append(node('p',group==='ready'?(names.flow[screen.flow]||'产品界面'):names.state[group]));
   const bookmark=node('button',undefined,'bookmark'+(favorites.has(screen.id)?' saved':'')); bookmark.setAttribute('aria-label',`${favorites.has(screen.id)?'取消收藏':'收藏'}${screen.title}`); bookmark.setAttribute('aria-pressed',String(favorites.has(screen.id)));
@@ -50,32 +60,38 @@ function render({sync=true}={}) {
 }
 function renderFlows(shown) {
  for(const group of groupFlows(shown)) {
-  const section=node('section',undefined,'flow-item'),head=node('header'); section.dataset.platform=platform; head.append(node('h3',group.name),node('span',`${group.screens.length} 个界面`));
+  const section=node('section',undefined,'flow-item'),head=node('header'); section.dataset.platform=platform; head.append(node('h3',group.name));
+  const tools=node('div',undefined,'flow-actions'),start=node('button','顺序浏览 →');start.type='button';start.setAttribute('aria-label',`顺序浏览${group.name}，共 ${group.screens.length} 页`);start.onclick=()=>show(group.screens[0],{scope:'flow'});tools.append(node('span',`${group.screens.length} 个界面`),start);head.append(tools);
   const row=node('div',undefined,'flow-screens'); row.setAttribute('role','group'); row.setAttribute('aria-label',group.name);
-  for(const [index,screen] of group.screens.entries()) { const button=node('button',undefined,'flow-screen');button.setAttribute('aria-label',`查看${screen.title}截图与详情`);button.append(screenImage(screen),node('span',`${String(index+1).padStart(2,'0')}  ${screen.title}`));button.onclick=()=>show(screen);row.append(button); }
+  for(const [index,screen] of group.screens.entries()) { const button=node('button',undefined,'flow-screen');button.setAttribute('aria-label',`查看第 ${index+1} 页：${screen.title}`);button.append(screenImage(screen),node('span',`${String(index+1).padStart(2,'0')}  ${screen.title}`));button.onclick=()=>show(screen,{scope:'flow'});row.append(button); }
   section.append(head,row); $('#flow-gallery').append(section);
  }
 }
-function show(screen) {
+function show(screen,{scope=detailScope}={}) {
+ detailScope=scope;
  const sequenceHadFocus=$('#detail-sequence').contains(document.activeElement);
  const sequenceScroll=$('#detail-sequence').scrollLeft;
  currentId=screen.id; $('#detail-title').textContent=screen.title; $('#detail-platform').textContent=names.platform[screen.platform];
+ captureInfo.textContent=screen.device==='iPhone preview'?`iPhone 预览 · ${screen.captureKind==='interaction'?'交互状态截图':'运行界面截图'} · 非真机拍摄`:screen.capture||'';captureInfo.title=screen.capture||'';captureInfo.hidden=!captureInfo.textContent;
  const group=stateGroup(screen); $('#detail-state').hidden=group==='ready'; $('#detail-state').textContent=names.state[group]; $('#detail-flow').textContent=names.flow[screen.flow]||'产品界面';
  const source=screen.source; $('#detail-source').replaceChildren(Object.assign(node('a',source+' ↗'),{href:'https://github.com/nph-cn/openni-club/blob/main/'+source,target:'_blank',rel:'noreferrer'}));
- const img=$('#detail-img'); img.hidden=false; $('#detail-image-error').hidden=true; img.alt=screen.title;
+ const img=$('#detail-img'); img.hidden=false; $('#detail-image-error').hidden=true; img.alt=screen.title;img.width=screen.width||390;img.height=screen.height||844;
  img.onload=()=>{img.hidden=false;$('#detail-image-error').hidden=true;}; img.onerror=()=>{img.hidden=true;$('#detail-image-error').hidden=false;}; img.src=screen.image;
- $('#detail-demo').href=screen.demo||(screen.platform==='admin'?'/admin/':screen.platform==='mini'?'/guide/05-wechat-release.html':`/demo/?screen=${encodeURIComponent(screen.id)}`);
- $('#detail-demo').textContent=screen.platform==='mini'?'查看小程序运行方式 ↗':screen.platform==='admin'?'打开后台 ↗':'打开 App ↗'; $('#detail-download').href=screen.image;
+ const preview=screenPreview(screen);$('#detail-demo').href=preview.href;$('#detail-demo').textContent=preview.label; $('#detail-download').href=screen.image;
  dialog.classList.toggle('wide-detail',screen.platform==='admin'); dialog.classList.remove('zoomed'); $('#toggle-zoom').textContent='放大'; $('#toggle-zoom').setAttribute('aria-label','放大截图'); $('#toggle-zoom').setAttribute('aria-pressed','false'); $('#copy-link').textContent='复制链接';
- const list=matched(),index=list.findIndex(s=>s.id===screen.id); $('#detail-position').textContent=`${index+1} / ${list.length}`; $('#previous-screen').disabled=index<=0; $('#next-screen').disabled=index>=list.length-1;
+ const list=detailList(),index=list.findIndex(s=>s.id===screen.id); $('#detail-position').textContent=`${detailScope==='flow'?'本流程':'筛选结果'} ${index+1} / ${list.length}`; $('#previous-screen').disabled=index<=0; $('#next-screen').disabled=index>=list.length-1;
+ browseMode.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.browseScope===detailScope)));
  const sequence=$('#detail-sequence');sequence.replaceChildren();
- for(const related of list.filter(item=>item.flow===screen.flow)) {
-  const button=node('button');button.dataset.screen=related.id;button.setAttribute('aria-label',`查看${related.title}`);button.setAttribute('aria-current',String(related.id===screen.id));button.title=related.title;
-  const thumb=screenImage(related);thumb.alt='';button.append(thumb);button.onclick=()=>show(related);sequence.append(button);
+ sequence.setAttribute('aria-label',detailScope==='flow'?'当前流程的界面':'当前筛选结果的界面');
+ for(const [step,related] of list.entries()) {
+  const button=node('button');button.dataset.screen=related.id;button.setAttribute('aria-label',`第 ${step+1} 页：${related.title}`);button.setAttribute('aria-current',String(related.id===screen.id));button.title=related.title;
+  const thumb=screenImage(related);thumb.alt='';button.append(thumb,node('span',`${String(step+1).padStart(2,'0')} ${related.title}`));button.onclick=()=>show(related);sequence.append(button);
  }
  if(!dialog.open)dialog.showModal(); $('.detail-body').scrollTop=0; $('.detail-stage').scrollTop=0; writeLocation(screen.id);
  sequence.scrollLeft=sequenceScroll;
- if(sequenceHadFocus){const current=sequence.querySelector('[aria-current=true]');current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}
+ const current=sequence.querySelector('[aria-current=true]');
+ if(sequenceHadFocus)current?.focus({preventScroll:true});
+ if(current){const left=current.offsetLeft-sequence.offsetLeft,right=left+current.offsetWidth;if(left<sequence.scrollLeft)sequence.scrollLeft=left;else if(right>sequence.scrollLeft+sequence.clientWidth)sequence.scrollLeft=right-sequence.clientWidth;}
 }
 function renderSidebar(){
  const sidebar=$('#flow-sidebar'),scroll=sidebar.scrollLeft,focusedFlow=sidebar.contains(document.activeElement)?document.activeElement.dataset.flow:null;sidebar.replaceChildren(node('h3','浏览流程'));
@@ -86,18 +102,18 @@ function renderSidebar(){
   button.onclick=()=>{flow=key;render();};sidebar.append(button);
  }
  sidebar.append(node('div',undefined,'sidebar-divider'));
- const demo=node('a','打开 App ↗');demo.href='/demo/';sidebar.append(demo);
+ const demo=node('a','打开 App ↗');demo.href=appPreviewUrl('/demo/');sidebar.append(demo);
  const guide=node('a','版本与功能状态 ↗');guide.href='/guide/00-status.html';sidebar.append(guide);
  sidebar.scrollLeft=scroll;
  if(focusedFlow){const current=Array.from(sidebar.querySelectorAll('button')).find(button=>button.dataset.flow===focusedFlow);current?.focus({preventScroll:true});current?.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}
 }
-function next(offset) {const list=matched(),index=list.findIndex(s=>s.id===currentId);if(list[index+offset])show(list[index+offset]);}
+function next(offset) {const list=detailList(),index=list.findIndex(s=>s.id===currentId);if(list[index+offset])show(list[index+offset]);}
 $('#close-detail').onclick=()=>dialog.close(); dialog.addEventListener('close',()=>{currentId='';writeLocation();});
 $('#previous-screen').onclick=()=>next(-1); $('#next-screen').onclick=()=>next(1);
-dialog.addEventListener('keydown',event=>{if(event.key==='ArrowLeft'){event.preventDefault();next(-1);}if(event.key==='ArrowRight'){event.preventDefault();next(1);}});
+dialog.addEventListener('keydown',event=>{if(event.altKey||event.ctrlKey||event.metaKey||/INPUT|TEXTAREA|SELECT/.test(event.target.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();next(-1);}if(event.key==='ArrowRight'){event.preventDefault();next(1);}});
 dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
 $('#toggle-zoom').onclick=()=>{const zoomed=dialog.classList.toggle('zoomed');$('#toggle-zoom').textContent=zoomed?'适合屏幕':'放大';$('#toggle-zoom').setAttribute('aria-label',zoomed?'缩小至适合屏幕':'放大截图');$('#toggle-zoom').setAttribute('aria-pressed',String(zoomed));};
-$('#copy-link').onclick=async()=>{try{const url=new URL(location.href);url.search=gallerySearch({platform},currentId);url.hash='gallery-region';await navigator.clipboard.writeText(url.href);$('#copy-link').textContent='已复制';}catch{$('#copy-link').textContent='请复制地址栏';}};
+$('#copy-link').onclick=async()=>{try{const url=new URL(location.href);url.search=gallerySearch({...filters(),view:detailScope==='flow'?'flows':'screens'},currentId);url.hash='gallery-region';await navigator.clipboard.writeText(url.href);$('#copy-link').textContent='已复制';}catch{$('#copy-link').textContent='请复制地址栏';}};
 $('#retry-image').onclick=()=>{const screen=screens.find(s=>s.id===currentId);if(screen)show(screen);};
 document.querySelectorAll('[data-platform]').forEach(button=>button.onclick=()=>{platform=button.dataset.platform;if(role!=='all'&&!screens.some(screen=>screen.platform===platform&&screen.role===role))role='all';render();});
 function setRole(value) {role=value;if(role==='operator')platform='admin';else if(role==='member'&&platform==='admin')platform='flutter';render();}
@@ -115,7 +131,7 @@ async function loadScreens() {
   const response=await fetch('/screens.json');if(!response.ok)throw Error('index');const data=await response.json();if(!Array.isArray(data))throw Error('index');screens=data;
   for(const button of document.querySelectorAll('[data-platform]')){const count=screens.filter(s=>s.platform===button.dataset.platform).length;button.hidden=!count;button.querySelector('span').textContent=count;}
   const requested=screens.find(screen=>screen.id===initialScreen);if(requested){platform=requested.platform;if(!matched().includes(requested)){role='all';flow='all';state='all';query='';favoriteOnly=false;}}
-  render();if(requested)show(requested);initialScreen='';
+  render();if(requested)show(requested,{scope:view==='flows'?'flow':'results'});initialScreen='';
  } catch {loadError=true;$('#empty').hidden=false;$('#empty h3').textContent='界面目录未能加载';$('#empty p').textContent='';$('#reset-empty').textContent='重新加载';}
  finally {$('#gallery-loading').hidden=true;$('#gallery').setAttribute('aria-busy','false');}
 }
@@ -123,8 +139,8 @@ syncControls(); await loadScreens();
 
 // Role changes show actual runtime captures; no invented dashboard or payment state.
 const stageRoles={
- customer:{screenId:'home',alt:'北岸电竞玩家首页真实运行截图',caption:'用户首页',browse:'查看用户端界面',demo:'/demo/'},
- member:{screenId:'member',alt:'北岸电竞成员工作台真实运行截图',caption:'成员工作台',browse:'查看成员端界面',demo:'/demo/?screen=member'},
+ customer:{screenId:'home',alt:'北岸电竞玩家首页真实运行截图',caption:'用户首页',browse:'查看用户端界面',demo:'/demo/?device=iphone'},
+ member:{screenId:'member',alt:'北岸电竞成员工作台真实运行截图',caption:'成员工作台',browse:'查看成员端界面',demo:'/demo/?screen=member&device=iphone'},
  operator:{screenId:'admin-dispatch',alt:'北岸电竞运营派单工作台真实运行截图',caption:'派单工作台',browse:'查看后台界面',demo:'/admin/'}
 };
 let stageRequest=0;

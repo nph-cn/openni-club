@@ -535,8 +535,19 @@ class _OrderPageState extends State<OrderPage> {
         await confirm(o);
       case 'completed':
       case 'cancelled':
+        final snapshot = o['serviceSnapshot'];
+        final variantId =
+            o['variantId'] ?? (snapshot is Map ? snapshot['variantId'] : null);
         context.push(
-          '/book?service=${o['serviceId']}${o['variantId'] == null ? '' : '&variant=${o['variantId']}'}${o['assignedPlayerId'] == null ? '' : '&player=${o['assignedPlayerId']}'}',
+          Uri(
+            path: '/book',
+            queryParameters: {
+              'service': '${o['serviceId']}',
+              if (variantId != null) 'variant': '$variantId',
+              if (o['assignedPlayerId'] != null)
+                'player': '${o['assignedPlayerId']}',
+            },
+          ).toString(),
         );
       default:
         await textSheet(

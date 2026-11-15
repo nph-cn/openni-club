@@ -31,7 +31,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(tester.getTopLeft(find.text('找服务')).dx, inset + 22);
+      expect(tester.getTopLeft(find.text('找陪练').first).dx, inset + 22);
       await tester.pumpWidget(
         OpenNIApp(
           key: ValueKey('service-$width'),
@@ -69,17 +69,17 @@ void main() {
       OpenNIApp(repository: repo, initialScreen: 'services'),
     );
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '不存在的服务');
+    await tester.enterText(find.byType(EditableText), '不存在的服务');
     await tester.pumpAndSettle();
     expect(find.text('没有匹配的服务'), findsOneWidget);
     await tester.tap(find.byTooltip('清除搜索'));
     await tester.pumpAndSettle();
     expect(find.text('没有匹配的服务'), findsNothing);
     expect(
-      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      tester.widget<EditableText>(find.byType(EditableText)).controller.text,
       isEmpty,
     );
-    await tester.tap(find.byTooltip('首页'));
+    await tester.tap(find.text('首页'));
     await tester.pumpAndSettle();
     expect(find.text(repo.clubName), findsOneWidget);
     expect(tester.takeException(), isNull);
