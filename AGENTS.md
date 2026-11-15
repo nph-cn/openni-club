@@ -13,7 +13,8 @@ Avoid unnecessary secondary labels and descriptions. Let the layout do the expla
 - Keep source MIT licensed. Third-party product screenshots are research references, not assets to redistribute in the application.
 
 - The platform brand is always written **OpenNI**. Domain/package names remain lowercase; independently configured club names are not overwritten.
-- Current approved reference direction is Codrops/Grok: graphite brand site, cool neutral product UI, precise typography and meaningful product interaction. The former cream/sage visual lock is superseded.
+- 最新网站方向（2026-11-16）：OpenNI 官网采用实际查看过的 Mobbin 公开官网排布：白底、黑色主动作、大尺寸完整截图、轻量标签和清晰的流程浏览。此项覆盖旧 graphite 巨型字标首页；App 仍使用冷中性色与清晰的玻璃导航层。
+- `/delta/` 是独立的三角洲行动视觉专题，参考 KPR 的分层大画面与滚动叙事。保持 OpenNI 品牌与真实 App 入口，明确非游戏官网；官方游戏美术不属于 MIT 代码授权。
 
 - Latest user feedback: keep the website direction, remove slogans/metaphors (including 主场), use direct product labels. App visual design must show real game imagery and configurable banner placements, not contour placeholders. Avoid repeated demo badges; disclose sample data centrally and preserve honest payment/account boundaries. Beginner guidance belongs in a conventional searchable documentation layout.
 

@@ -65,6 +65,28 @@ export function appPreviewUrl(href) {
   return url.pathname + url.search + url.hash;
 }
 
+const repositorySourceRoot = 'https://github.com/nph-cn/openni-club/blob/';
+
+// 生产默认 main；预览构建显式传入分支或提交，避免把截图链接到旧代码。
+export function sourceBaseForRef(ref = 'main') {
+  const parts = (String(ref).trim() || 'main').split('/');
+  if (parts.some(part => !part || part === '.' || part === '..')) throw Error('源码分支名称无效');
+  return repositorySourceRoot + parts.map(encodeURIComponent).join('/') + '/';
+}
+
+export function sourceHref(screen) {
+  let base = sourceBaseForRef();
+  try {
+    const url = new URL(screen.sourceBase);
+    if (url.origin === 'https://github.com' && !url.username && !url.password &&
+        url.pathname.startsWith('/nph-cn/openni-club/blob/') && url.pathname.endsWith('/') &&
+        !url.search && !url.hash) base = url.href;
+  } catch { /* 旧清单没有构建来源时，兼容 main。 */ }
+  const parts = String(screen.source || '').replaceAll('\\','/').split('/');
+  if (parts.some(part => !part || part === '.' || part === '..')) return base;
+  return base + parts.map(encodeURIComponent).join('/');
+}
+
 export function screenPreview(screen) {
   if (screen.platform === 'admin') return {href: screen.demo || '/admin/', label:'打开后台 ↗'};
   if (screen.platform === 'mini') return {href: screen.demo || '/guide/05-wechat-release.html', label:'查看小程序运行方式 ↗'};

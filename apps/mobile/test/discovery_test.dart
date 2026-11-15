@@ -122,6 +122,8 @@ void main() {
     await repo.toggleFollow('p2');
     await tester.pumpAndSettle();
     expect(find.text('还没有本机关注'), findsOneWidget);
+    final selectedLabel = tester.widget<Text>(find.text('本机关注'));
+    expect(selectedLabel.style?.color, onBrand(repo));
     await tester.tap(find.text('查看全部陪练'));
     await tester.pumpAndSettle();
     expect(shownPlayers(tester), ['p1', 'p2', 'p3', 'p4']);

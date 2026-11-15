@@ -217,7 +217,7 @@
     "previewScreen": "support",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 6
+    "flowOrder": 7
   },
   {
     "id": "profile",
@@ -257,7 +257,7 @@
     "previewScreen": "announcements",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 4
+    "flowOrder": 7
   },
   {
     "id": "settings",
@@ -277,7 +277,7 @@
     "previewScreen": "settings",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 5
+    "flowOrder": 8
   },
   {
     "id": "notifications",
@@ -297,7 +297,7 @@
     "previewScreen": "notifications",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 3
+    "flowOrder": 5
   },
   {
     "id": "member",
@@ -357,7 +357,7 @@
     "previewScreen": "member_order",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 3
+    "flowOrder": 5
   },
   {
     "id": "delivery",
@@ -377,7 +377,7 @@
     "previewScreen": "delivery",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 4
+    "flowOrder": 6
   },
   {
     "id": "member_notifications",
@@ -397,7 +397,7 @@
     "previewScreen": "member_notifications",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 5
+    "flowOrder": 8
   },
   {
     "id": "availability",
@@ -417,7 +417,7 @@
     "previewScreen": "availability",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 6
+    "flowOrder": 9
   },
   {
     "id": "earnings",
@@ -437,7 +437,7 @@
     "previewScreen": "earnings",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 7
+    "flowOrder": 10
   },
   {
     "id": "welcome",
@@ -619,7 +619,7 @@
     "previewScreen": "orders_empty",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 7
+    "flowOrder": 12
   },
   {
     "id": "orders_guest",
@@ -659,7 +659,7 @@
     "previewScreen": "privacy",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 6
+    "flowOrder": 9
   },
   {
     "id": "terms",
@@ -679,7 +679,7 @@
     "previewScreen": "terms",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 7
+    "flowOrder": 10
   },
   {
     "id": "home_android",
@@ -720,7 +720,7 @@
     "previewScreen": "following",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 2
+    "flowOrder": 4
   },
   {
     "id": "services_search",
@@ -1000,7 +1000,7 @@
     "previewScreen": "orders",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 4
+    "flowOrder": 10
   },
   {
     "id": "orders_finished",
@@ -1020,7 +1020,7 @@
     "previewScreen": "orders",
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
-    "flowOrder": 5
+    "flowOrder": 11
   },
   {
     "id": "player_booking_sheet",
@@ -1041,5 +1041,245 @@
     "capture": "Flutter实际运行控件树，2倍分辨率；示例资料。设备外观仅用于预览，非iOS真机截图。",
     "device": "iPhone preview",
     "flowOrder": 2
+  },
+  {
+    "id": "member_orders_active",
+    "title": "成员服务中",
+    "role": "member",
+    "flow": "member",
+    "description": "按实际状态筛选服务，显示冻结规格与预计收入。",
+    "source": "apps/mobile/lib/member.dart",
+    "state": "member_orders_active",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "member_orders",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 3
+  },
+  {
+    "id": "member_orders_finished",
+    "title": "成员已结束",
+    "role": "member",
+    "flow": "member",
+    "description": "完成订单单独归档，不混入待接单任务。",
+    "source": "apps/mobile/lib/member.dart",
+    "state": "member_orders_finished",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "member_orders",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 4
+  },
+  {
+    "id": "delivery_filled",
+    "title": "填写交付记录",
+    "role": "member",
+    "flow": "member",
+    "description": "输入服务说明与凭证链接，并核对实际提交请求。",
+    "source": "apps/mobile/lib/member.dart",
+    "state": "delivery_filled",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "delivery",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 7
+  },
+  {
+    "id": "order_awaiting_confirmation",
+    "title": "核对服务交付",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "真实API提交后的订单，客户可核对服务记录。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "order_awaiting_confirmation",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "order",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 4
+  },
+  {
+    "id": "order_rating",
+    "title": "评价与确认完成",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "填写评价后确认，等待服务端返回完成状态。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "order_rating",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "order",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 5
+  },
+  {
+    "id": "order_completed",
+    "title": "服务完成与评价",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "显示服务端返回的评价内容和完成结果。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "order_completed",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "success",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "order",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 6
+  },
+  {
+    "id": "order_disputed",
+    "title": "售后处理中",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "提交后保留问题类型和说明，状态由API返回。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "order_disputed",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "order",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 9
+  },
+  {
+    "id": "profile_signed_in",
+    "title": "已登录个人中心",
+    "role": "customer",
+    "flow": "account",
+    "description": "展示账号身份与已有预约，不假设头像上传能力。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "profile_signed_in",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "profile",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 2
+  },
+  {
+    "id": "profile_edit_name",
+    "title": "修改账号昵称",
+    "role": "customer",
+    "flow": "account",
+    "description": "实际昵称编辑弹层，保留当前账号值。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "profile_edit_name",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "settings",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 3
+  },
+  {
+    "id": "notifications_inbox",
+    "title": "客户通知收件箱",
+    "role": "customer",
+    "flow": "account",
+    "description": "按日期分组，展示时间和未读状态，可进入关联订单。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "notifications_inbox",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "ready",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "notifications",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 6
+  },
+  {
+    "id": "support_validation",
+    "title": "售后说明校验",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "说明不完整时阻止提交，在表单内提示补充。",
+    "source": "apps/mobile/lib/main.dart",
+    "state": "support_validation",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "error",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "support",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 8
+  },
+  {
+    "id": "orders_retry",
+    "title": "订单加载失败与重试",
+    "role": "customer",
+    "flow": "fulfillment",
+    "description": "网络响应失败后提供重新加载，测试验证恢复真实订单。",
+    "source": "apps/mobile/lib/orders.dart",
+    "state": "orders_retry",
+    "width": 780,
+    "height": 1688,
+    "stateGroup": "error",
+    "logicalWidth": 390,
+    "logicalHeight": 844,
+    "pixelRatio": 2,
+    "captureKind": "interaction",
+    "previewScreen": "orders",
+    "capture": "Flutter实际交互，2倍栅格化；履约数据来自隔离演示API真实HTTP流程的录制响应，不代表真实付款或用户。设备外观仅用于预览。",
+    "device": "iPhone preview",
+    "flowOrder": 13
   }
 ]

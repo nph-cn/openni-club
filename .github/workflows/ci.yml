@@ -37,7 +37,7 @@ jobs:
         working-directory: apps/mobile
       - run: flutter analyze
         working-directory: apps/mobile
-      - run: flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart test/discovery_test.dart test/booking_followup_test.dart test/device_preview_test.dart test/shared_ui_accessibility_test.dart test/navigation_interactions_test.dart test/session_logout_test.dart
+      - run: flutter test test/flows_test.dart test/production_test.dart test/v2_test.dart test/catalog_test.dart test/auth_repository_test.dart test/auth_ui_test.dart test/loading_accessibility_test.dart test/discovery_test.dart test/booking_followup_test.dart test/device_preview_test.dart test/shared_ui_accessibility_test.dart test/navigation_interactions_test.dart test/session_logout_test.dart test/product_flow_test.dart
         working-directory: apps/mobile
       - run: flutter build web --base-href /demo/ --no-web-resources-cdn
         working-directory: apps/mobile

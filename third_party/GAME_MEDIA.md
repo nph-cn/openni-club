@@ -1,6 +1,6 @@
 # 游戏媒体来源与配置
 
-OpenNI 的程序代码采用 MIT 协议。示例目录引用的腾讯、Riot Games 游戏图片及商标属于各自权利人，**不在 OpenNI 的 MIT 授权范围内**。界面截图中出现的游戏素材也不在 MIT 授权范围内。OpenNI 与这些发行商没有合作或背书关系。仓库保存图片 URL 和来源记录，不把这些位图重新授权为开源资源。发布经营产品前，应按对应官方素材条款核实使用范围，替换为自己有权用于该产品的素材。
+OpenNI 的程序代码采用 MIT 协议。示例目录引用的腾讯、Riot Games 游戏图片及商标属于各自权利人，**不在 OpenNI 的 MIT 授权范围内**。界面截图中出现的游戏素材也不在 MIT 授权范围内。OpenNI 与这些发行商没有合作或背书关系。App 示例保存图片 URL 和来源记录；三角洲视觉专题另外保存官方公开网页原件用于本地设计预览。这些位图和视频均不重新授权为开源资源。发布经营产品前，应按对应官方素材条款核实使用范围，替换为自己有权用于该产品的素材。
 
 官方来源：
 
@@ -9,6 +9,12 @@ OpenNI 的程序代码采用 MIT 协议。示例目录引用的腾讯、Riot Gam
 - 英雄联盟：[官网](https://www.leagueoflegends.com/en-us/) 的游戏标识与 [Data Dragon 官方说明](https://developer.riotgames.com/docs/lol#data-dragon) 的英雄原画。涉及 Riot 产品发布时还需核对 [开发者政策](https://developer.riotgames.com/policies/general)。官方可访问不等于任意商业用途授权。
 
 精确 URL、用途及检视日期记录在 `config/media.sources.json`。示例包含真实游戏官方图片；成员头像仍是有单独来源记录的虚构人物。
+
+## 三角洲视觉专题
+
+2026-11-16 新增 `apps/showcase/delta/`。本地专题包含 4 张官方 3840 像素宽场景、1 张透明小队人物图、2 段视频与对应原帧封面。原始 URL、尺寸及 SHA-256 在 `apps/showcase/delta/assets-manifest.json`；网页 `/delta/sources.html` 提供可点击出处和非官方声明。原件来自 [国服官网](https://df.qq.com/cp/a20240906main/index.html)及[国际官网](https://www.playdeltaforce.com/en/)。没有去除水印或使用 AI 冒充官方游戏画面。
+
+KPR 仅用于观察大画面、层叠字和滚动叙事。OpenNI 官网与截图图库参考 Mobbin 的公开首页和 Explore 页面布局，未保存第三方 App 截图作为产品资产；Mobbin 素材搜索连接器本轮仍不可用。两张新增陪练头像为原创虚构成年人物，记录在 `apps/mobile/assets/demo/GENERATED-2026-11-16.json`。
 
 ## 俱乐部如何换图
 

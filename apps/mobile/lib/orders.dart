@@ -144,6 +144,14 @@ class _OrdersPageState extends State<OrdersPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 7),
+                                if (orderSpecification(o).isNotEmpty)
+                                  Text(
+                                    orderSpecification(o),
+                                    style: const TextStyle(
+                                      color: muted,
+                                      fontSize: 13,
+                                    ),
+                                  ),
                                 Text(
                                   when(o['scheduledAt']),
                                   style: const TextStyle(
@@ -185,6 +193,52 @@ class _OrdersPageState extends State<OrdersPage> {
       ),
     );
   }
+}
+
+/// 客户与成员看到同一份冻结服务规格，仅布局随上下文变化。
+class OrderServiceSummary extends StatelessWidget {
+  const OrderServiceSummary({
+    super.key,
+    required this.repo,
+    required this.order,
+  });
+  final ClubRepository repo;
+  final Json order;
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      SizedBox(
+        width: 68,
+        height: 76,
+        child: ServiceArt({
+          ...?repo.findService('${order['serviceId']}'),
+          ...Json.from(order['serviceSnapshot'] ?? {}),
+        }, radius: 14),
+      ),
+      const SizedBox(width: 14),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${order['serviceTitle']}',
+              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              orderSpecification(order),
+              style: const TextStyle(fontSize: 14, color: muted),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              when(order['scheduledAt']),
+              style: const TextStyle(fontSize: 13, color: muted),
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 class OrderPage extends StatefulWidget {
@@ -362,7 +416,7 @@ class _OrderPageState extends State<OrderPage> {
                             ),
                           ),
                           Text(
-                            '${o['serviceSnapshot']?['variantTitle'] ?? '${o['serviceSnapshot']?['durationMinutes'] ?? o['durationMinutes'] ?? repo.findService(o['serviceId'])?['durationMinutes'] ?? 60} 分钟'}',
+                            orderSpecification(o),
                             style: const TextStyle(fontSize: 13, color: muted),
                           ),
                         ],
@@ -405,23 +459,6 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ),
           ],
-          SectionTitle('订单进度'),
-          if (events.isEmpty)
-            TimelineEntry(
-              title: '预约已提交',
-              description: '等待俱乐部处理预约',
-              time: when(o['createdAt']),
-              last: true,
-            )
-          else
-            ...events.asMap().entries.map(
-              (e) => TimelineEntry(
-                title: orderEventTitle(e.value),
-                description: '${(e.value['actor'] as Map?)?['name'] ?? '俱乐部'}',
-                time: when(e.value['at']),
-                last: e.key == events.length - 1,
-              ),
-            ),
           if (o['delivery'] is Map) ...[
             const Divider(),
             const Text(
@@ -434,6 +471,41 @@ class _OrderPageState extends State<OrderPage> {
               child: Text(
                 '${o['delivery']['summary']}',
                 style: const TextStyle(fontSize: 16, height: 1.7),
+              ),
+            ),
+          ],
+          if (o['review'] is Map) ...[
+            const SectionTitle('我的评价'),
+            Surface(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      for (var i = 0; i < 5; i++)
+                        Icon(
+                          i < (o['review']['rating'] as num? ?? 0)
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          size: 20,
+                        ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${o['review']['rating']} 分',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  if ('${o['review']['comment'] ?? ''}'.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text('${o['review']['comment']}'),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    when(o['review']['at']),
+                    style: const TextStyle(fontSize: 13, color: muted),
+                  ),
+                ],
               ),
             ),
           ],
@@ -458,6 +530,23 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ],
           const Divider(),
+          SectionTitle('订单进度'),
+          if (events.isEmpty)
+            TimelineEntry(
+              title: '预约已提交',
+              description: '等待俱乐部处理预约',
+              time: when(o['createdAt']),
+              last: true,
+            )
+          else
+            ...events.asMap().entries.map(
+              (e) => TimelineEntry(
+                title: orderEventTitle(e.value),
+                description: '${(e.value['actor'] as Map?)?['name'] ?? '俱乐部'}',
+                time: when(e.value['at']),
+                last: e.key == events.length - 1,
+              ),
+            ),
           PairRow('订单编号', '${o['id']}'),
           PairRow('联系方式', '${o['contact']}'),
           PairRow(
@@ -703,7 +792,12 @@ class _ProgressStrip extends StatelessWidget {
               ),
               const SizedBox(height: 7),
               Text(
-                ['提交预约', '安排队友', '服务中', '服务完成'][i],
+                [
+                  '提交预约',
+                  '安排队友',
+                  status == 'awaiting_confirmation' ? '核对交付' : '服务中',
+                  '服务完成',
+                ][i],
                 style: TextStyle(
                   fontSize: 13,
                   color: i <= current ? ink : muted,

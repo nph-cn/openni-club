@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
-import {labels,browseSequence,stateGroup,appPreviewUrl,screenPreview} from '../../apps/showcase/gallery-model.js';
+import {labels,browseSequence,stateGroup,appPreviewUrl,screenPreview,sourceHref} from '../../apps/showcase/gallery-model.js';
 
 // 执行真实详情与翻页函数，验证界面上的页码、缩略图、边界按钮一致。
 async function fixture(){
@@ -22,7 +22,7 @@ async function fixture(){
   const elements=new Map(),lookup=selector=>{if(!elements.has(selector))elements.set(selector,element('div'));return elements.get(selector);};
   const dialog=element('dialog');dialog.open=true;
   const browseMode=element('div');browseMode.children=['flow','results'].map(scope=>Object.assign(element('button'),{dataset:{browseScope:scope}}));
-  const context=vm.createContext({screens,$:lookup,node:element,screenImage:()=>element('img'),names:labels,stateGroup,appPreviewUrl,screenPreview,browseSequence,captureInfo:element('p'),
+  const context=vm.createContext({screens,$:lookup,node:element,screenImage:()=>element('img'),names:labels,stateGroup,appPreviewUrl,screenPreview,sourceHref,browseSequence,captureInfo:element('p'),
     document:{activeElement:{}},dialog,browseMode,matched:()=>screens,writeLocation(){},
   });
   vm.runInContext(`let currentId='',detailScope='results'; const detailList=()=>browseSequence(matched(),currentId,detailScope);${show}\n${next}\n globalThis.viewer={show,next,get id(){return currentId;}};`,context);

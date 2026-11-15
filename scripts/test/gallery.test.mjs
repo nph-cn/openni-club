@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {matchScreens, groupFlows, stateGroup, gallerySearch, parseLocation, browseSequence, galleryCounts, appPreviewUrl, screenPreview} from '../../apps/showcase/gallery-model.js';
+import {matchScreens, groupFlows, stateGroup, gallerySearch, parseLocation, browseSequence, galleryCounts, appPreviewUrl, screenPreview, sourceBaseForRef, sourceHref} from '../../apps/showcase/gallery-model.js';
 
 const screens = [
   {id:'home',platform:'flutter',role:'customer',flow:'discover',state:'catalog',title:'首页'},
@@ -80,4 +80,15 @@ test('真实清单的交互截图回到已实现流程起点，不把截图名�
     assert.equal(preview.label,screen.captureKind==='interaction'?'打开流程起点 ↗':'打开此页 ↗');
   }
   for(const screen of interactions)assert.ok(routes.has(screen.previewScreen),`${screen.id} 必须指向真实路由`);
+});
+
+test('源码链接使用构建指定分支，旧清单默认main且不接受外部来源地址',()=>{
+  const source='apps/mobile/lib/discover.dart';
+  const draft=sourceBaseForRef('codex/openni-ui-20261116');
+  assert.equal(draft,'https://github.com/nph-cn/openni-club/blob/codex/openni-ui-20261116/');
+  assert.equal(sourceHref({source,sourceBase:draft}),draft+source);
+  assert.equal(sourceHref({source}),sourceBaseForRef('main')+source);
+  assert.equal(sourceHref({source,sourceBase:'https://example.com/blob/draft/'}),sourceBaseForRef('main')+source);
+  assert.equal(sourceHref({source:'apps/中文 文件.dart',sourceBase:draft}),draft+'apps/'+encodeURIComponent('中文 文件.dart'));
+  assert.throws(()=>sourceBaseForRef('../main'),/源码分支/);
 });

@@ -25,6 +25,7 @@ class MemberPage extends StatefulWidget {
 class _MemberPageState extends State<MemberPage> {
   bool loading = false, busy = false, loaded = false;
   bool deliveryOpened = false;
+  String orderFilter = '待接单';
   String? error;
   ClubRepository get repo => widget.repo;
   @override
@@ -292,128 +293,154 @@ class _MemberPageState extends State<MemberPage> {
       ],
     ),
   );
-  Widget taskRow(Json o, {bool urgent = false}) => InkWell(
-    onTap: () => context.push('/member/orders/${o['id']}'),
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 17),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: rule)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget taskRow(Json o, {bool urgent = false}) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(22),
+      onTap: () => context.push('/member/orders/${o['id']}'),
+      child: Surface(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      when(o['scheduledAt']),
-                      style: const TextStyle(fontSize: 14, color: muted),
-                    ),
-                    const Spacer(),
-                    Text(
-                      stageName(stage(o)),
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: urgent ? brandColor(repo) : forest,
-                      ),
-                    ),
-                  ],
+                Tag(
+                  stageName(stage(o)),
+                  fill: urgent ? ink : sage,
+                  color: urgent ? Colors.white : forest,
                 ),
-                const SizedBox(height: 7),
+                const Spacer(),
+                const Icon(Icons.chevron_right_rounded, size: 20, color: muted),
+              ],
+            ),
+            const SizedBox(height: 14),
+            OrderServiceSummary(repo: repo, order: o),
+            const Divider(height: 24),
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    '预计收入',
+                    style: TextStyle(fontSize: 14, color: muted),
+                  ),
+                ),
                 Text(
-                  '${o['serviceTitle']}',
+                  '¥${money(o, 'memberCents')}',
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 7),
-                Row(
-                  children: [
-                    Text(
-                      '${o['durationMinutes'] ?? 60}分钟 · 预计收入 ',
-                      style: const TextStyle(fontSize: 14, color: muted),
-                    ),
-                    Text(
-                      '¥${money(o, 'memberCents')}',
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const Spacer(),
-                    const Icon(Icons.arrow_forward_rounded, size: 17),
-                  ],
-                ),
               ],
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-  List<Widget> queue() => [
-    const Text('待接单与履约中的服务', style: TextStyle(color: muted, fontSize: 15)),
-    const SizedBox(height: 14),
-    if (repo.memberOrders.isEmpty)
-      const EmptyState('还没有指派给你的服务', '在可接时段内，运营者可以向你派单。'),
-    ...repo.memberOrders.map(
-      (o) => taskRow(o, urgent: stage(o) == 'awaiting_acceptance'),
-    ),
-  ];
-  List<Widget> detail(Json? o) {
-    if (o == null) return [const EmptyState('找不到这笔服务', '订单可能尚未指派给你。')];
-    return [
-      Tag(stageName(stage(o)), fill: sage, color: forest),
-      const SizedBox(height: 18),
-      Text(
-        '${o['serviceTitle']}',
-        style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w600),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        when(o['scheduledAt']),
-        style: const TextStyle(fontSize: 16, color: muted),
-      ),
-      const SectionTitle('订单信息'),
-      PairRow('服务时长', '${o['durationMinutes'] ?? 60} 分钟'),
-      PairRow('客户联系', '${o['contact']}'),
-      PairRow('客户备注', '${o['note'] ?? ''}'.isEmpty ? '未填写' : '${o['note']}'),
-      if (o['acceptBy'] != null) PairRow('接单截止', when(o['acceptBy'])),
-      const Divider(),
-      Surface(
-        color: sage,
-        child: Column(
-          children: [
-            PairRow('订单金额', '¥${money(o)}'),
-            PairRow(
-              '本单俱乐部分成',
-              '${((o['commissionBps'] as num? ?? 0) / 100).toStringAsFixed(0)}%',
-            ),
-            PairRow('你的预计收入', '¥${money(o, 'memberCents')}', strong: true),
-            const SizedBox(height: 8),
-            const Text(
-              '比例在派单时确定。客户确认完成且无争议后，才进入可结算账目。',
-              style: TextStyle(fontSize: 14, color: muted, height: 1.7),
             ),
           ],
         ),
       ),
-      if (o['delivery'] is Map) ...[
-        const SectionTitle('你提交的服务记录'),
-        Text(
-          '${o['delivery']['summary']}',
-          style: const TextStyle(fontSize: 14, height: 1.8),
+    ),
+  );
+
+  List<Widget> queue() {
+    final items =
+        repo.memberOrders.where((o) {
+          final status = stage(o);
+          return switch (orderFilter) {
+            '待接单' => status == 'awaiting_acceptance',
+            '已结束' => ['completed', 'cancelled'].contains(status),
+            _ => ![
+              'awaiting_acceptance',
+              'completed',
+              'cancelled',
+            ].contains(status),
+          };
+        }).toList()..sort(
+          (a, b) => '${a['scheduledAt']}'.compareTo('${b['scheduledAt']}'),
+        );
+    return [
+      ClubSegmentedControl(
+        values: const ['待接单', '服务中', '已结束'],
+        value: orderFilter,
+        onChanged: (value) => setState(() => orderFilter = value),
+      ),
+      const SizedBox(height: 20),
+      if (items.isEmpty)
+        EmptyState(switch (orderFilter) {
+          '待接单' => '暂时没有待接单',
+          '已结束' => '还没有结束的服务',
+          _ => '暂时没有进行中的服务',
+        }, orderFilter == '待接单' ? '俱乐部安排的预约会出现在这里。' : '服务状态更新后，会同步到对应列表。'),
+      ...items.map((o) => taskRow(o, urgent: orderFilter == '待接单')),
+    ];
+  }
+
+  List<Widget> detail(Json? o) {
+    if (o == null) return [const EmptyState('找不到这笔服务', '订单可能尚未指派给你。')];
+    return [
+      Text(
+        stageName(stage(o)),
+        style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 20),
+      Surface(
+        child: OrderServiceSummary(repo: repo, order: o),
+      ),
+      const SectionTitle('服务约定'),
+      Surface(
+        child: Column(
+          children: [
+            PairRow('客户联系', '${o['contact']}'),
+            PairRow(
+              '客户备注',
+              '${o['note'] ?? ''}'.isEmpty ? '未填写' : '${o['note']}',
+            ),
+            if (o['acceptBy'] != null) PairRow('接单截止', when(o['acceptBy'])),
+          ],
         ),
-        if (o['delivery']['evidenceUrl'] != null)
-          SelectableText(
-            '${o['delivery']['evidenceUrl']}',
-            style: const TextStyle(fontSize: 14, color: muted),
+      ),
+      if (o['delivery'] is Map) ...[
+        const SectionTitle('已提交的服务记录'),
+        Surface(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${o['delivery']['summary']}',
+                style: const TextStyle(fontSize: 16, height: 1.65),
+              ),
+              if (o['delivery']['evidenceUrl'] != null) ...[
+                const SizedBox(height: 12),
+                const Text(
+                  '交付凭证',
+                  style: TextStyle(fontSize: 13, color: muted),
+                ),
+                SelectableText(
+                  '${o['delivery']['evidenceUrl']}',
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ],
+            ],
           ),
+        ),
       ],
+      const SectionTitle('收入明细'),
+      Surface(
+        child: Column(
+          children: [
+            PairRow('订单金额', '¥${money(o)}'),
+            PairRow(
+              '俱乐部分成',
+              '${((o['commissionBps'] as num? ?? 0) / 100).toStringAsFixed(0)}%',
+            ),
+            const Divider(height: 18),
+            PairRow('你的预计收入', '¥${money(o, 'memberCents')}', strong: true),
+            const SizedBox(height: 8),
+            const Text(
+              '客户确认完成且无争议后，进入可结算账目。',
+              style: TextStyle(fontSize: 13, color: muted, height: 1.6),
+            ),
+          ],
+        ),
+      ),
       const SectionTitle('履约记录'),
       ...(o['events'] as List? ?? []).asMap().entries.map((e) {
         final v = e.value as Map;

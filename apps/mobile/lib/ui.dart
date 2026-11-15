@@ -45,6 +45,23 @@ String when(dynamic value, {bool onlyTime = false}) {
 
 String stage(Json o) =>
     '${o['fulfillmentStatus'] ?? (o['status'] == 'cancelled' ? 'cancelled' : 'awaiting_assignment')}';
+
+/// 优先使用下单时冻结的规格，目录后续改价不会改变历史订单。
+String orderSpecification(Json order) {
+  final snapshot = order['serviceSnapshot'] as Map? ?? const {};
+  final title = '${snapshot['variantTitle'] ?? ''}'.trim();
+  final minutes = snapshot['durationMinutes'] ?? order['durationMinutes'];
+  if (title.isNotEmpty) {
+    return minutes != null && !title.contains('$minutes')
+        ? '$title · $minutes分钟'
+        : title;
+  }
+  return [
+    if ('${snapshot['platform'] ?? ''}'.isNotEmpty) '${snapshot['platform']}',
+    if (minutes != null) '$minutes分钟',
+  ].join(' · ');
+}
+
 String stageName(String value) =>
     const {
       'awaiting_payment': '待付款',
@@ -1028,6 +1045,8 @@ class PlayerArt extends StatelessWidget {
         ? {
             'p1': 'assets/demo/player-yu.png',
             'p2': 'assets/demo/player-bei.png',
+            'p3': 'assets/demo/player-xiaoman.webp',
+            'p4': 'assets/demo/player-north.webp',
           }[player['id']]
         : null;
     final fallback = Container(
@@ -1200,32 +1219,41 @@ Future<T?> showClubSheet<T>({
   bool isScrollControlled = true,
   bool showDragHandle = true,
   Color? backgroundColor,
-}) => showModalBottomSheet<T>(
-  context: context,
-  isScrollControlled: isScrollControlled,
-  backgroundColor: Colors.transparent,
-  builder: (ctx) => GlassSurface(
-    radius: 28,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        if (showDragHandle)
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Container(
-              width: 36,
-              height: 5,
-              decoration: BoxDecoration(
-                color: muted.withValues(alpha: .3),
-                borderRadius: BorderRadius.circular(4),
+}) async {
+  ModalRoute<dynamic>? sheetRoute;
+  final result = await showModalBottomSheet<T>(
+    context: context,
+    isScrollControlled: isScrollControlled,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) {
+      sheetRoute ??= ModalRoute.of(ctx);
+      return GlassSurface(
+        radius: 28,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showDragHandle)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Container(
+                  width: 36,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: muted.withValues(alpha: .3),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
               ),
-            ),
-          ),
-        Flexible(child: builder(ctx)),
-      ],
-    ),
-  ),
-);
+            Flexible(child: builder(ctx)),
+          ],
+        ),
+      );
+    },
+  );
+  // pop的结果先于退场动画；等路由移除后，调用方才可安全释放输入控制器。
+  await sheetRoute?.completed;
+  return result;
+}
 
 Future<void> textSheet(BuildContext context, String title, String text) =>
     showClubSheet(

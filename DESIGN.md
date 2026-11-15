@@ -5,9 +5,11 @@ Avoid unnecessary secondary labels and descriptions. Let the layout do the expla
 
 OpenNI is a public open-source product website. Its primary routes are the complete screen gallery, working app demo, brand configuration, documentation, and GitHub source. It is not the club operator's dashboard. The fictional 北岸电竞 brand demonstrates the independently deployable product.
 
-The user rejected the former cream/sage layout and tilted-phone hero. The current direction is a graphite brand site with a large OpenNI wordmark, quiet typography and an interactive stage that changes between actual customer, member and operator screens. The gallery is a full-width product archive with complete runtime captures, role/platform/flow filters, a large viewer and source links. Do not fabricate screen content or metrics for visual polish.
+2026-11-16 用户要求官网更接近 Mobbin。主站方向更新为白底、黑色主动作、紧凑导航与大尺寸完整截图；用实际产品页面构成多屏预览，去掉巨型 OpenNI 字标占据首屏。保留角色、平台、流程、状态筛选、大图查看与源码链接。禁止为了视觉效果捏造界面内容和指标。
 
-Design read: independent club software · restrained graphite · brand register · spectacle 5 · CSS/WAAPI product-state transition. One motivated motion sequence reveals the typography and switches real product roles. Reduced-motion displays the final static state. Brand casing is OpenNI, distinct from the independently configurable fictional 北岸电竞 demo club. Charcoal (#101216) is the brand background; Silver (#F0F2F4) is primary text; Slate (#A5ABB4) is secondary text; Mist (#F4F5F7) is the product background; Graphite (#272D35) is the default configurable club accent. Avoid lifestyle/cafe imagery and opaque oversized navigation pills.
+主站：独立俱乐部开源软件，白底与黑灰文字，内容优先，截图与可操作流程占主导。品牌拼写固定为 OpenNI，独立配置的虚构北岸电竞俱乐部不被覆盖。App 保留 Mist (#F4F5F7) 内容背景与 Graphite (#272D35) 默认强调色。减少动态时直接显示最终状态。
+
+独立 `/delta/` 专题使用官方三角洲场景与透明人物，深色环境、浅色大字、克制的淡绿点缀。首屏分层滚动，之后依次为模式、地图、App 体验入口；不做鼠标跟随或转圈等待。视频只在可见时静音播放，有暂停和减少动态降级；点击影像再加载可控制的视频。该页参考已实际查看的 KPR 视觉结构，采用独立 CSS/浏览器动画实现，不宣称复制其 WebGL 引擎。
 
 Typography is readable rather than decorative: 16px body copy, 14–16px operational text, larger headings. Secondary metadata can be 11–12px when it is truly secondary. Chinese UI uses the system Chinese sans; Manrope is locally hosted for Latin text with its license. No repeated explanatory subtitle under each action. Configuration learning belongs in the guide; contextual errors stay beside the relevant input.
 

@@ -976,7 +976,13 @@ class _PlayerDirectoryState extends State<PlayerDirectory> {
                 size: 17,
                 color: following ? onBrand(repo) : muted,
               ),
-              label: const Text('本机关注', style: TextStyle(fontSize: 14)),
+              label: Text(
+                '本机关注',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: following ? onBrand(repo) : ink,
+                ),
+              ),
               onSelected: (v) => setState(() => following = v),
             ),
           ),

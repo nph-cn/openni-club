@@ -32,18 +32,27 @@ async function fixture(t){
  await write('docs/index.md','# 隔离构建测试\n');
  return {root,portrait,desktop,write};
 }
-function build(root){return spawnSync(process.execPath,[buildScript],{cwd:root,encoding:'utf8',windowsHide:true,timeout:15000});}
+function build(root,env={}){return spawnSync(process.execPath,[buildScript],{cwd:root,env:{...process.env,OPENNI_SOURCE_REF:'',...env},encoding:'utf8',windowsHide:true,timeout:15000});}
 
 test('构建保留2倍原图，输出实际像素，并仅在screens目录发布后台截图',async t=>{
  const f=await fixture(t),result=build(f.root);assert.equal(result.status,0,result.stderr||String(result.error));
  const screens=JSON.parse(await readFile(join(f.root,'dist/screens.json'),'utf8'));
  assert.equal(screens.length,required.length+1);
  const home=screens.find(screen=>screen.id==='home');assert.equal(home.width,780);assert.equal(home.height,1688);
+ assert.equal(home.sourceBase,'https://github.com/nph-cn/openni-club/blob/main/');
  const admin=screens.find(screen=>screen.id==='admin-overview');assert.equal(admin.width,2880);assert.equal(admin.height,1960);
  assert.deepEqual(await readFile(join(f.root,'dist/screens/home.png')),f.portrait);
  assert.deepEqual(await readFile(join(f.root,'dist/screens/admin-overview.png')),f.desktop);
  await assert.rejects(access(join(f.root,'dist/admin/screenshots')),{code:'ENOENT'});
  await access(join(f.root,'dist/admin/index.html'));
+});
+
+test('草稿构建把同一明确分支写入全部界面的源码来源',async t=>{
+ const f=await fixture(t),result=build(f.root,{OPENNI_SOURCE_REF:'codex/openni-ui-20261116'});
+ assert.equal(result.status,0,result.stderr||String(result.error));
+ const screens=JSON.parse(await readFile(join(f.root,'dist/screens.json'),'utf8'));
+ assert.ok(screens.length>0);
+ for(const screen of screens)assert.equal(screen.sourceBase,'https://github.com/nph-cn/openni-club/blob/codex/openni-ui-20261116/',screen.id);
 });
 
 test('损坏或非数组截图清单必须阻止构建，不静默改用文件名',async t=>{

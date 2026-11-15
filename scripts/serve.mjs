@@ -1,3 +1,9 @@
-import {createServer} from 'node:http';import {readFile,stat} from 'node:fs/promises';import {resolve,extname,sep} from 'node:path';
-const root=resolve('dist'),port=Number(process.env.WEB_PORT||4173);const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.wasm':'application/wasm','.woff2':'font/woff2'};
-createServer(async(req,res)=>{try{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);let path=resolve(root,'.'+pathname);if(path!==root&&!path.startsWith(root+sep)){res.writeHead(403);res.end();return;}if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.writeHead(200,{'Content-Type':types[extname(path)]||'application/octet-stream','X-Content-Type-Options':'nosniff'});res.end(await readFile(path));}catch{res.writeHead(404);res.end('Not found');}}).listen(port,'127.0.0.1',()=>console.log(`OpenNI preview http://127.0.0.1:${port}`));
+import {resolve} from 'node:path';
+import {createPreviewServer} from './lib/preview-server.mjs';
+
+const root = resolve('dist');
+const port = Number(process.env.WEB_PORT || 4173);
+
+createPreviewServer({root}).listen(port, '127.0.0.1', () => {
+  console.log(`OpenNI preview http://127.0.0.1:${port}`);
+});

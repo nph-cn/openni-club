@@ -607,14 +607,36 @@ class _AccountPageState extends State<AccountPage> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    BrandMark(repo, size: 58),
+                    if (repo.role == 'member' &&
+                        repo.findPlayer(repo.memberPlayerId) != null)
+                      PlayerArt(
+                        repo: repo,
+                        player: repo.findPlayer(repo.memberPlayerId)!,
+                        width: 58,
+                        height: 64,
+                        radius: 16,
+                      )
+                    else if (repo.token != null)
+                      const CircleAvatar(
+                        radius: 29,
+                        backgroundColor: Colors.white,
+                        child: Icon(
+                          CupertinoIcons.person_fill,
+                          size: 28,
+                          color: muted,
+                        ),
+                      )
+                    else
+                      BrandMark(repo, size: 58),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            repo.token == null ? '欢迎来到俱乐部' : repo.memberName,
+                            repo.token == null && repo.role != 'member'
+                                ? '欢迎来到俱乐部'
+                                : repo.memberName,
                             style: const TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.w600,
@@ -998,6 +1020,111 @@ class _NotificationsPageState extends State<NotificationsPage> {
     }
   }
 
+  List<Widget> notificationGroups() {
+    final groups = <String, List<Json>>{};
+    final items = [...widget.repo.notifications]
+      ..sort((a, b) => '${b['createdAt']}'.compareTo('${a['createdAt']}'));
+    for (final item in items) {
+      final time = DateTime.tryParse('${item['createdAt']}')
+          ?.toUtc()
+          .add(const Duration(hours: 8));
+      final label = time == null ? '消息' : '${time.month}月${time.day}日';
+      (groups[label] ??= []).add(item);
+    }
+    return [
+      for (final group in groups.entries) ...[
+        SectionTitle(group.key),
+        Surface(
+          padding: EdgeInsets.zero,
+          child: Material(
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                for (var i = 0; i < group.value.length; i++) ...[
+                  if (i > 0)
+                    const Padding(
+                      padding: EdgeInsets.only(left: 56),
+                      child: Divider(height: 1),
+                    ),
+                  notificationRow(group.value[i]),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ],
+    ];
+  }
+
+  Widget notificationRow(Json n) {
+    final unread = n['readAt'] == null;
+    return ListTile(
+      contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      shape: const RoundedRectangleBorder(),
+      tileColor: Colors.transparent,
+      leading: Icon(
+        unread ? CupertinoIcons.bell_fill : CupertinoIcons.bell,
+        size: 21,
+        color: unread ? ink : muted,
+      ),
+      title: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '${n['title']}',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: unread ? FontWeight.w600 : FontWeight.w400,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            when(n['createdAt'], onlyTime: true),
+            style: const TextStyle(fontSize: 12, color: muted),
+          ),
+        ],
+      ),
+      subtitle: Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          '${n['body'] ?? n['message'] ?? ''}',
+          style: const TextStyle(fontSize: 14, height: 1.45, color: muted),
+        ),
+      ),
+      trailing: unread
+          ? Semantics(
+              label: '未读',
+              child: const Icon(Icons.circle, size: 7, color: ink),
+            )
+          : null,
+      onTap: () async {
+        try {
+          if (!widget.repo.isLocal) {
+            await widget.repo.request(
+              'PATCH',
+              '/notifications/${n['id']}/read',
+              {},
+            );
+          }
+          if (!mounted) return;
+          setState(
+            () => n['readAt'] = widget.repo.now.toUtc().toIso8601String(),
+          );
+          if (n['orderId'] != null) {
+            context.push(
+              widget.repo.role == 'member'
+                  ? '/member/orders/${n['orderId']}'
+                  : '/orders/${n['orderId']}',
+            );
+          }
+        } catch (e) {
+          if (mounted) toast(context, e);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) => ClubPage(
     repo: widget.repo,
@@ -1031,32 +1158,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   widget.repo.notifications.isEmpty &&
                   (!widget.repo.isProduction || widget.repo.token != null))
                 const EmptyState('暂时没有新通知', '预约安排和服务进度更新，会出现在这里。'),
-              ...widget.repo.notifications.map(
-                (n) => ListTile(
-                  title: Text('${n['title']}'),
-                  subtitle: Text('${n['body'] ?? n['message'] ?? ''}'),
-                  onTap: () async {
-                    try {
-                      if (!widget.repo.isLocal) {
-                        await widget.repo.request(
-                          'PATCH',
-                          '/notifications/${n['id']}/read',
-                          {},
-                        );
-                      }
-                      if (context.mounted && n['orderId'] != null) {
-                        context.push(
-                          widget.repo.role == 'member'
-                              ? '/member/orders/${n['orderId']}'
-                              : '/orders/${n['orderId']}',
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) toast(context, e);
-                    }
-                  },
-                ),
-              ),
+              ...notificationGroups(),
             ],
           ),
   );

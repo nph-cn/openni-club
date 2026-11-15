@@ -55,6 +55,8 @@ Future<void> primeLocalMedia(BuildContext context) => Future.wait([
     'assets/brand/logo.png',
     'assets/demo/player-yu.png',
     'assets/demo/player-bei.png',
+    'assets/demo/player-xiaoman.webp',
+    'assets/demo/player-north.webp',
   ])
     precacheImage(AssetImage(asset), context),
 ]);

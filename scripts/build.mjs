@@ -2,13 +2,15 @@ import {cp,mkdir,readdir,readFile,writeFile,access,rm} from 'node:fs/promises';
 import {join,basename,resolve,relative,sep} from 'node:path';
 import sharp from 'sharp';
 import {buildDocs} from './lib/docs-site.mjs';
-import {stateGroup} from '../apps/showcase/gallery-model.js';
+import {stateGroup,sourceBaseForRef} from '../apps/showcase/gallery-model.js';
+// 本地/草稿预览通过 OPENNI_SOURCE_REF 指定分支；正式构建未设置时保持 main。
+const sourceBase=sourceBaseForRef(process.env.OPENNI_SOURCE_REF || 'main');
 const root=process.cwd();await rm('dist',{recursive:true,force:true});await mkdir('dist',{recursive:true});await cp('apps/showcase','dist',{recursive:true});
 const adminRoot=resolve('apps/admin');
 await cp(adminRoot,'dist/admin',{recursive:true,filter:source=>relative(adminRoot,source).split(sep)[0]!=='screenshots'});
 await cp('apps/studio','dist/studio',{recursive:true});
 await mkdir('dist/vendor',{recursive:true});await cp('node_modules/fflate/esm/browser.js','dist/vendor/fflate.js');
-const {count:docCount}=await buildDocs({root:process.cwd(),outDir:'dist/guide'});
+const {count:docCount}=await buildDocs({root:process.cwd(),outDir:'dist/guide',sourceBase});
 await access('apps/mobile/build/web/index.html');await cp('apps/mobile/build/web','dist/demo',{recursive:true});
 await mkdir('dist/screens',{recursive:true});const files=await readdir('apps/mobile/screenshots');for(const f of files.filter(f=>f.endsWith('.png')))await cp(join('apps/mobile/screenshots',f),join('dist/screens',f));
 const required=['home','services','service','players','player','booking','orders','order','profile','announcements','settings'];for(const id of required)await access(`dist/screens/${id}.png`);
@@ -32,7 +34,7 @@ for(const [platform,dir] of [['flutter','apps/mobile/screenshots'],['mini','apps
   const flow=item.flow||meta?.[1]||original.flow||'account';
   await cp(join(dir,file),join('dist/screens',file));
   const screen={...original,...item,id:item.id,platform,title,flow,role:item.role||(platform==='admin'?'operator':original.role||'customer'),description:item.description||original.description||title,image:`/screens/${file}`,width:info.width,height:info.height,source:item.source||(platform==='admin'?'apps/admin/operations.js':platform==='mini'?`apps/miniprogram/pages/${shortId}/${shortId}.wxml`:'apps/mobile/lib/screens.dart')};
-  await access(screen.source);screen.stateGroup=stateGroup(screen);gallery.push(screen);
+  await access(screen.source);screen.sourceBase=sourceBase;screen.stateGroup=stateGroup(screen);gallery.push(screen);
  }
 }
 await writeFile('dist/screens.json',JSON.stringify(gallery));
