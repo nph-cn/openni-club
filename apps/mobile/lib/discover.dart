@@ -1022,16 +1022,22 @@ class PlayersPage extends StatefulWidget {
 
 class _PlayersPageState extends State<PlayersPage> {
   String query = '';
+  String game = '全部';
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
     final q = query.trim();
+    final games = repo.players
+        .expand((p) => (p['games'] as List? ?? []).map((g) => '$g'))
+        .toSet()
+        .toList();
     final players = repo.players
         .where(
           (p) =>
-              q.isEmpty ||
-              '${p['name']} ${p['role']} ${(p['games'] as List? ?? []).join(' ')}'
-                  .contains(q),
+              (game == '全部' || (p['games'] as List? ?? []).contains(game)) &&
+              (q.isEmpty ||
+                  '${p['name']} ${p['role']} ${(p['games'] as List? ?? []).join(' ')}'
+                      .contains(q)),
         )
         .toList();
     return ClubPage(
@@ -1047,6 +1053,24 @@ class _PlayersPageState extends State<PlayersPage> {
             onChanged: (v) => setState(() => query = v),
           ),
           const SizedBox(height: 14),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: ['全部', ...games]
+                  .map(
+                    (v) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        selected: game == v,
+                        label: Text(v, style: const TextStyle(fontSize: 15)),
+                        onSelected: (_) => setState(() => game = v),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          const SizedBox(height: 20),
           if (players.isEmpty)
             const Text('没有匹配的成员', style: TextStyle(color: muted)),
           ...players.map((p) => RosterRow(repo: repo, player: p)),
