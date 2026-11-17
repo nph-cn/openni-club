@@ -13,7 +13,11 @@ const canvas = Color(0xFFF5F6F8),
     rule = Color(0xFFDDE1E7),
     sage = Color(0xFFE9EDF2),
     sand = Color(0xFFEEF0F4),
-    forest = Color(0xFF272D35);
+    forest = Color(0xFF272D35),
+    // 克制暖强调色：用于价格、主操作与选中态，不随俱乐部品牌色变化。
+    accent = Color(0xFFE8891C),
+    accentSoft = Color(0xFFFBF1E2),
+    warmHead = Color(0xFFF7F1E7);
 Color brandColor(ClubRepository repo) {
   final hex = '${repo.club['primaryColor'] ?? '#272D35'}'.replaceFirst('#', '');
   return Color(int.tryParse('FF$hex', radix: 16) ?? 0xFF272D35);
