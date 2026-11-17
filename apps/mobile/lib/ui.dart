@@ -687,9 +687,14 @@ class EmptyState extends StatelessWidget {
 }
 
 class PairRow extends StatelessWidget {
-  const PairRow(this.label, this.value, {super.key, this.strong = false});
+  const PairRow(this.label, this.value, {
+    super.key,
+    this.strong = false,
+    this.accentValue = false,
+  });
   final String label, value;
   final bool strong;
+  final bool accentValue;
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 7),
@@ -704,7 +709,12 @@ class PairRow extends StatelessWidget {
             textAlign: TextAlign.right,
             style: TextStyle(
               fontSize: 16,
-              fontWeight: strong ? FontWeight.w600 : FontWeight.w400,
+              fontWeight: accentValue
+                  ? FontWeight.w700
+                  : strong
+                      ? FontWeight.w600
+                      : FontWeight.w400,
+              color: accentValue ? accent : ink,
             ),
           ),
         ),

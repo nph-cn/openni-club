@@ -341,7 +341,8 @@ class _MemberPageState extends State<MemberPage> {
                       '¥${money(o, 'memberCents')}',
                       style: const TextStyle(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
+                        color: accent,
                       ),
                     ),
                     const Spacer(),
@@ -393,7 +394,7 @@ class _MemberPageState extends State<MemberPage> {
               '本单俱乐部分成',
               '${((o['commissionBps'] as num? ?? 0) / 100).toStringAsFixed(0)}%',
             ),
-            PairRow('你的预计收入', '¥${money(o, 'memberCents')}', strong: true),
+            PairRow('你的预计收入', '¥${money(o, 'memberCents')}', accentValue: true),
             const SizedBox(height: 8),
             const Text(
               '比例在派单时确定。客户确认完成且无争议后，才进入可结算账目。',
@@ -689,7 +690,8 @@ class _MemberPageState extends State<MemberPage> {
                     '¥${money(e, 'memberCents')}',
                     style: const TextStyle(
                       fontSize: 22,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
                     ),
                   ),
                 ],

@@ -59,6 +59,11 @@ page{background:#F4F5F7;color:#171B21;font-family:-apple-system,BlinkMacSystemFo
 .order-line{display:flex;justify-content:space-between;gap:28rpx;padding:16rpx 0;align-items:flex-start}
 .order-line>text:last-child{text-align:right;word-break:break-word;flex:1}
 .order-id{word-break:break-all;font-size:24rpx;margin-top:24rpx}
+.quick-grid{display:flex;gap:18rpx;margin:8rpx 0 28rpx}
+.quick-cell{flex:1;min-width:0;background:#fff;border:1rpx solid #E6EAF0;border-radius:16rpx;padding:26rpx 0;text-align:center}
+.quick-cell.on{border-color:var(--accent);background:var(--accent-soft)}
+.quick-num{font-size:38rpx;font-weight:700;color:#171B21;font-variant-numeric:tabular-nums}
+.quick-label{font-size:26rpx;color:#626C78;margin-top:6rpx}
 .body-copy{line-height:1.75;color:#3F4956}
 .page-bottom{margin-top:28rpx}
 .summary-grid{display:flex;gap:24rpx;margin-top:24rpx}
@@ -76,6 +81,10 @@ page{background:#F4F5F7;color:#171B21;font-family:-apple-system,BlinkMacSystemFo
 .flow-step:last-child{border-bottom:0}button.text-button{width:100%;max-width:none;padding:0;display:block;margin-left:0;margin-right:0}button.button{width:100%;max-width:none;margin-left:0;margin-right:0}button.link,button.chip{width:auto;max-width:none;margin-left:0;margin-right:0}
 .profile-header{margin:12rpx 0 36rpx}
 .profile-header .title{font-size:44rpx;margin-bottom:12rpx}
+.profile-stats{display:flex;gap:20rpx;margin:0 0 28rpx;padding:26rpx 24rpx;background:var(--warm);border-radius:16rpx}
+.stat-cell{flex:1;min-width:0;text-align:center}
+.stat-num{font-size:38rpx;font-weight:700;color:#171B21}
+.stat-label{font-size:26rpx;color:#626C78;margin-top:6rpx}
 .order-state{padding:16rpx 0 20rpx}
 .order-state .title{margin-bottom:16rpx}
 .timeline-item{display:flex;gap:20rpx;padding:0 0 34rpx;position:relative}

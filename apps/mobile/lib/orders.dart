@@ -58,11 +58,16 @@ class _OrdersPageState extends State<OrdersPage> {
     }
     final items = repo.orders
         .where(
-          (o) =>
-              filter == '全部' ||
-              (filter == '已结束'
-                  ? ['completed', 'cancelled'].contains(stage(o))
-                  : !['completed', 'cancelled'].contains(stage(o))),
+          (o) => switch (filter) {
+            '全部' => true,
+            '已结束' => ['completed', 'cancelled'].contains(stage(o)),
+            '待付款' => stage(o) == 'awaiting_payment',
+            '待接单' => ['awaiting_assignment', 'awaiting_acceptance']
+                .contains(stage(o)),
+            '服务中' => ['scheduled', 'in_progress', 'awaiting_confirmation']
+                .contains(stage(o)),
+            _ => !['completed', 'cancelled'].contains(stage(o)),
+          },
         )
         .toList();
     return ClubPage(
@@ -78,6 +83,10 @@ class _OrdersPageState extends State<OrdersPage> {
       ],
       child: PageList(
         children: [
+          _OrderQuickGrid(orders: repo.orders, onTap: (status) {
+            setState(() => filter = status);
+          }),
+          const SizedBox(height: 16),
           Row(
             children: ['进行中', '已结束', '全部']
                 .map(
@@ -154,7 +163,8 @@ class _OrdersPageState extends State<OrdersPage> {
                             '¥${money(o)}',
                             style: const TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
+                              color: accent,
                             ),
                           ),
                         ],
@@ -169,6 +179,94 @@ class _OrdersPageState extends State<OrdersPage> {
       ),
     );
   }
+}
+
+/// 订单状态快捷宫格：按真实订单状态归类计数，点击切换列表筛选。
+class _OrderQuickGrid extends StatelessWidget {
+  const _OrderQuickGrid({required this.orders, required this.onTap});
+  final List<Json> orders;
+  final ValueChanged<String> onTap;
+
+  int _count(Set<String> stages) =>
+      orders.where((o) => stages.contains(stage(o))).length;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = [
+      _QuickItem(
+        label: '待付款',
+        icon: Icons.payments_outlined,
+        count: _count(const {'awaiting_payment'}),
+        filter: '待付款',
+      ),
+      _QuickItem(
+        label: '待接单',
+        icon: Icons.assignment_outlined,
+        count: _count(const {'awaiting_assignment', 'awaiting_acceptance'}),
+        filter: '待接单',
+      ),
+      _QuickItem(
+        label: '服务中',
+        icon: Icons.sports_esports_outlined,
+        count: _count(const {'scheduled', 'in_progress', 'awaiting_confirmation'}),
+        filter: '服务中',
+      ),
+      _QuickItem(
+        label: '已结束',
+        icon: Icons.check_circle_outline_rounded,
+        count: _count(const {'completed', 'cancelled'}),
+        filter: '已结束',
+      ),
+    ];
+    return Surface(
+      border: true,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: items
+            .map(
+              (item) => Expanded(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => onTap(item.filter),
+                  child: Column(
+                    children: [
+                      Icon(item.icon, size: 24, color: ink),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${item.count}',
+                        style: const TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                          color: ink,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        item.label,
+                        style: const TextStyle(fontSize: 12, color: muted),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+}
+
+class _QuickItem {
+  const _QuickItem({
+    required this.label,
+    required this.icon,
+    required this.count,
+    required this.filter,
+  });
+  final String label;
+  final IconData icon;
+  final int count;
+  final String filter;
 }
 
 class OrderPage extends StatefulWidget {
@@ -356,7 +454,7 @@ class _OrderPageState extends State<OrderPage> {
                 ),
                 const Divider(),
                 PairRow('预约时间', when(o['scheduledAt']), strong: true),
-                PairRow('服务费用', '¥${money(o)}'),
+                PairRow('服务费用', '¥${money(o)}', accentValue: true),
                 PairRow(
                   '支付状态',
                   repo.isProduction
