@@ -373,13 +373,55 @@
         "settledAt": "2026-11-15T13:00:00.000Z",
         "settlementId": "151b7d2e-3602-4efa-967f-04c07fbd79d0",
         "demo": true
+      },
+      {
+        "id": "7c2d8f1a-9b44-4e2a-8f61-2d5c9b0a11ee",
+        "orderId": "ac05d6db-293a-4911-9223-a6c69af58c9c",
+        "playerId": "p1",
+        "grossCents": 3900,
+        "clubCents": 780,
+        "memberCents": 3120,
+        "state": "held",
+        "createdAt": "2026-11-15T13:05:00.000Z",
+        "availableAt": null,
+        "settledAt": null,
+        "settlementId": null,
+        "demo": true
+      },
+      {
+        "id": "8d3e9a2b-0c55-4f3b-9a72-3e6d0c1b22ff",
+        "orderId": "14c40ab5-274a-4a01-997e-9baa94369c64",
+        "playerId": "p1",
+        "grossCents": 3900,
+        "clubCents": 780,
+        "memberCents": 3120,
+        "state": "available",
+        "createdAt": "2026-11-15T13:15:00.000Z",
+        "availableAt": "2026-11-15T13:15:00.000Z",
+        "settledAt": null,
+        "settlementId": null,
+        "demo": true
+      },
+      {
+        "id": "9e4f0b3c-1d66-4a4c-8b83-4f7e1d2c33aa",
+        "orderId": "0b2a4c68-7e99-4a1f-9c05-5d6e8f3a44bb",
+        "playerId": "p1",
+        "grossCents": 3500,
+        "clubCents": 700,
+        "memberCents": 2800,
+        "state": "reversed",
+        "createdAt": "2026-11-14T20:10:00.000Z",
+        "availableAt": null,
+        "settledAt": null,
+        "settlementId": null,
+        "demo": true
       }
     ],
     "totals": {
-      "heldCents": 0,
-      "availableCents": 0,
+      "heldCents": 3120,
+      "availableCents": 3120,
       "settledCents": 3120,
-      "reversedCents": 0
+      "reversedCents": 2800
     },
     "currency": "CNY",
     "settlements": [

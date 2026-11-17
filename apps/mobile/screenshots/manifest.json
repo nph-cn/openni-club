@@ -256,7 +256,7 @@
     "title": "收入账本",
     "role": "member",
     "flow": "member",
-    "description": "服务分成、待确认金额与已登记结算账目。",
+    "description": "服务分成账目，含待确认冻结、可结算、已记录结算与已撤销四类状态。",
     "source": "apps/mobile/lib/member.dart",
     "state": "ledger",
     "width": 390,

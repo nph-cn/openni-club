@@ -655,6 +655,11 @@ class _MemberPageState extends State<MemberPage> {
                   '已记录结算',
                   Colors.white,
                 ),
+                _metric(
+                  '¥${((totals['reversedCents'] as num? ?? 0) / 100).toStringAsFixed(2)}',
+                  '已撤销',
+                  const Color(0xFFC5CBD6),
+                ),
               ],
             ),
           ],
@@ -680,18 +685,27 @@ class _MemberPageState extends State<MemberPage> {
                   Expanded(
                     child: Text(
                       '服务 #${e['orderId'].toString().substring(0, 8)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: e['state'] == 'reversed' ? muted : ink,
                       ),
                     ),
                   ),
                   Text(
                     '¥${money(e, 'memberCents')}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
-                      color: accent,
+                      color: switch (e['state']) {
+                        'reversed' => muted,
+                        'held' => ink,
+                        _ => accent,
+                      },
+                      decoration: e['state'] == 'reversed'
+                          ? TextDecoration.lineThrough
+                          : TextDecoration.none,
+                      decorationColor: muted,
                     ),
                   ),
                 ],
@@ -713,8 +727,15 @@ class _MemberPageState extends State<MemberPage> {
                           'reversed': '已撤销',
                         }[e['state']] ??
                         '待处理',
-                    fill: e['state'] == 'available' ? sage : sand,
-                    color: ink,
+                    fill: switch (e['state']) {
+                      'available' => sage,
+                      'reversed' => const Color(0xFFFBEFEF),
+                      _ => sand,
+                    },
+                    color: switch (e['state']) {
+                      'reversed' => const Color(0xFF9A3A3A),
+                      _ => ink,
+                    },
                   ),
                 ],
               ),

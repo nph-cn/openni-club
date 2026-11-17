@@ -168,6 +168,8 @@ button[disabled]{opacity:.48}.button-row{gap:16rpx}.button-row .button{font-size
 .price,.summary-number,.earnings-total{font-weight:550;letter-spacing:-.5rpx;font-variant-numeric:tabular-nums}
 .status{background:#E7EDF5;color:#344C69;border-radius:8rpx;font-size:26rpx;white-space:nowrap}
 .status.completed{background:#E4F0EB;color:#24664D}.status.cancelled{color:#626D7A;background:#E9EDF2}
+.card-reversed .price-reversed{color:#626C78;text-decoration:line-through}
+.card-reversed .order-line,.card-reversed .small{color:#626C78}
 .avatar,.member-photo{border-radius:22rpx}.member-portrait{border-radius:20rpx;box-shadow:var(--shadow)}
 .tag,.pill{background:#E8EDF3;border-radius:8rpx}.notice{background:#E8EDF3;border-radius:16rpx;line-height:1.6}
 .form-error,.danger-text{color:#A0382D}.form-error{font-size:29rpx;line-height:1.6}
