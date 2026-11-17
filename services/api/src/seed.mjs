@@ -13,10 +13,10 @@ export const services = [
   {id:'s4',title:'英雄联盟 · 双排小时陪',game:'英雄联盟',category:'小时陪',description:'一位成员与你双排，预约前沟通位置与时段。双排指两位玩家，不是两位服务成员。',priceCents:3500,durationMinutes:60,tags:['一位服务成员','位置协作'],platform:'PC',serviceType:'hourly',teamSize:1,billingUnit:'hour',gameMode:'召唤师峡谷',maps:['召唤师峡谷'],rules:['一位服务成员，60 分钟，不承诺上分。','双方各自使用自己的游戏账号。']}
 ];
 export const players = [
-  {id:'p1',name:'阿屿',role:'小队指挥',bio:'喜欢清晰的报点，也喜欢轻松的队内气氛。地图和打法都可以提前聊。虚构演示成员。',games:['三角洲行动'],tags:['耐心沟通','战术协作'],initials:'屿',color:'#2455E7'},
-  {id:'p2',name:'Echo',role:'战术教练',bio:'把每一场对局里的小细节讲清楚。一起复盘，也一起进步。虚构演示成员。',games:['三角洲行动','无畏契约'],tags:['对局复盘','思路教学'],initials:'E',color:'#137B57'},
-  {id:'p3',name:'小满',role:'开黑搭子',bio:'开心对局，认真沟通。偏爱团队配合，不催促、不责备。虚构演示成员。',games:['无畏契约','英雄联盟'],tags:['友好交流','团队协作'],initials:'满',color:'#AC4B38'},
-  {id:'p4',name:'North',role:'全能队友',bio:'喜欢与新朋友一起找到合适的节奏。上线时间请在预约里备注。虚构演示成员。',games:['三角洲行动','英雄联盟'],tags:['节奏稳定','灵活补位'],initials:'N',color:'#7356AA'}
+  {id:'p1',name:'阿屿',role:'小队指挥',bio:'喜欢清晰的报点，也喜欢轻松的队内气氛。地图和打法都可以提前聊。虚构演示成员。',games:['三角洲行动'],tags:['耐心沟通','战术协作'],initials:'屿',color:'#2455E7',status:'available'},
+  {id:'p2',name:'Echo',role:'战术教练',bio:'把每一场对局里的小细节讲清楚。一起复盘，也一起进步。虚构演示成员。',games:['三角洲行动','无畏契约'],tags:['对局复盘','思路教学'],initials:'E',color:'#137B57',status:'available'},
+  {id:'p3',name:'小满',role:'开黑搭子',bio:'开心对局，认真沟通。偏爱团队配合，不催促、不责备。虚构演示成员。',games:['无畏契约','英雄联盟'],tags:['友好交流','团队协作'],initials:'满',color:'#AC4B38',status:'available'},
+  {id:'p4',name:'North',role:'全能队友',bio:'喜欢与新朋友一起找到合适的节奏。上线时间请在预约里备注。虚构演示成员。',games:['三角洲行动','英雄联盟'],tags:['节奏稳定','灵活补位'],initials:'N',color:'#7356AA',status:'available'}
 ];
 export const announcements = [
   {id:'a1',title:'欢迎来到北岸，一起找到同频队友',body:'这是 OpenNI Club 的演示公告。你可以浏览服务、了解成员并体验预约。所有订单均为模拟预约，不扣款、不提供真实游戏服务。',publishedAt:'2026-11-15T09:00:00+08:00'},

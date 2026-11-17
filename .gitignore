@@ -24,3 +24,6 @@ generated/.configure.lock
 
 *.pem
 *.key
+
+# Flutter golden 失败对比临时产物
+apps/mobile/test/failures/

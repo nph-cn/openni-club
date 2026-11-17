@@ -201,10 +201,19 @@ class GlassSurface extends StatelessWidget {
           !appleChrome(context);
       final surface = DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: opaque ? 1 : .74),
+          color: Colors.white.withValues(alpha: opaque ? 1 : .72),
           borderRadius: BorderRadius.circular(radius),
           border: border
-              ? Border.all(color: Colors.white.withValues(alpha: .9), width: .5)
+              ? Border.all(color: Colors.white.withValues(alpha: .95), width: .5)
+              : null,
+          boxShadow: border && !opaque
+              ? [
+                  BoxShadow(
+                    color: ink.withValues(alpha: .05),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ]
               : null,
         ),
         child: Material(type: MaterialType.transparency, child: child),

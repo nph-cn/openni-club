@@ -593,6 +593,27 @@ class RosterRow extends StatelessWidget {
                           ),
                         ),
                       ),
+                      if (player['status'] == 'available') ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE9F3EC),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            '可约',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF2E7D4F),
+                            ),
+                          ),
+                        ),
+                      ],
                       const Icon(
                         Icons.chevron_right_rounded,
                         color: muted,
@@ -747,6 +768,15 @@ class _ServicePageState extends State<ServicePage> {
       title: '服务详情',
       bottom: Row(
         children: [
+          IconButton(
+            tooltip: '联系俱乐部',
+            onPressed: () => textSheet(
+              context,
+              '联系俱乐部',
+              '${repo.club['supportContact'] ?? '请通过运营方公示渠道联系。'}',
+            ),
+            icon: const Icon(Icons.headset_mic_outlined, size: 23),
+          ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -891,6 +921,18 @@ class _ServicePageState extends State<ServicePage> {
               ),
             ),
           ],
+          Container(
+            margin: const EdgeInsets.only(top: 16),
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFBEFEF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Text(
+              '本平台提供陪练与组队协作，不提供上号代练、代打，双方各自使用本人游戏账号。',
+              style: TextStyle(fontSize: 14, color: Color(0xFF9A3A3A), height: 1.5),
+            ),
+          ),
           SectionTitle('可选陪练'),
           if (players.isEmpty)
             const Text('暂无陪练', style: TextStyle(color: muted))
