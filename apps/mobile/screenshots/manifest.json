@@ -100,7 +100,7 @@
     "title": "我的订单",
     "role": "customer",
     "flow": "fulfillment",
-    "description": "订单筛选和真实预约状态。",
+    "description": "订单宫格分类与筛选，演示待付款、服务中、已结束三类预约状态。",
     "source": "apps/mobile/lib/orders.dart",
     "state": "in_progress",
     "width": 390,

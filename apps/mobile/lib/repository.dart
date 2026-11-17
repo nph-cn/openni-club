@@ -439,15 +439,15 @@ class ClubRepository extends ChangeNotifier {
 
   Future<void> loadDemoPreview() async {
     if (!isLocal || isProduction || orders.isNotEmpty) return;
-    final fixture = Json.from(
-      jsonDecode(
-        await rootBundle.loadString(
-          'assets/demo/order-in-progress.json',
-          cache: false,
-        ),
+    final raw = jsonDecode(
+      await rootBundle.loadString(
+        'assets/demo/order-in-progress.json',
+        cache: false,
       ),
     );
-    orders = [fixture];
+    orders = (raw is List ? raw : [raw])
+        .map((e) => Map<String, dynamic>.from(e as Map))
+        .toList();
     notifyListeners();
   }
 

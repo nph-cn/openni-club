@@ -33,14 +33,15 @@ void main() {
       );
       await repo.load();
       // Exported from the API's real create -> assign -> accept -> start flow.
+      final raw = jsonDecode(
+        await rootBundle.loadString(
+          'assets/demo/order-in-progress.json',
+          cache: false,
+        ),
+      );
       repo.orders = [
-        Json.from(
-          jsonDecode(
-            await rootBundle.loadString(
-              'assets/demo/order-in-progress.json',
-              cache: false,
-            ),
-          ),
+        Map<String, dynamic>.from(
+          (raw is List ? raw.first : raw) as Map,
         ),
       ];
       await tester.runAsync(primeCatalogMedia);

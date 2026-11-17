@@ -1,103 +1,206 @@
-{
-  "id": "ac05d6db-293a-4911-9223-a6c69af58c9c",
-  "serviceId": "s1",
-  "serviceTitle": "三角洲 · PC 小时陪",
-  "playerId": null,
-  "scheduledAt": "2026-11-15T13:15:00.000Z",
-  "contact": "demo-contact-only",
-  "note": "正在进行的小队服务。",
-  "priceCents": 3900,
-  "status": "confirmed",
-  "createdAt": "2026-11-15T13:05:00.000Z",
-  "paymentStatus": "unpaid",
-  "refundStatus": null,
-  "demo": true,
-  "fulfillmentStatus": "in_progress",
-  "assignedPlayerId": "p1",
-  "commissionBps": 2000,
-  "memberCents": 3120,
-  "clubCents": 780,
-  "durationMinutes": 60,
-  "acceptBy": null,
-  "paymentExpiresAt": "2026-11-15T13:35:00.000Z",
-  "serviceSnapshot": {
-    "id": "s1",
-    "title": "三角洲 · PC 小时陪",
-    "game": "三角洲行动",
-    "category": "小时陪",
-    "description": "路线沟通 · 报点协作",
+[
+  {
+    "id": "ac05d6db-293a-4911-9223-a6c69af58c9c",
+    "serviceId": "s1",
+    "serviceTitle": "三角洲 · PC 小时陪",
+    "playerId": null,
+    "scheduledAt": "2026-11-15T13:15:00.000Z",
+    "contact": "demo-contact-only",
+    "note": "正在进行的小队服务。",
     "priceCents": 3900,
+    "status": "confirmed",
+    "createdAt": "2026-11-15T13:05:00.000Z",
+    "paymentStatus": "unpaid",
+    "refundStatus": null,
+    "demo": true,
+    "fulfillmentStatus": "in_progress",
+    "assignedPlayerId": "p1",
+    "commissionBps": 2000,
+    "memberCents": 3120,
+    "clubCents": 780,
     "durationMinutes": 60,
-    "tags": [
-      "单陪",
-      "语音沟通"
+    "acceptBy": null,
+    "paymentExpiresAt": "2026-11-15T13:35:00.000Z",
+    "serviceSnapshot": {
+      "id": "s1",
+      "title": "三角洲 · PC 小时陪",
+      "game": "三角洲行动",
+      "category": "小时陪",
+      "description": "路线沟通 · 报点协作",
+      "priceCents": 3900,
+      "durationMinutes": 60,
+      "tags": ["单陪", "语音沟通"],
+      "inclusions": [],
+      "requirements": [],
+      "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
+      "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
+      "platform": "PC",
+      "serviceType": "hourly",
+      "billingUnit": "hour",
+      "teamSize": 1,
+      "gameMode": "烽火地带",
+      "maps": ["零号大坝", "长弓溪谷"],
+      "rules": [
+        "一位服务成员，预约 60 分钟。",
+        "地图在当前可选范围内协商；无额外地图加价。",
+        "不承诺撤离、击杀或游戏资产收益。",
+        "服务结束后提交记录，由客户确认或申请售后。"
+      ],
+      "variantId": "pc-60",
+      "variantTitle": "PC · 60分钟"
+    },
+    "events": [
+      {
+        "id": "299c14ae-6f60-4314-9528-1e5979796299",
+        "type": "created",
+        "at": "2026-11-15T13:05:00.000Z",
+        "actor": {"role": "customer", "name": "林"},
+        "message": "已提交演示预约，不产生真实付款。"
+      },
+      {
+        "id": "d6e998d1-4a69-47ae-bf67-655cfb02b430",
+        "type": "assigned",
+        "at": "2026-11-15T13:05:00.000Z",
+        "actor": {"role": "owner", "name": "俱乐部运营"},
+        "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+      },
+      {
+        "id": "3f131037-8184-49fe-94b1-6158e1865a60",
+        "type": "accepted",
+        "at": "2026-11-15T13:05:00.000Z",
+        "actor": {"role": "member", "name": "阿屿"},
+        "message": "成员已接单，预约时间已锁定。"
+      },
+      {
+        "id": "6b53eb97-34e0-453d-a2b0-3d4246e7fe6d",
+        "type": "started",
+        "at": "2026-11-15T13:15:00.000Z",
+        "actor": {"role": "member", "name": "阿屿"},
+        "message": "成员已开始服务。"
+      }
     ],
-    "inclusions": [],
-    "requirements": [],
-    "coverUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
-    "gameIconUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/share-icon.png",
-    "bannerUrl": "https://game.gtimg.cn/images/dfm/cp/a20240906main/p3_img1.jpg",
-    "platform": "PC",
-    "serviceType": "hourly",
-    "billingUnit": "hour",
-    "teamSize": 1,
-    "gameMode": "烽火地带",
-    "maps": [
-      "零号大坝",
-      "长弓溪谷"
-    ],
-    "rules": [
-      "一位服务成员，预约 60 分钟。",
-      "地图在当前可选范围内协商；无额外地图加价。",
-      "不承诺撤离、击杀或游戏资产收益。",
-      "服务结束后提交记录，由客户确认或申请售后。"
-    ],
-    "variantId": "pc-60",
-    "variantTitle": "PC · 60分钟"
+    "delivery": null,
+    "review": null,
+    "dispute": null
   },
-  "events": [
-    {
-      "id": "299c14ae-6f60-4314-9528-1e5979796299",
-      "type": "created",
-      "at": "2026-11-15T13:05:00.000Z",
-      "actor": {
-        "role": "customer",
-        "name": "林"
-      },
-      "message": "已提交演示预约，不产生真实付款。"
+  {
+    "id": "f41a9c27-6b3e-4d29-8a15-0c7d2e9f3b14",
+    "serviceId": "s3",
+    "serviceTitle": "无畏契约 · 组队小时陪",
+    "playerId": null,
+    "scheduledAt": "2026-11-15T14:30:00.000Z",
+    "contact": "demo-contact-only",
+    "note": "待付款，预约时段已保留。",
+    "priceCents": 2900,
+    "status": "pending",
+    "createdAt": "2026-11-15T14:20:00.000Z",
+    "paymentStatus": "unpaid",
+    "refundStatus": null,
+    "demo": true,
+    "fulfillmentStatus": "awaiting_payment",
+    "assignedPlayerId": null,
+    "commissionBps": 2000,
+    "memberCents": 2320,
+    "clubCents": 580,
+    "durationMinutes": 60,
+    "acceptBy": null,
+    "paymentExpiresAt": "2026-11-15T14:50:00.000Z",
+    "serviceSnapshot": {
+      "id": "s3",
+      "title": "无畏契约 · 组队小时陪",
+      "game": "无畏契约",
+      "category": "小时陪",
+      "description": "团队语音 · 角色协作",
+      "priceCents": 2900,
+      "durationMinutes": 60,
+      "tags": ["单陪", "角色协作"],
+      "inclusions": [],
+      "requirements": [],
+      "platform": "PC",
+      "serviceType": "hourly",
+      "billingUnit": "hour",
+      "teamSize": 1,
+      "gameMode": "普通对局",
+      "maps": [],
+      "rules": ["一位成员，60 分钟，不保证胜率。", "不共享账号，不使用外挂。"],
+      "variantId": "pc-60",
+      "variantTitle": "PC · 60分钟"
     },
-    {
-      "id": "d6e998d1-4a69-47ae-bf67-655cfb02b430",
-      "type": "assigned",
-      "at": "2026-11-15T13:05:00.000Z",
-      "actor": {
-        "role": "owner",
-        "name": "俱乐部运营"
-      },
-      "message": "已指派 阿屿，等待接单。根据开放时段与游戏匹配安排。"
+    "events": [
+      {
+        "id": "77e2c1a4-8f3b-49d2-ae51-2b8c4d1a90e6",
+        "type": "created",
+        "at": "2026-11-15T14:20:00.000Z",
+        "actor": {"role": "customer", "name": "林"},
+        "message": "已提交演示预约，等待付款，不产生真实扣款。"
+      }
+    ],
+    "delivery": null,
+    "review": null,
+    "dispute": null
+  },
+  {
+    "id": "0b2a4c68-7e99-4a1f-9c05-5d6e8f3a44bb",
+    "serviceId": "s4",
+    "serviceTitle": "英雄联盟 · 双排小时陪",
+    "playerId": null,
+    "scheduledAt": "2026-11-14T19:00:00.000Z",
+    "contact": "demo-contact-only",
+    "note": "客户主动取消，订单已结束。",
+    "priceCents": 3500,
+    "status": "cancelled",
+    "createdAt": "2026-11-14T18:50:00.000Z",
+    "paymentStatus": "unpaid",
+    "refundStatus": "cancelled",
+    "demo": true,
+    "fulfillmentStatus": "cancelled",
+    "assignedPlayerId": null,
+    "commissionBps": 2000,
+    "memberCents": 2800,
+    "clubCents": 700,
+    "durationMinutes": 60,
+    "acceptBy": null,
+    "paymentExpiresAt": "2026-11-14T19:10:00.000Z",
+    "serviceSnapshot": {
+      "id": "s4",
+      "title": "英雄联盟 · 双排小时陪",
+      "game": "英雄联盟",
+      "category": "小时陪",
+      "description": "位置协作 · 灵活补位",
+      "priceCents": 3500,
+      "durationMinutes": 60,
+      "tags": ["一位服务成员", "位置协作"],
+      "inclusions": [],
+      "requirements": [],
+      "platform": "PC",
+      "serviceType": "hourly",
+      "billingUnit": "hour",
+      "teamSize": 1,
+      "gameMode": "召唤师峡谷",
+      "maps": ["召唤师峡谷"],
+      "rules": ["一位服务成员，60 分钟，不承诺上分。", "双方各自使用自己的游戏账号。"],
+      "variantId": "pc-60",
+      "variantTitle": "PC · 60分钟"
     },
-    {
-      "id": "3f131037-8184-49fe-94b1-6158e1865a60",
-      "type": "accepted",
-      "at": "2026-11-15T13:05:00.000Z",
-      "actor": {
-        "role": "member",
-        "name": "阿屿"
+    "events": [
+      {
+        "id": "51d8b2e7-2c49-4f3a-9e67-1b8c2f0a4d7f",
+        "type": "created",
+        "at": "2026-11-14T18:50:00.000Z",
+        "actor": {"role": "customer", "name": "林"},
+        "message": "已提交演示预约。"
       },
-      "message": "成员已接单，预约时间已锁定。"
-    },
-    {
-      "id": "6b53eb97-34e0-453d-a2b0-3d4246e7fe6d",
-      "type": "started",
-      "at": "2026-11-15T13:15:00.000Z",
-      "actor": {
-        "role": "member",
-        "name": "阿屿"
-      },
-      "message": "成员已开始服务。"
-    }
-  ],
-  "delivery": null,
-  "review": null,
-  "dispute": null
-}
+      {
+        "id": "93a1c4d2-7f8a-4b6c-1e3d-5c9a1b7d2e8f",
+        "type": "cancelled",
+        "at": "2026-11-14T18:58:00.000Z",
+        "actor": {"role": "customer", "name": "林"},
+        "message": "客户在派单前取消预约，本单不进入服务。"
+      }
+    ],
+    "delivery": null,
+    "review": null,
+    "dispute": null
+  }
+]
