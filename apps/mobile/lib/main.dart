@@ -846,6 +846,21 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   String? error;
   bool loading = false;
+  String category = '全部';
+
+  static const _categories = ['全部', '订单', '金额', '系统'];
+
+  static String _categoryOf(Json n) {
+    final type = '${n['type']}';
+    if (type.contains('refund') ||
+        type.contains('settlement') ||
+        type.contains('ledger')) {
+      return '金额';
+    }
+    if (type.contains('membership') || type.contains('bound')) return '系统';
+    return '订单';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -873,9 +888,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => ClubPage(
-    repo: widget.repo,
-    title: '通知',
+  Widget build(BuildContext context) {
+    final filteredNotifications = widget.repo.notifications
+        .where((n) => category == '全部' || _categoryOf(n) == category)
+        .toList();
+    return ClubPage(
+      repo: widget.repo,
+      title: '通知',
     child: loading && widget.repo.notifications.isEmpty
         ? const ClubSkeleton(kind: SkeletonKind.notifications)
         : PageList(
@@ -905,7 +924,33 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   widget.repo.notifications.isEmpty &&
                   (!widget.repo.isProduction || widget.repo.token != null))
                 const EmptyState('暂时没有新通知', '预约安排和服务进度更新，会出现在这里。'),
-              ...widget.repo.notifications.map(
+              if (!loading &&
+                  error == null &&
+                  widget.repo.notifications.isNotEmpty)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: _categories
+                        .map(
+                          (v) => Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: ChoiceChip(
+                              selected: category == v,
+                              label: Text(v, style: const TextStyle(fontSize: 15)),
+                              onSelected: (_) =>
+                                  setState(() => category = v),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              if (!loading &&
+                  error == null &&
+                  widget.repo.notifications.isNotEmpty)
+                const SizedBox(height: 16),
+              ...filteredNotifications
+                  .map(
                 (n) {
                   final unread = n['readAt'] == null;
                   return Padding(
@@ -983,9 +1028,15 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   );
                 },
               ),
+              if (!loading &&
+                  error == null &&
+                  widget.repo.notifications.isNotEmpty &&
+                  filteredNotifications.isEmpty)
+                const EmptyState('该分类下暂无通知', '切换其他分类查看。'),
             ],
           ),
-  );
+    );
+  }
 }
 
 class SupportPage extends StatefulWidget {

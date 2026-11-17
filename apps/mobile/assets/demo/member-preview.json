@@ -553,6 +553,16 @@
       "orderId": "1e914e74-ea65-4e47-9d0f-e83cc5fa297b",
       "createdAt": "2026-11-15T11:45:00.000Z",
       "readAt": null
+    },
+    {
+      "id": "7c1f2a90-3b64-4e21-9a88-5d0c1b3e6f24",
+      "role": "member",
+      "type": "membership_bound",
+      "title": "欢迎加入俱乐部",
+      "body": "你的成员身份已绑定，可以设置可接时段。",
+      "orderId": null,
+      "createdAt": "2026-11-15T11:30:00.000Z",
+      "readAt": "2026-11-15T11:32:00.000Z"
     }
   ]
 }
