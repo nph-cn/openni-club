@@ -52,7 +52,7 @@
     "title": "陪练目录",
     "role": "customer",
     "flow": "discover",
-    "description": "陪练资料、擅长游戏和服务价格。",
+    "description": "陪练目录：按昵称、身份或擅长游戏搜索，展示资料、擅长游戏与服务价格。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
     "width": 390,

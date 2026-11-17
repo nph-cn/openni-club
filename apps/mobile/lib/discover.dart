@@ -1013,21 +1013,47 @@ class MemberRow extends StatelessWidget {
   );
 }
 
-class PlayersPage extends StatelessWidget {
+class PlayersPage extends StatefulWidget {
   const PlayersPage(this.repo, {super.key});
   final ClubRepository repo;
   @override
-  Widget build(BuildContext context) => ClubPage(
-    repo: repo,
-    title: '俱乐部陪练',
-    child: PageList(
-      children: [
-        if (repo.players.isEmpty)
-          const Text('暂无陪练', style: TextStyle(color: muted)),
-        ...repo.players.map((p) => RosterRow(repo: repo, player: p)),
-      ],
-    ),
-  );
+  State<PlayersPage> createState() => _PlayersPageState();
+}
+
+class _PlayersPageState extends State<PlayersPage> {
+  String query = '';
+  @override
+  Widget build(BuildContext context) {
+    final repo = widget.repo;
+    final q = query.trim();
+    final players = repo.players
+        .where(
+          (p) =>
+              q.isEmpty ||
+              '${p['name']} ${p['role']} ${(p['games'] as List? ?? []).join(' ')}'
+                  .contains(q),
+        )
+        .toList();
+    return ClubPage(
+      repo: repo,
+      title: '俱乐部陪练',
+      child: PageList(
+        children: [
+          TextField(
+            decoration: const InputDecoration(
+              prefixIcon: Icon(Icons.search_rounded),
+              hintText: '搜索成员或游戏',
+            ),
+            onChanged: (v) => setState(() => query = v),
+          ),
+          const SizedBox(height: 14),
+          if (players.isEmpty)
+            const Text('没有匹配的成员', style: TextStyle(color: muted)),
+          ...players.map((p) => RosterRow(repo: repo, player: p)),
+        ],
+      ),
+    );
+  }
 }
 
 class PlayerPage extends StatefulWidget {
