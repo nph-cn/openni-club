@@ -139,6 +139,44 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
+          if (repo.announcements.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: InkWell(
+                onTap: () => context.push('/announcements'),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.campaign_outlined,
+                      size: 18,
+                      color: brandColor(repo),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${repo.announcements.first['title']}',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        '${repo.announcements.first['body'] ?? ''}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 13, color: muted),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      size: 19,
+                      color: muted,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           const SizedBox(height: 20),
           SizedBox(
             height: 84,

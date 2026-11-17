@@ -4,7 +4,7 @@
     "title": "俱乐部首页",
     "role": "customer",
     "flow": "discover",
-    "description": "游戏横幅、服务与陪练入口，进行中订单快捷查看。",
+    "description": "游戏横幅、最新公告、服务与陪练入口，进行中订单快捷查看。",
     "source": "apps/mobile/lib/discover.dart",
     "state": "catalog",
     "width": 390,
