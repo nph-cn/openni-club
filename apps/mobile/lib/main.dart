@@ -454,6 +454,24 @@ class _OpenNIAppState extends State<OpenNIApp> {
   );
 }
 
+class _AccountStat extends StatelessWidget {
+  const _AccountStat(this.value, this.label);
+  final String value, label;
+  @override
+  Widget build(BuildContext context) => Expanded(
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(label, style: const TextStyle(fontSize: 13, color: muted)),
+          ],
+        ),
+      );
+}
+
 class AccountPage extends StatefulWidget {
   const AccountPage(this.repo, {super.key, this.settings = false});
   final ClubRepository repo;
@@ -576,72 +594,48 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               if (!settings) ...[
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    BrandMark(repo, size: 58),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                Surface(
+                  color: warmHead,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
-                          Text(
-                            repo.token == null ? '未登录' : repo.memberName,
-                            style: const TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
+                          BrandMark(repo, size: 58),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  repo.token == null ? '未登录' : repo.memberName,
+                                  style: const TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  repo.role == 'member'
+                                      ? '俱乐部成员'
+                                      : repo.token == null
+                                      ? '未登录'
+                                      : '俱乐部客户',
+                                  style: const TextStyle(color: muted, fontSize: 14),
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            repo.role == 'member'
-                                ? '俱乐部成员'
-                                : repo.token == null
-                                ? '未登录'
-                                : '俱乐部客户',
-                            style: const TextStyle(color: muted, fontSize: 14),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Surface(
-                  color: sage,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              '${repo.orders.length}',
-                              style: const TextStyle(
-                                fontSize: 27,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Text(
-                              '我的预约',
-                              style: TextStyle(fontSize: 14, color: muted),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Text(
-                              '${repo.following.length}',
-                              style: const TextStyle(
-                                fontSize: 27,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Text(
-                              '本机关注',
-                              style: TextStyle(fontSize: 14, color: muted),
-                            ),
-                          ],
-                        ),
+                      const SizedBox(height: 22),
+                      Row(
+                        children: [
+                          _AccountStat('${repo.orders.length}', '我的预约'),
+                          _AccountStat('${repo.following.length}', '本机关注'),
+                          _AccountStat('${repo.players.length}', '俱乐部成员'),
+                        ],
                       ),
                     ],
                   ),

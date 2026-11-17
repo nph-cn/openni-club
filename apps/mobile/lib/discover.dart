@@ -381,7 +381,11 @@ class ServiceFeature extends StatelessWidget {
         children: [
           TextSpan(
             text: '¥${money(quote)}',
-            style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+            style: const TextStyle(
+              fontSize: 23,
+              fontWeight: FontWeight.w700,
+              color: accent,
+            ),
           ),
           TextSpan(
             text: variants.length > 1 ? ' 起' : '/${priceUnit(quote)}',
@@ -1054,7 +1058,8 @@ class _PlayerPageState extends State<PlayerPage> {
                       text: '¥${money(prices.first)}',
                       style: const TextStyle(
                         fontSize: 27,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
+                        color: accent,
                       ),
                     ),
                     const TextSpan(

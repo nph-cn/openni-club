@@ -262,7 +262,8 @@ class _BookingPageState extends State<BookingPage> {
                     '¥${money(s)}',
                     style: const TextStyle(
                       fontSize: 26,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: accent,
                     ),
                   ),
                   Text(
