@@ -140,20 +140,23 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           const SizedBox(height: 20),
-          Row(
-            children: games
-                .map(
-                  (game) => Expanded(
-                    child: GameSelector(
-                      service: repo.services.firstWhere(
-                        (s) => s['game'] == game,
-                      ),
-                      selected: selectedGame == game,
-                      onTap: () => setState(() => selectedGame = game),
-                    ),
+          SizedBox(
+            height: 84,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: games.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 18),
+              itemBuilder: (_, i) {
+                final game = games[i];
+                return GameSelector(
+                  service: repo.services.firstWhere(
+                    (s) => s['game'] == game,
                   ),
-                )
-                .toList(),
+                  selected: selectedGame == game,
+                  onTap: () => setState(() => selectedGame = game),
+                );
+              },
+            ),
           ),
           const SizedBox(height: 8),
           SectionTitle(
@@ -419,6 +422,15 @@ class ServiceFeature extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         title,
+                        if ('${quote['description'] ?? ''}'.isNotEmpty) ...[
+                          const SizedBox(height: 5),
+                          Text(
+                            '${quote['description']}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 13, color: muted, height: 1.4),
+                          ),
+                        ],
                         const SizedBox(height: 7),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
@@ -457,6 +469,15 @@ class ServiceFeature extends StatelessWidget {
                           '${quote['durationMinutes']} 分钟 · ${serviceKind(quote)}',
                           style: const TextStyle(fontSize: 13, color: muted),
                         ),
+                        if ('${quote['description'] ?? ''}'.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            '${quote['description']}',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 12, color: muted, height: 1.4),
+                          ),
+                        ],
                         const SizedBox(height: 9),
                         price,
                       ],
