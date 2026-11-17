@@ -132,6 +132,10 @@ npm run build
 
 **检查结果：** `dist/index.html`、`dist/studio/`、`dist/guide/`、`dist/demo/`、`dist/admin/` 与 `dist/screens/` 均存在；画廊截图可打开。
 
+本地预览静态站：在仓库根目录 `cd dist && python3 -m http.server 8099`，访问 `http://127.0.0.1:8099/`（展示站）、`/demo/`（Web 演示）、`/admin/`、`/guide/`。
+
+> 本地 Web 演示预览环境备注：Flutter Web 首帧依赖浏览器的 WebGL/Canvas 合成。若在某台机器的 Chromium 里演示页停在启动占位、看不到画面，先在 Safari 或其他浏览器打开同一地址对照；同一产物在 Safari 能出帧即说明应用代码与产物正常，问题在本机 Chromium 的 GPU/合成环境（驱动、ANGLE 或标志位），不要据此判断客户端代码有缺陷。线上用户环境多样，最终以线上静态托管地址在真实浏览器的打开结果为准。
+
 **检查结果：** 后台能读取自己的俱乐部目录；客户端登录后能查询自己的订单；另一个账号不能读取前一账号的订单。
 
 ## 7. 更新与备份
