@@ -906,30 +906,82 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   (!widget.repo.isProduction || widget.repo.token != null))
                 const EmptyState('暂时没有新通知', '预约安排和服务进度更新，会出现在这里。'),
               ...widget.repo.notifications.map(
-                (n) => ListTile(
-                  title: Text('${n['title']}'),
-                  subtitle: Text('${n['body'] ?? n['message'] ?? ''}'),
-                  onTap: () async {
-                    try {
-                      if (!widget.repo.isLocal) {
-                        await widget.repo.request(
-                          'PATCH',
-                          '/notifications/${n['id']}/read',
-                          {},
-                        );
-                      }
-                      if (context.mounted && n['orderId'] != null) {
-                        context.push(
-                          widget.repo.role == 'member'
-                              ? '/member/orders/${n['orderId']}'
-                              : '/orders/${n['orderId']}',
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) toast(context, e);
-                    }
-                  },
-                ),
+                (n) {
+                  final unread = n['readAt'] == null;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: InkWell(
+                      onTap: () async {
+                        try {
+                          if (!widget.repo.isLocal) {
+                            await widget.repo.request(
+                              'PATCH',
+                              '/notifications/${n['id']}/read',
+                              {},
+                            );
+                          }
+                          if (context.mounted && n['orderId'] != null) {
+                            context.push(
+                              widget.repo.role == 'member'
+                                  ? '/member/orders/${n['orderId']}'
+                                  : '/orders/${n['orderId']}',
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) toast(context, e);
+                        }
+                      },
+                      child: Surface(
+                        border: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (unread)
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    margin: const EdgeInsets.only(right: 7),
+                                    decoration: const BoxDecoration(
+                                      color: unreadDot,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    '${n['title']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight:
+                                          unread ? FontWeight.w600 : FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  when(n['createdAt']),
+                                  style: const TextStyle(
+                                    color: muted,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${n['body'] ?? n['message'] ?? ''}',
+                              style: const TextStyle(
+                                color: muted,
+                                fontSize: 14,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

@@ -17,7 +17,9 @@ const canvas = Color(0xFFF5F6F8),
     // 克制暖强调色：用于价格、主操作与选中态，不随俱乐部品牌色变化。
     accent = Color(0xFFE8891C),
     accentSoft = Color(0xFFFBF1E2),
-    warmHead = Color(0xFFF7F1E7);
+    warmHead = Color(0xFFF7F1E7),
+    // 未读提示圆点，与小程序通知圆点同一暖棕。
+    unreadDot = Color(0xFFA7693D);
 Color brandColor(ClubRepository repo) {
   final hex = '${repo.club['primaryColor'] ?? '#272D35'}'.replaceFirst('#', '');
   return Color(int.tryParse('FF$hex', radix: 16) ?? 0xFF272D35);

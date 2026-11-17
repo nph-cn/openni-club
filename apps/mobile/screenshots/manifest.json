@@ -232,7 +232,7 @@
     "title": "成员通知",
     "role": "member",
     "flow": "member",
-    "description": "真实API流程产生的本人订单通知。",
+    "description": "本人订单通知列表：未读圆点、通知时间与正文，点击进入对应订单。",
     "source": "apps/mobile/lib/main.dart",
     "state": "read-only",
     "width": 390,
