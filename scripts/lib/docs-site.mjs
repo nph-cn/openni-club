@@ -1,5 +1,5 @@
 import {mkdir,readdir,readFile,writeFile} from 'node:fs/promises';
-import {join,resolve} from 'node:path';
+import {join,resolve,dirname} from 'node:path';
 import {marked} from 'marked';
 
 const repo='https://github.com/nph-cn/openni-club';
@@ -9,7 +9,8 @@ const sections=[
  {title:'第三方集成',pages:[['06-integrations.md','集成总览'],['09-wechat-adapters.md','微信登录与支付'],['11-phone-auth.md','手机号与验证码']]},
  {title:'服务器部署',pages:[['03-deployment.md','域名与服务器']]},
  {title:'应用发布',pages:[['04-mobile-release.md','iOS 与 Android'],['05-wechat-release.md','微信小程序'],['07-release-checklist.md','上线检查']]},
- {title:'工具与参考',pages:[['08-use-the-skill.md','使用教学 Skill'],['00-status.md','功能与版本状态'],['sources.md','参考资料']]}
+ {title:'工具与参考',pages:[['08-use-the-skill.md','使用教学 Skill'],['00-status.md','功能与版本状态'],['sources.md','参考资料']]},
+ {title:'产品依据',pages:[['product/01-club-operations.md','经营闭环与角色范围'],['product/02-market-reality.md','真实服务目录结构']]}
 ];
 const escape=value=>String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const text=value=>String(value).replace(/<[^>]*>/g,'').replace(/!\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/\[([^\]]+)\]\([^)]*\)/g,'$1').replace(/[`*~]/g,'').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
@@ -18,8 +19,17 @@ const slug=value=>text(value).toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu,'').tri
 
 export async function buildDocs({root=process.cwd(),outDir='dist/guide'}={}){
  const destination=resolve(root,outDir);await mkdir(destination,{recursive:true});
- const files=(await readdir(join(root,'docs'))).filter(file=>file.endsWith('.md')).sort();
- const contents=new Map(await Promise.all(files.map(async file=>[file,await readFile(join(root,'docs',file),'utf8')])));
+ const readMd=async file=>readFile(join(root,'docs',file),'utf8');
+ const files=[];
+ for(const entry of await readdir(join(root,'docs'),{withFileTypes:true})){
+  if(entry.isDirectory()){
+   for(const sub of await readdir(join(root,'docs',entry.name))){
+    if(sub.endsWith('.md'))files.push(`${entry.name}/${sub}`);
+   }
+  }else if(entry.name.endsWith('.md'))files.push(entry.name);
+ }
+ files.sort();
+ const contents=new Map(await Promise.all(files.map(async file=>[file,await readMd(file)])));
  const ordered=sections.flatMap(section=>section.pages).filter(([file])=>contents.has(file));
  for(const file of files)if(!ordered.some(([entry])=>entry===file))ordered.push([file,(contents.get(file).match(/^# (.+)$/m)||[])[1]||file]);
  const search=[];
@@ -53,7 +63,9 @@ export async function buildDocs({root=process.cwd(),outDir='dist/guide'}={}){
 <dialog id="doc-menu" aria-labelledby="doc-menu-title"><div class="menu-title"><span id="doc-menu-title">文档目录</span><button type="button" data-close-dialog="doc-menu" aria-label="关闭目录">关闭</button></div><nav aria-label="文档章节（移动端）">${navigation}</nav></dialog>
 <dialog id="doc-search" aria-labelledby="search-label"><div class="search-form"><label class="sr-only" id="search-label" for="doc-search-input">搜索文档</label><input id="doc-search-input" type="search" autocomplete="off" placeholder="搜索文档、配置项或命令" aria-controls="doc-search-results"><button type="button" data-close-dialog="doc-search" aria-label="关闭搜索">Esc</button></div><div class="search-status" id="search-status" role="status">正在加载搜索索引…</div><div id="doc-search-results"></div><div class="search-footer"><span>↑ ↓ 选择</span><span>Enter 打开</span></div></dialog>
 </body></html>`;
-  await writeFile(join(destination,file.replace(/\.md$/,'.html')),html);
+  const outFile=join(destination,file.replace(/\.md$/,'.html'));
+  await mkdir(dirname(outFile),{recursive:true});
+  await writeFile(outFile,html);
   const tokens=marked.lexer(markdown);let current={id:'',heading:shortTitle,parts:[]};
   const append=()=>{const body=text(current.parts.join(' '));if(body||!current.id)search.push({title:shortTitle,heading:current.heading,url:url(file)+(current.id?'#'+current.id:''),text:body});};
   let headingIndex=0;
