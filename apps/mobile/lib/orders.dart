@@ -62,10 +62,15 @@ class _OrdersPageState extends State<OrdersPage> {
             '全部' => true,
             '已结束' => ['completed', 'cancelled'].contains(stage(o)),
             '待付款' => stage(o) == 'awaiting_payment',
-            '待接单' => ['awaiting_assignment', 'awaiting_acceptance']
-                .contains(stage(o)),
-            '服务中' => ['scheduled', 'in_progress', 'awaiting_confirmation']
-                .contains(stage(o)),
+            '待接单' => [
+              'awaiting_assignment',
+              'awaiting_acceptance',
+            ].contains(stage(o)),
+            '服务中' => [
+              'scheduled',
+              'in_progress',
+              'awaiting_confirmation',
+            ].contains(stage(o)),
             _ => !['completed', 'cancelled'].contains(stage(o)),
           },
         )
@@ -83,9 +88,13 @@ class _OrdersPageState extends State<OrdersPage> {
       ],
       child: PageList(
         children: [
-          _OrderQuickGrid(orders: repo.orders, onTap: (status) {
-            setState(() => filter = status);
-          }),
+          _OrderQuickGrid(
+            orders: repo.orders,
+            selectedFilter: filter,
+            onTap: (status) {
+              setState(() => filter = status);
+            },
+          ),
           const SizedBox(height: 16),
           Row(
             children: ['进行中', '已结束', '全部']
@@ -114,12 +123,17 @@ class _OrdersPageState extends State<OrdersPage> {
             ),
           if (!loading && failure == null && items.isEmpty)
             EmptyState(
-              '这里还没有预约',
-              '选择服务并预约时段。',
-              action: FilledButton(
-                onPressed: () => context.go('/services'),
-                child: const Text('去发现服务'),
-              ),
+              repo.orders.isEmpty ? '这里还没有预约' : '暂无$filter订单',
+              repo.orders.isEmpty ? '选择服务并预约时段。' : '可以查看其他订单状态。',
+              action: repo.orders.isEmpty
+                  ? FilledButton(
+                      onPressed: () => context.go('/services'),
+                      child: const Text('去发现服务'),
+                    )
+                  : TextButton(
+                      onPressed: () => setState(() => filter = '全部'),
+                      child: const Text('查看全部订单'),
+                    ),
             ),
           ...items.map(
             (o) => Padding(
@@ -183,8 +197,13 @@ class _OrdersPageState extends State<OrdersPage> {
 
 /// 订单状态快捷宫格：按真实订单状态归类计数，点击切换列表筛选。
 class _OrderQuickGrid extends StatelessWidget {
-  const _OrderQuickGrid({required this.orders, required this.onTap});
+  const _OrderQuickGrid({
+    required this.orders,
+    required this.selectedFilter,
+    required this.onTap,
+  });
   final List<Json> orders;
+  final String selectedFilter;
   final ValueChanged<String> onTap;
 
   int _count(Set<String> stages) =>
@@ -208,7 +227,11 @@ class _OrderQuickGrid extends StatelessWidget {
       _QuickItem(
         label: '服务中',
         icon: Icons.sports_esports_outlined,
-        count: _count(const {'scheduled', 'in_progress', 'awaiting_confirmation'}),
+        count: _count(const {
+          'scheduled',
+          'in_progress',
+          'awaiting_confirmation',
+        }),
         filter: '服务中',
       ),
       _QuickItem(
@@ -225,27 +248,52 @@ class _OrderQuickGrid extends StatelessWidget {
         children: items
             .map(
               (item) => Expanded(
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () => onTap(item.filter),
-                  child: Column(
-                    children: [
-                      Icon(item.icon, size: 24, color: ink),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${item.count}',
-                        style: const TextStyle(
-                          fontSize: 19,
-                          fontWeight: FontWeight.w700,
-                          color: ink,
-                        ),
+                child: Semantics(
+                  key: Key('order-filter-${item.filter}'),
+                  button: true,
+                  selected: selectedFilter == item.filter,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => onTap(item.filter),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      decoration: BoxDecoration(
+                        color: selectedFilter == item.filter
+                            ? sage
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item.label,
-                        style: const TextStyle(fontSize: 12, color: muted),
+                      child: Column(
+                        children: [
+                          Icon(
+                            item.icon,
+                            size: 24,
+                            color: selectedFilter == item.filter ? forest : ink,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${item.count}',
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              color: selectedFilter == item.filter
+                                  ? forest
+                                  : ink,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            item.label,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: selectedFilter == item.filter
+                                  ? forest
+                                  : muted,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
