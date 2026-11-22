@@ -85,9 +85,15 @@ void main() {
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byType(TextFormField).first);
       await tester.enterText(find.byType(TextFormField).first, 'demo-contact');
+      await tester.enterText(find.byType(TextFormField).at(1), 'Demo#1234');
+      await tester.enterText(find.byType(TextFormField).last, '希望练习报点');
       await tester.tap(find.text('核对预约'));
       await tester.pumpAndSettle();
       expect(find.text('核对这次预约'), findsOneWidget);
+      expect(find.text('服务规格'), findsOneWidget);
+      expect(find.text('游戏昵称或 ID'), findsOneWidget);
+      expect(find.text('Demo#1234'), findsOneWidget);
+      expect(find.text('服务费用'), findsOneWidget);
       expect(
         tester.getTopLeft(find.text('三角洲 · PC 小时陪')).dy,
         greaterThanOrEqualTo(0),
@@ -102,6 +108,7 @@ void main() {
       await tester.tap(find.text('提交预约'));
       await tester.pumpAndSettle();
       expect(repo.orders, hasLength(1));
+      expect(repo.orders.first['note'], '游戏昵称或 ID：Demo#1234\n希望练习报点');
       expect(repo.orders.first['fulfillmentStatus'], 'awaiting_assignment');
       expect(find.text('订单详情'), findsOneWidget);
       await tester.scrollUntilVisible(

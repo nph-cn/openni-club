@@ -198,6 +198,7 @@ void main() {
       tester.widget<BookingPage>(find.byType(BookingPage)).variantId,
       'pc-120',
     );
+    expect(find.text('PC · 120分钟'), findsOneWidget);
     expect(find.text('¥72'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

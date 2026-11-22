@@ -29,6 +29,7 @@ class _BookingPageState extends State<BookingPage> {
   final scroll = ScrollController(keepScrollOffset: false);
   final form = GlobalKey<FormState>(),
       contact = TextEditingController(),
+      gameId = TextEditingController(),
       note = TextEditingController();
   late DateTime day;
   late final String requestId;
@@ -82,9 +83,15 @@ class _BookingPageState extends State<BookingPage> {
   void dispose() {
     scroll.dispose();
     contact.dispose();
+    gameId.dispose();
     note.dispose();
     super.dispose();
   }
+
+  String get bookingNote => [
+    if (gameId.text.trim().isNotEmpty) '游戏昵称或 ID：${gameId.text.trim()}',
+    if (note.text.trim().isNotEmpty) note.text.trim(),
+  ].join('\n');
 
   Future<void> loadSlots() async {
     final revision = ++fetchId;
@@ -173,10 +180,19 @@ class _BookingPageState extends State<BookingPage> {
     });
   }
 
+  void revealError() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && scroll.hasClients) {
+        scroll.jumpTo(scroll.position.maxScrollExtent);
+      }
+    });
+  }
+
   Future<void> next() async {
     if (!form.currentState!.validate()) return;
     if (playerId == null || selectedSlot == null) {
       setState(() => failure = '请选择队友和一个可约时段。');
+      revealError();
       return;
     }
     setState(() {
@@ -193,6 +209,7 @@ class _BookingPageState extends State<BookingPage> {
     }
     if (!accepted) {
       setState(() => failure = '请先阅读并同意预约说明');
+      revealError();
       return;
     }
     setState(() {
@@ -217,13 +234,14 @@ class _BookingPageState extends State<BookingPage> {
         player: repo.findPlayer(playerId),
         date: DateTime.parse(selectedSlot!['startAt']),
         contact: contact.text.trim(),
-        note: note.text.trim(),
+        note: bookingNote,
         idempotencyKey: requestId,
       );
       if (mounted) context.go('/orders/${o['id']}');
     } catch (e) {
       if (mounted) {
         setState(() => failure = '$e'.replaceFirst('Exception: ', ''));
+        revealError();
       }
     } finally {
       if (mounted) setState(() => busy = false);
@@ -324,6 +342,13 @@ class _BookingPageState extends State<BookingPage> {
                           '${s['durationMinutes']} 分钟 · ${s['gameMode'] ?? s['game']}',
                           style: const TextStyle(fontSize: 14, color: muted),
                         ),
+                        if (s['variantTitle'] != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            '${s['variantTitle']}',
+                            style: const TextStyle(fontSize: 14, color: muted),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -555,6 +580,15 @@ class _BookingPageState extends State<BookingPage> {
                 ),
                 const SizedBox(height: 14),
                 TextFormField(
+                  controller: gameId,
+                  maxLength: 64,
+                  decoration: const InputDecoration(
+                    labelText: '游戏昵称或 ID（选填）',
+                    hintText: '用于队友识别，请勿填写账号密码',
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextFormField(
                   controller: note,
                   maxLength: 200,
                   maxLines: 3,
@@ -568,6 +602,8 @@ class _BookingPageState extends State<BookingPage> {
                   border: true,
                   child: Column(
                     children: [
+                      if (s['variantTitle'] != null)
+                        PairRow('服务规格', '${s['variantTitle']}'),
                       PairRow('意向队友', '${p?['name']}', strong: true),
                       PairRow(
                         '预约时间',
@@ -576,11 +612,14 @@ class _BookingPageState extends State<BookingPage> {
                       ),
                       PairRow('服务时长', '${s['durationMinutes']} 分钟'),
                       PairRow('联系方式', contact.text.trim()),
+                      if (gameId.text.trim().isNotEmpty)
+                        PairRow('游戏昵称或 ID', gameId.text.trim()),
                       PairRow(
                         '预约备注',
                         note.text.trim().isEmpty ? '未填写' : note.text.trim(),
                       ),
                       const Divider(),
+                      PairRow('服务费用', '¥${money(s)}'),
                       PairRow('合计', '¥${money(s)}', strong: true),
                     ],
                   ),
@@ -596,6 +635,14 @@ class _BookingPageState extends State<BookingPage> {
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
                       '预览预约，不收取费用。',
+                      style: TextStyle(fontSize: 14, color: muted),
+                    ),
+                  )
+                else
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      '提交后进入订单详情完成付款。',
                       style: TextStyle(fontSize: 14, color: muted),
                     ),
                   ),
