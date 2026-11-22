@@ -46,6 +46,8 @@ OpenNI 是一套 MIT 开源的电竞俱乐部应用，包含 Flutter App、微�
 
 ## 遇到问题
 
+产品流程与界面的设计依据见[俱乐部经营闭环](product/01-club-operations.md)、[服务目录研究](product/02-market-reality.md)和[手机竞品流程走查](product/03-mobile-competitor-walkthrough.md)。
+
 先查看对应页面的操作结果和常见错误，再检查 [功能与版本状态](00-status.md)。需要 AI 协助时，使用 [教学 Skill](08-use-the-skill.md)，让它读取仓库并检查当前配置。
 
 代码、构建或文档问题可在 [GitHub Issues](https://github.com/nph-cn/openni-club/issues) 提交。附上操作步骤和错误信息即可，不要附上密钥、管理员令牌或客户资料。
