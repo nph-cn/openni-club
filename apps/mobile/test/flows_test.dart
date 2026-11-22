@@ -127,23 +127,38 @@ void main() {
       expect(find.text('预约已取消'), findsWidgets);
     },
   );
-  testWidgets('catalog filters have real empty and matching states', (
-    tester,
-  ) async {
-    final repo = ClubRepository(persist: false);
-    await repo.load();
-    await tester.pumpWidget(
-      OpenNIApp(repository: repo, initialScreen: 'services'),
-    );
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '不存在');
-    await tester.pumpAndSettle();
-    expect(find.text('没有匹配的服务'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), '复盘');
-    await tester.pumpAndSettle();
-    expect(find.text('三角洲 · 对局复盘'), findsOneWidget);
-    expect(find.text('三角洲 · PC 小时陪'), findsNothing);
-  });
+  testWidgets(
+    'home search opens service search with honest results and empty states',
+    (tester) async {
+      final repo = ClubRepository(persist: false);
+      await repo.load();
+      await tester.pumpWidget(OpenNIApp(repository: repo));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('搜索游戏或服务'));
+      await tester.pumpAndSettle();
+      expect(find.text('找服务'), findsOneWidget);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).decoration?.hintText,
+        '搜索游戏或服务',
+      );
+      await tester.enterText(find.byType(TextField), '不存在');
+      await tester.pumpAndSettle();
+      expect(find.text('没有匹配的服务'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), ' 复盘 ');
+      await tester.pumpAndSettle();
+      expect(find.text('三角洲 · 对局复盘'), findsOneWidget);
+      expect(find.text('三角洲 · PC 小时陪'), findsNothing);
+
+      repo.services.clear();
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        OpenNIApp(repository: repo, initialScreen: 'services'),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('暂无服务'), findsOneWidget);
+      expect(find.text('服务上架后会显示在这里。'), findsOneWidget);
+    },
+  );
   test('local demo idempotency and storage survive reloading', () async {
     SharedPreferences.setMockInitialValues({});
     final repo = ClubRepository();

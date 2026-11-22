@@ -85,10 +85,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Icon(Icons.search_rounded, size: 21, color: muted),
                   SizedBox(width: 9),
-                  Text(
-                    '搜索游戏、服务、陪练',
-                    style: TextStyle(fontSize: 15, color: muted),
-                  ),
+                  Text('搜索游戏或服务', style: TextStyle(fontSize: 15, color: muted)),
                 ],
               ),
             ),
@@ -722,11 +719,12 @@ class _ServicesPageState extends State<ServicesPage> {
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
+    final search = query.trim();
     final items = repo.services
         .where(
           (s) =>
               (game == '全部' || s['game'] == game) &&
-              '${s['title']} ${s['game']} ${s['description']}'.contains(query),
+              '${s['title']} ${s['game']} ${s['description']}'.contains(search),
         )
         .toList();
     return ClubPage(
@@ -765,7 +763,11 @@ class _ServicesPageState extends State<ServicesPage> {
             ),
           ),
           const SizedBox(height: 20),
-          if (items.isEmpty) const EmptyState('没有匹配的服务', '试试其他游戏或关键词。'),
+          if (items.isEmpty)
+            EmptyState(
+              repo.services.isEmpty ? '暂无服务' : '没有匹配的服务',
+              repo.services.isEmpty ? '服务上架后会显示在这里。' : '换个游戏或关键词试试。',
+            ),
           ...items.map(
             (s) => Padding(
               padding: const EdgeInsets.only(bottom: 16),
