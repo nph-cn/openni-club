@@ -124,11 +124,11 @@ docker compose ps
 公开网站、画廊、品牌配置页（studio）、文档（guide）与 Web 演示（demo）由 `dist/` 静态目录提供，不随 Compose 自动生成。先在 `apps/mobile` 产出 Web 演示产物，再在仓库根目录打包：
 
 ```sh
-cd apps/mobile && flutter build web && cd ../..
+cd apps/mobile && flutter build web --base-href /demo/ && cd ../..
 npm run build
 ```
 
-`npm run build`（`node scripts/build.mjs`）会把 `apps/showcase`、`apps/admin`、`apps/studio`、`docs` 与 Web 演示汇总到 `dist/`，并校验画廊截图齐全。把 `dist/` 部署到任意静态托管（对象存储、Nginx 或 CDN）即可；后台与品牌配置页按实际来源配置 CORS。
+`npm run build`（`node scripts/build.mjs`）会把 `apps/showcase`、`apps/admin`、`apps/studio`、`docs` 与 Web 演示汇总到 `dist/`，强制将演示页的 `<base href>` 设为 `/demo/`，并校验启动脚本和画廊截图齐全。把 `dist/` 部署到任意静态托管（对象存储、Nginx 或 CDN）即可；后台与品牌配置页按实际来源配置 CORS。
 
 **检查结果：** `dist/index.html`、`dist/studio/`、`dist/guide/`、`dist/demo/`、`dist/admin/` 与 `dist/screens/` 均存在；画廊截图可打开。
 
