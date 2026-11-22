@@ -6,11 +6,58 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:openni_club/booking.dart';
 import 'package:openni_club/main.dart';
 import 'package:openni_club/repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  testWidgets(
+    'player booking selects the requested service and keeps the player',
+    (tester) async {
+      tester.view.physicalSize = const Size(390, 844);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final repo = ClubRepository(persist: false);
+      await repo.load();
+      await tester.pumpWidget(
+        OpenNIApp(repository: repo, initialScreen: 'player'),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('预约 TA'));
+      await tester.pumpAndSettle();
+      final sheet = find.byType(BottomSheet);
+      expect(
+        find.descendant(of: sheet, matching: find.text('选择预约服务')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: sheet, matching: find.text('三角洲 · PC 小时陪')),
+        findsOneWidget,
+      );
+      final reviewService = find.descendant(
+        of: sheet,
+        matching: find.text('三角洲 · 对局复盘'),
+      );
+      expect(reviewService, findsOneWidget);
+      expect(
+        find.descendant(of: sheet, matching: find.text('无畏契约 · 组队小时陪')),
+        findsNothing,
+      );
+
+      await tester.tap(reviewService);
+      await tester.pumpAndSettle();
+      final booking = tester.widget<BookingPage>(find.byType(BookingPage));
+      expect(booking.serviceId, 's2');
+      expect(booking.playerId, 'p1');
+      expect(find.text('选择队友与时间'), findsOneWidget);
+      expect(find.text('三角洲 · 对局复盘'), findsOneWidget);
+      expect(find.text('阿屿'), findsOneWidget);
+    },
+  );
+
   testWidgets(
     'booking validates contact, checks a real slot, requires consent, creates and cancels',
     (tester) async {

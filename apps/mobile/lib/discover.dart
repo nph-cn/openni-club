@@ -187,9 +187,7 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (_, i) {
                 final game = games[i];
                 return GameSelector(
-                  service: repo.services.firstWhere(
-                    (s) => s['game'] == game,
-                  ),
+                  service: repo.services.firstWhere((s) => s['game'] == game),
                   selected: selectedGame == game,
                   onTap: () => setState(() => selectedGame = game),
                 );
@@ -392,10 +390,12 @@ class ServiceFeature extends StatelessWidget {
     required this.service,
     this.embedded = false,
     this.poster = false,
+    this.onTap,
   });
   final ClubRepository repo;
   final Json service;
   final bool embedded, poster;
+  final VoidCallback? onTap;
   @override
   Widget build(BuildContext context) {
     final variants = serviceVariants(service);
@@ -436,7 +436,7 @@ class ServiceFeature extends StatelessWidget {
       ),
     );
     return InkWell(
-      onTap: () => context.push('/services/${service['id']}'),
+      onTap: onTap ?? () => context.push('/services/${service['id']}'),
       borderRadius: BorderRadius.circular(14),
       child: Container(
         decoration: embedded
@@ -466,7 +466,11 @@ class ServiceFeature extends StatelessWidget {
                             '${quote['description']}',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 13, color: muted, height: 1.4),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: muted,
+                              height: 1.4,
+                            ),
                           ),
                         ],
                         const SizedBox(height: 7),
@@ -513,7 +517,11 @@ class ServiceFeature extends StatelessWidget {
                             '${quote['description']}',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, color: muted, height: 1.4),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: muted,
+                              height: 1.4,
+                            ),
                           ),
                         ],
                         const SizedBox(height: 9),
@@ -968,7 +976,11 @@ class _ServicePageState extends State<ServicePage> {
             ),
             child: const Text(
               '本平台提供陪练与组队协作，不提供上号代练、代打，双方各自使用本人游戏账号。',
-              style: TextStyle(fontSize: 14, color: Color(0xFF9A3A3A), height: 1.5),
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF9A3A3A),
+                height: 1.5,
+              ),
             ),
           ),
           SectionTitle('可选陪练'),
@@ -1158,6 +1170,57 @@ class _PlayerPageState extends State<PlayerPage> {
     }
   }
 
+  Future<void> chooseService(List<Json> services, String playerId) async {
+    final serviceId = await showClubSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(ctx).height * .7,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '选择预约服务',
+                  style: TextStyle(fontSize: 23, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 16),
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: services.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
+                    itemBuilder: (_, index) {
+                      final service = services[index];
+                      return ServiceFeature(
+                        repo: widget.repo,
+                        service: service,
+                        onTap: () => Navigator.pop(ctx, '${service['id']}'),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    if (serviceId != null && mounted) {
+      context.push(
+        Uri(
+          path: '/book',
+          queryParameters: {'service': serviceId, 'player': playerId},
+        ).toString(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo, p = widget.repo.findPlayer(widget.id);
@@ -1225,9 +1288,7 @@ class _PlayerPageState extends State<PlayerPage> {
             child: FilledButton(
               onPressed: services.isEmpty
                   ? null
-                  : () => context.push(
-                      '/book?service=${services.first['id']}&player=${p['id']}',
-                    ),
+                  : () => chooseService(services, '${p['id']}'),
               child: const Text('预约 TA'),
             ),
           ),
