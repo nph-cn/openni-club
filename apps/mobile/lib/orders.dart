@@ -7,6 +7,21 @@ import 'auth.dart';
 import 'loading.dart';
 import 'discover.dart';
 
+String orderNextStep(Json order) => switch (stage(order)) {
+  'awaiting_payment' => '确认付款后，可在这里查看派单进度。',
+  'awaiting_assignment' => '刷新进度查看派单结果；需要协助可联系俱乐部。',
+  'awaiting_acceptance' => '刷新进度查看队友接单结果。',
+  'scheduled' => '按预约时间准备服务；需要协助可联系俱乐部。',
+  'in_progress' => '服务中如有问题，可申请售后。',
+  'awaiting_confirmation' =>
+    order['delivery'] is Map
+        ? '核对服务记录后确认完成；如有问题可申请售后。'
+        : '核对本次服务后确认完成；如有问题可申请售后。',
+  'disputed' => '可联系俱乐部了解售后进度。',
+  'completed' || 'cancelled' => '需要服务，可再次预约。',
+  _ => '刷新进度，或联系俱乐部核对订单状态。',
+};
+
 class OrdersPage extends StatefulWidget {
   const OrdersPage(this.repo, {super.key});
   final ClubRepository repo;
@@ -459,6 +474,11 @@ class _OrderPageState extends State<OrderPage> {
               fontWeight: FontWeight.w600,
               letterSpacing: -.4,
             ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '下一步 · ${orderNextStep(o)}',
+            style: const TextStyle(fontSize: 16, height: 1.5, color: ink),
           ),
           const SizedBox(height: 20),
           _ProgressStrip(status),
