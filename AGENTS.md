@@ -13,7 +13,7 @@ Avoid unnecessary secondary labels and descriptions. Let the layout do the expla
 - Keep source MIT licensed. Third-party product screenshots are research references, not assets to redistribute in the application.
 
 - The platform brand is always written **OpenNI**. Domain/package names remain lowercase; independently configured club names are not overwritten.
-- Current approved reference direction is Codrops/Grok: graphite brand site, cool neutral product UI, precise typography and meaningful product interaction. The former cream/sage visual lock is superseded.
+- Current approved website direction (confirmed 2026-11-23) is the warm-white Mobbin-inspired showcase originally in `apps/showcase/redesign/` (commit `5ec1d92`), now the root site. Preserve its near-black headings, restrained pill actions, screenshot-led stage, and gallery. The mobile app retains its own established colors; competitor research may inform its flow and hierarchy, not its theme.
 
 - Latest user feedback: keep the website direction, remove slogans/metaphors (including 主场), use direct product labels. App visual design must show real game imagery and configurable banner placements, not contour placeholders. Avoid repeated demo badges; disclose sample data centrally and preserve honest payment/account boundaries. Beginner guidance belongs in a conventional searchable documentation layout.
 

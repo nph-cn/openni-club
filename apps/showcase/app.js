@@ -88,8 +88,10 @@ document.addEventListener('keydown',event=>{if(event.key==='/'&&!/INPUT|TEXTAREA
 async function loadScreens() {
  loadError=false; $('#gallery-loading').hidden=false; $('#empty').hidden=true; $('#gallery').setAttribute('aria-busy','true');
  try {
-  const response=await fetch('/screens.json');if(!response.ok)throw Error('index');const data=await response.json();if(!Array.isArray(data))throw Error('index');screens=data;
+  const response=await fetch('/screens.json');if(!response.ok)throw Error('index');const data=await response.json();if(!Array.isArray(data))throw Error('index');
+  screens=data;
   for(const button of document.querySelectorAll('[data-platform]')){const count=screens.filter(s=>s.platform===button.dataset.platform).length;button.hidden=!count;button.querySelector('span').textContent=count;}
+  for(const item of document.querySelectorAll('[data-count-platform]'))item.textContent=screens.filter(s=>s.platform===item.dataset.countPlatform).length;
   const requested=screens.find(screen=>screen.id===initialScreen);if(requested){platform=requested.platform;if(!matched().includes(requested)){role='all';flow='all';state='all';query='';favoriteOnly=false;}}
   render();if(requested)show(requested);initialScreen='';
  } catch {loadError=true;$('#empty').hidden=false;$('#empty h3').textContent='界面目录未能加载';$('#empty p').textContent='';$('#reset-empty').textContent='重新加载';}
@@ -119,4 +121,4 @@ async function setStage(key){
 }
 const roleTabs=[...document.querySelectorAll('[data-stage-role]')];
 roleTabs.forEach((button,index)=>{button.onclick=()=>setStage(button.dataset.stageRole);button.onkeydown=event=>{let next;if(event.key==='ArrowRight'||event.key==='ArrowDown')next=(index+1)%roleTabs.length;else if(event.key==='ArrowLeft'||event.key==='ArrowUp')next=(index+roleTabs.length-1)%roleTabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=roleTabs.length-1;else return;event.preventDefault();roleTabs[next].focus();setStage(roleTabs[next].dataset.stageRole);};});
-if(!reduceMotion.matches){$('.hero-wordmark').animate([{opacity:0,transform:'translateY(22px)'},{opacity:1,transform:'translateY(0)'}],{duration:850,easing:'cubic-bezier(.22,.61,.36,1)'});}
+if(!reduceMotion.matches){const hw=$('.hero-wordmark')||$('#hero-title');if(hw)hw.animate([{opacity:0,transform:'translateY(22px)'},{opacity:1,transform:'translateY(0)'}],{duration:850,easing:'cubic-bezier(.22,.61,.36,1)'});}
