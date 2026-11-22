@@ -446,49 +446,52 @@ class _BookingPageState extends State<BookingPage> {
                           d.year == day.year &&
                           d.month == day.month &&
                           d.day == day.day;
-                      return InkWell(
-                        onTap: () {
-                          setState(() => day = d);
-                          if (playerId != null) loadSlots();
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          width: 96,
-                          padding: const EdgeInsets.symmetric(vertical: 11),
-                          decoration: BoxDecoration(
-                            color: picked ? ink : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: picked ? ink : rule),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                i == 0
-                                    ? '明天'
-                                    : [
-                                        '周一',
-                                        '周二',
-                                        '周三',
-                                        '周四',
-                                        '周五',
-                                        '周六',
-                                        '周日',
-                                      ][d.weekday - 1],
-                                style: TextStyle(
-                                  color: picked ? Colors.white70 : muted,
-                                  fontSize: 14,
+                      return Semantics(
+                        selected: picked,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() => day = d);
+                            if (playerId != null) loadSlots();
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            width: 96,
+                            padding: const EdgeInsets.symmetric(vertical: 11),
+                            decoration: BoxDecoration(
+                              color: picked ? ink : Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: picked ? ink : rule),
+                            ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  i == 0
+                                      ? '明天'
+                                      : [
+                                          '周一',
+                                          '周二',
+                                          '周三',
+                                          '周四',
+                                          '周五',
+                                          '周六',
+                                          '周日',
+                                        ][d.weekday - 1],
+                                  style: TextStyle(
+                                    color: picked ? Colors.white70 : muted,
+                                    fontSize: 14,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                '${d.month}/${d.day}',
-                                style: TextStyle(
-                                  color: picked ? Colors.white : ink,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 5),
+                                Text(
+                                  '${d.month}/${d.day}',
+                                  style: TextStyle(
+                                    color: picked ? Colors.white : ink,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -531,36 +534,51 @@ class _BookingPageState extends State<BookingPage> {
                       final picked =
                               selectedSlot?['startAt'] == slot['startAt'],
                           available = slot['available'] == true;
+                      final time = when(slot['startAt'], onlyTime: true);
                       return SizedBox(
                         width: 102,
-                        child: OutlinedButton(
-                          onPressed: available
+                        child: Semantics(
+                          label: available ? time : '$time 已占用',
+                          button: true,
+                          enabled: available,
+                          selected: picked,
+                          onTap: available
                               ? () => setState(() => selectedSlot = slot)
                               : null,
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: picked ? sage : Colors.white,
-                            side: BorderSide(color: picked ? forest : rule),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                when(slot['startAt'], onlyTime: true),
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: picked
-                                      ? forest
-                                      : available
-                                      ? ink
-                                      : muted,
-                                ),
+                          child: ExcludeSemantics(
+                            child: OutlinedButton(
+                              onPressed: available
+                                  ? () => setState(() => selectedSlot = slot)
+                                  : null,
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: picked ? sage : Colors.white,
+                                side: BorderSide(color: picked ? forest : rule),
                               ),
-                              if (!available)
-                                const Text(
-                                  '已占用',
-                                  style: TextStyle(fontSize: 14, color: muted),
-                                ),
-                            ],
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    time,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: picked
+                                          ? forest
+                                          : available
+                                          ? ink
+                                          : muted,
+                                    ),
+                                  ),
+                                  if (!available)
+                                    const Text(
+                                      '已占用',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: muted,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       );

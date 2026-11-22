@@ -83,6 +83,16 @@ void main() {
       await tester.ensureVisible(find.text('20:00'));
       await tester.tap(find.text('20:00'));
       await tester.pumpAndSettle();
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Semantics &&
+              widget.properties.label == '20:00' &&
+              widget.properties.button == true &&
+              widget.properties.selected == true,
+        ),
+        findsOneWidget,
+      );
       await tester.ensureVisible(find.byType(TextFormField).first);
       await tester.enterText(find.byType(TextFormField).first, 'demo-contact');
       await tester.enterText(find.byType(TextFormField).at(1), 'Demo#1234');
